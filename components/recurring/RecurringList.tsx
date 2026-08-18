@@ -43,10 +43,10 @@ export function RecurringList({ recurring }: { recurring: RecurringTransaction[]
       <>
         <Card className="flex flex-col items-center justify-center gap-3 py-16 text-center">
           <div className="flex size-12 items-center justify-center rounded-full bg-slate-100">
-            <Repeat className="size-6 text-slate-400" />
+            <Repeat className="size-6 text-text-muted" />
           </div>
-          <p className="text-sm font-medium text-slate-700">No recurring transactions yet</p>
-          <p className="max-w-xs text-sm text-slate-500">
+          <p className="text-sm font-medium text-text-secondary">No recurring transactions yet</p>
+          <p className="max-w-xs text-sm text-text-muted">
             Set up salary, rent, or subscriptions to post automatically on schedule.
           </p>
           <Button onClick={openAdd} className="mt-2">

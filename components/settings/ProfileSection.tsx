@@ -72,7 +72,7 @@ export function ProfileSection({
   return (
     <Card className="space-y-6 p-5">
       <div>
-        <p className="mb-4 text-sm font-semibold text-slate-900">Profile</p>
+        <p className="mb-4 text-sm font-semibold text-text-primary">Profile</p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Input
             label="Display name"
@@ -85,12 +85,12 @@ export function ProfileSection({
           />
           <Input label="Email" value={email} disabled readOnly />
         </div>
-        {savingName && <p className="mt-1.5 text-xs text-slate-400">Saving…</p>}
+        {savingName && <p className="mt-1.5 text-xs text-text-muted">Saving…</p>}
         {nameSaved && !savingName && <p className="mt-1.5 text-xs text-emerald-600">Saved</p>}
       </div>
 
-      <div className="border-t border-slate-100 pt-6">
-        <p className="mb-4 text-sm font-semibold text-slate-900">Change Password</p>
+      <div className="border-t border-black/[0.08] pt-6">
+        <p className="mb-4 text-sm font-semibold text-text-primary">Change Password</p>
         <form onSubmit={handlePasswordSubmit} className="space-y-4">
           <Input
             label="Current password"

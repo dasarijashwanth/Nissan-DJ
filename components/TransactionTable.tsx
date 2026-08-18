@@ -80,10 +80,10 @@ export function TransactionTable({ transactions }: { transactions: Transaction[]
       <>
         <Card className="flex flex-col items-center justify-center gap-3 py-16 text-center">
           <div className="flex size-12 items-center justify-center rounded-full bg-slate-100">
-            <Receipt className="size-6 text-slate-400" />
+            <Receipt className="size-6 text-text-muted" />
           </div>
-          <p className="text-sm font-medium text-slate-700">No transactions yet</p>
-          <p className="max-w-xs text-sm text-slate-500">
+          <p className="text-sm font-medium text-text-secondary">No transactions yet</p>
+          <p className="max-w-xs text-sm text-text-muted">
             Add your first income or expense to start tracking your finances.
           </p>
           <Button onClick={openAdd} className="mt-2">
@@ -141,14 +141,14 @@ export function TransactionTable({ transactions }: { transactions: Transaction[]
 
       <Card className="overflow-hidden p-0">
         {filtered.length === 0 ? (
-          <div className="py-16 text-center text-sm text-slate-500">
+          <div className="py-16 text-center text-sm text-text-muted">
             No transactions match these filters.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-200 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
+                <tr className="border-b border-black/[0.08] text-left text-xs font-medium uppercase tracking-wide text-text-muted">
                   <SortableHeader label="Title" sortKey="title" active={sortKey} dir={sortDir} onClick={toggleSort} />
                   <th className="px-4 py-3">Category</th>
                   <SortableHeader label="Date" sortKey="date" active={sortKey} dir={sortDir} onClick={toggleSort} />
@@ -158,12 +158,12 @@ export function TransactionTable({ transactions }: { transactions: Transaction[]
               </thead>
               <tbody>
                 {pageItems.map((t) => (
-                  <tr key={t.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
-                    <td className="px-4 py-3 font-medium text-slate-900">{t.title}</td>
+                  <tr key={t.id} className="border-b border-black/[0.08] last:border-0 hover:bg-slate-50">
+                    <td className="px-4 py-3 font-medium text-text-primary">{t.title}</td>
                     <td className="px-4 py-3">
                       <Badge color="slate">{t.category}</Badge>
                     </td>
-                    <td className="px-4 py-3 text-slate-500">{formatDate(t.date)}</td>
+                    <td className="px-4 py-3 text-text-muted">{formatDate(t.date)}</td>
                     <td
                       className={cn(
                         "px-4 py-3 text-right font-medium tabular-nums",
@@ -178,7 +178,7 @@ export function TransactionTable({ transactions }: { transactions: Transaction[]
                         <button
                           onClick={() => openEdit(t)}
                           aria-label={`Edit ${t.title}`}
-                          className="rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                          className="rounded-md p-1.5 text-text-muted hover:bg-slate-100 hover:text-text-secondary"
                         >
                           <Pencil className="size-4" />
                         </button>
@@ -186,7 +186,7 @@ export function TransactionTable({ transactions }: { transactions: Transaction[]
                           onClick={() => handleDelete(t.id)}
                           disabled={deletingId === t.id}
                           aria-label={`Delete ${t.title}`}
-                          className="rounded-md p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                          className="rounded-md p-1.5 text-text-muted hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
                         >
                           <Trash2 className="size-4" />
                         </button>
@@ -200,8 +200,8 @@ export function TransactionTable({ transactions }: { transactions: Transaction[]
         )}
 
         {totalPages > 1 && (
-          <div className="flex items-center justify-between border-t border-slate-200 px-4 py-3">
-            <p className="text-sm text-slate-500">
+          <div className="flex items-center justify-between border-t border-black/[0.08] px-4 py-3">
+            <p className="text-sm text-text-muted">
               Page {currentPage} of {totalPages}
             </p>
             <div className="flex gap-2">
@@ -256,7 +256,7 @@ function SortableHeader({
       <button
         onClick={() => onClick(sortKey)}
         className={cn(
-          "inline-flex items-center gap-1 hover:text-slate-700",
+          "inline-flex items-center gap-1 hover:text-text-secondary",
           align === "right" && "flex-row-reverse"
         )}
       >
@@ -264,7 +264,7 @@ function SortableHeader({
         <ArrowUpDown
           className={cn(
             "size-3",
-            active === sortKey ? "text-slate-600" : "text-slate-300",
+            active === sortKey ? "text-text-secondary" : "text-slate-300",
             active === sortKey && dir === "asc" && "rotate-180"
           )}
         />

@@ -43,13 +43,13 @@ export function InstallPrompt() {
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-x-4 bottom-20 z-40 flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-lg lg:bottom-4 lg:left-64 lg:right-4">
+    <div className="fixed inset-x-4 bottom-20 z-40 flex items-center gap-3 rounded-xl border border-black/[0.08] bg-surface-card p-4 shadow-lg lg:bottom-4 lg:left-64 lg:right-4">
       <Download className="size-5 shrink-0 text-indigo-600" />
-      <p className="flex-1 text-sm text-slate-700">Add SentraTrack to your home screen for quick access.</p>
+      <p className="flex-1 text-sm text-text-secondary">Add SentraTrack to your home screen for quick access.</p>
       <Button size="sm" onClick={install}>
         Install
       </Button>
-      <button onClick={dismiss} aria-label="Dismiss" className="rounded-md p-1 text-slate-400 hover:bg-slate-100">
+      <button onClick={dismiss} aria-label="Dismiss" className="rounded-md p-1 text-text-muted hover:bg-slate-100">
         <X className="size-4" />
       </button>
     </div>

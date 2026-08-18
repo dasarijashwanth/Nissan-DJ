@@ -109,7 +109,7 @@ export function TransactionForm({ open, onClose, transaction }: TransactionFormP
                   ? type === "income"
                     ? "border-emerald-600 bg-emerald-50 text-emerald-700"
                     : "border-red-600 bg-red-50 text-red-700"
-                  : "border-slate-200 text-slate-500 hover:bg-slate-50"
+                  : "border-slate-200 text-text-muted hover:bg-slate-50"
               )}
             >
               {type}

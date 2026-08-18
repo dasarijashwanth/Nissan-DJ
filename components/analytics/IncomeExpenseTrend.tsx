@@ -13,7 +13,7 @@ export interface TrendDatum {
 export function IncomeExpenseTrend({ data }: { data: TrendDatum[] }) {
   return (
     <Card className="p-5">
-      <p className="mb-4 text-sm font-medium text-slate-700">Income vs Expense Trend</p>
+      <p className="mb-4 text-sm font-medium text-text-secondary">Income vs Expense Trend</p>
       <div className="h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>

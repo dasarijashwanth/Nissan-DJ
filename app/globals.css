@@ -1,10 +1,197 @@
+@import url("https://cdn.jsdelivr.net/npm/cal-sans@1.0.1/index.css");
 @import "tailwindcss";
+
+/* Route Tailwind's dark: variant through our manual [data-theme] toggle instead of OS preference. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root {
+  /* Brand colors */
+  --color-primary: #4f46e5; /* indigo-600 */
+  --color-primary-light: #6366f1; /* indigo-500 */
+  --color-primary-dark: #3730a3; /* indigo-800 */
+  --color-accent: #f59e0b; /* amber-500 — car/fuel */
+  --color-accent-dark: #d97706; /* amber-600 */
+
+  /* Semantic */
+  --color-income: #10b981; /* emerald-500 */
+  --color-expense: #ef4444; /* red-500 */
+  --color-warning: #f59e0b; /* amber-500 */
+  --color-success: #10b981;
+  --color-danger: #ef4444;
+
+  /* Surfaces */
+  --surface-page: #f8fafc; /* slate-50 */
+  --surface-card: #ffffff;
+  --surface-glass: rgba(255, 255, 255, 0.72);
+  --surface-sidebar: #0f172a; /* slate-900 */
+
+  /* Text */
+  --text-primary: #0f172a; /* slate-900 */
+  --text-secondary: #475569; /* slate-600 */
+  --text-muted: #94a3b8; /* slate-400 */
+  --text-inverse: #f8fafc; /* on dark bg */
+
+  /* Typography scale */
+  --font-display: "Cal Sans", var(--font-inter), sans-serif;
+
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.875rem; /* 14px */
+  --text-base: 1rem; /* 16px */
+  --text-lg: 1.125rem; /* 18px */
+  --text-xl: 1.25rem; /* 20px */
+  --text-2xl: 1.5rem; /* 24px */
+  --text-3xl: 1.875rem; /* 30px */
+  --text-4xl: 2.25rem; /* 36px */
+
+  /* Spacing */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 2px 8px rgba(79, 70, 229, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+
+  /* Blur (glassmorphism) */
+  --blur-glass: blur(16px);
+}
+
+/* Dark mode — explicit opt-in via [data-theme="dark"] on <html> */
+:root[data-theme="dark"] {
+  --surface-page: #0b0f19;
+  --surface-card: #131929;
+  --surface-glass: rgba(19, 25, 41, 0.8);
+  --surface-sidebar: #070b14;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #475569;
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+}
 
 @theme inline {
   --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+  --font-display: var(--font-display);
+
+  --color-primary: var(--color-primary);
+  --color-primary-light: var(--color-primary-light);
+  --color-primary-dark: var(--color-primary-dark);
+  --color-accent: var(--color-accent);
+  --color-accent-dark: var(--color-accent-dark);
+  --color-income: var(--color-income);
+  --color-expense: var(--color-expense);
+  --color-warning: var(--color-warning);
+  --color-success: var(--color-success);
+  --color-danger: var(--color-danger);
+
+  --color-surface-page: var(--surface-page);
+  --color-surface-card: var(--surface-card);
+  --color-surface-sidebar: var(--surface-sidebar);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-inverse: var(--text-inverse);
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+
+  --shadow-card: var(--shadow-card);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
 }
 
 body {
-  background: #ffffff;
-  color: #0f172a;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  background: var(--surface-page);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.font-mono,
+code,
+.amount-display {
+  font-family: var(--font-mono);
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseAmber {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(245, 158, 11, 0);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-slide-up-fade {
+  animation: slideUpFade 0.3s ease forwards;
+}
+
+.animate-pulse-amber {
+  animation: pulseAmber 2s infinite;
+}
+
+/* Decorative colored corner accent for stat cards. Set --card-accent-color inline per instance. */
+.card-stat {
+  position: relative;
+  overflow: hidden;
+}
+.card-stat::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: 0 var(--radius-lg) 0 100%;
+  opacity: 0.08;
+  background: var(--card-accent-color, var(--color-primary));
 }

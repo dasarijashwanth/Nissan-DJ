@@ -39,10 +39,10 @@ export function BudgetOverviewGrid({
       <>
         <Card className="flex flex-col items-center justify-center gap-3 py-16 text-center">
           <div className="flex size-12 items-center justify-center rounded-full bg-slate-100">
-            <Target className="size-6 text-slate-400" />
+            <Target className="size-6 text-text-muted" />
           </div>
-          <p className="text-sm font-medium text-slate-700">No budgets set for this month</p>
-          <p className="max-w-xs text-sm text-slate-500">
+          <p className="text-sm font-medium text-text-secondary">No budgets set for this month</p>
+          <p className="max-w-xs text-sm text-text-muted">
             Set a monthly limit per category to start tracking your spending.
           </p>
           <Button onClick={() => setFormOpen(true)} className="mt-2">

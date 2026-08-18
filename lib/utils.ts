@@ -12,12 +12,22 @@ export function formatCurrency(amount: number) {
   }).format(amount);
 }
 
+export function formatMiles(miles: number) {
+  return `${new Intl.NumberFormat("en-US").format(Math.round(miles))} mi`;
+}
+
+// Every stored date here is a calendar day with no meaningful time component, serialized as
+// UTC midnight ("...T00:00:00.000Z"). Parsing that with `new Date()` and formatting in the
+// viewer's local timezone shifts it back a day for anyone west of UTC — so pull the Y/M/D
+// straight out of the string instead of letting the Date constructor reinterpret it.
 export function formatDate(date: string | Date) {
+  const iso = typeof date === "string" ? date : date.toISOString();
+  const [year, month, day] = iso.slice(0, 10).split("-").map(Number);
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "2-digit",
     year: "numeric",
-  }).format(new Date(date));
+  }).format(new Date(year, month - 1, day));
 }
 
 export function toDateInputValue(date: string | Date) {

@@ -50,24 +50,24 @@ export function ExportMenu({ month, year, userEmail }: ExportMenuProps) {
       <button
         onClick={() => setOpen((o) => !o)}
         disabled={loading}
-        className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 px-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50"
+        className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-black/[0.08] px-3 text-sm font-medium text-text-secondary transition-colors hover:bg-slate-50 disabled:opacity-50"
       >
         {loading ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
         Export
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-30 mt-2 w-44 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg">
+        <div className="absolute right-0 top-full z-30 mt-2 w-44 overflow-hidden rounded-lg border border-black/[0.08] bg-surface-card shadow-lg">
           <button
             onClick={() => handleExport("pdf")}
-            className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+            className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:bg-slate-50"
           >
             <FileText className="size-4" />
             Export PDF
           </button>
           <button
             onClick={() => handleExport("xlsx")}
-            className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+            className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:bg-slate-50"
           >
             <FileSpreadsheet className="size-4" />
             Export XLSX

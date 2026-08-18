@@ -12,8 +12,8 @@ export default function LoginPage() {
 
   return (
     <Card className="p-6">
-      <h1 className="mb-1 text-lg font-semibold text-slate-900">Welcome back</h1>
-      <p className="mb-6 text-sm text-slate-500">Log in to your SentraTrack account.</p>
+      <h1 className="mb-1 text-lg font-semibold text-text-primary">Welcome back</h1>
+      <p className="mb-6 text-sm text-text-muted">Log in to your SentraTrack account.</p>
 
       <form action={formAction} className="space-y-4">
         <Input label="Email" id="email" name="email" type="email" autoComplete="email" required />
@@ -33,7 +33,7 @@ export default function LoginPage() {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-slate-500">
+      <p className="mt-6 text-center text-sm text-text-muted">
         Don&apos;t have an account?{" "}
         <Link href="/signup" className="font-medium text-indigo-600 hover:text-indigo-700">
           Sign up

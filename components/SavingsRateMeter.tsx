@@ -38,8 +38,8 @@ export function SavingsRateMeter({ rate }: { rate: number }) {
         </text>
       </svg>
       <div>
-        <p className="text-sm font-medium text-slate-500">Savings Rate</p>
-        <p className="text-xs text-slate-400">This month</p>
+        <p className="text-sm font-medium text-text-muted">Savings Rate</p>
+        <p className="text-xs text-text-muted">This month</p>
       </div>
     </Card>
   );

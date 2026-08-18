@@ -38,13 +38,13 @@ export function NotificationsSection({ notifications }: { notifications: UserPre
 
   return (
     <Card className="p-5">
-      <p className="mb-4 text-sm font-semibold text-slate-900">Notifications</p>
+      <p className="mb-4 text-sm font-semibold text-text-primary">Notifications</p>
       <div className="space-y-4">
         {TOGGLES.map((t) => (
           <div key={t.key} className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-sm font-medium text-slate-900">{t.label}</p>
-              <p className="text-xs text-slate-500">{t.description}</p>
+              <p className="text-sm font-medium text-text-primary">{t.label}</p>
+              <p className="text-xs text-text-muted">{t.description}</p>
             </div>
             <button
               onClick={() => toggle(t.key)}

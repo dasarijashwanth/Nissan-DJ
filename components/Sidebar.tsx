@@ -2,20 +2,43 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, CreditCard, Calendar, BarChart3, Target, Repeat, Bell, Car, Settings, LogOut } from "lucide-react";
+import {
+  Home,
+  CreditCard,
+  Calendar,
+  BarChart3,
+  Target,
+  Repeat,
+  Bell,
+  Car,
+  Settings,
+  LogOut,
+} from "lucide-react";
 import { logout } from "@/app/(auth)/actions";
 import { cn } from "@/lib/utils";
+import { VehicleSwitcher } from "@/components/layout/VehicleSwitcher";
 
-const DESKTOP_NAV_ITEMS = [
-  { href: "/", label: "Dashboard", icon: Home },
-  { href: "/transactions", label: "Transactions", icon: CreditCard },
-  { href: "/monthly", label: "Monthly", icon: Calendar },
-  { href: "/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/budgets", label: "Budgets", icon: Target },
-  { href: "/recurring", label: "Recurring", icon: Repeat },
-  { href: "/sentra", label: "My Sentra", icon: Car },
-  { href: "/alerts", label: "Alerts", icon: Bell },
-  { href: "/settings", label: "Settings", icon: Settings },
+const NAV_SECTIONS = [
+  {
+    label: "Overview",
+    items: [
+      { href: "/", label: "Dashboard", icon: Home },
+      { href: "/analytics", label: "Analytics", icon: BarChart3 },
+    ],
+  },
+  {
+    label: "Finance",
+    items: [
+      { href: "/transactions", label: "Transactions", icon: CreditCard },
+      { href: "/monthly", label: "Monthly", icon: Calendar },
+      { href: "/budgets", label: "Budgets", icon: Target },
+      { href: "/recurring", label: "Recurring", icon: Repeat },
+    ],
+  },
+  {
+    label: "My Vehicles",
+    items: [{ href: "/vehicles", label: "My Sentra", icon: Car }],
+  },
 ] as const;
 
 // Mobile bottom nav only has room for ~5 items; the rest stay reachable from
@@ -23,48 +46,107 @@ const DESKTOP_NAV_ITEMS = [
 const MOBILE_NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: Home },
   { href: "/transactions", label: "Transactions", icon: CreditCard },
-  { href: "/sentra", label: "Sentra", icon: Car },
+  { href: "/vehicles", label: "Sentra", icon: Car },
   { href: "/budgets", label: "Budgets", icon: Target },
   { href: "/settings", label: "Settings", icon: Settings },
 ] as const;
 
-export function Sidebar({ userEmail }: { userEmail: string }) {
+const NOISE_BACKGROUND =
+  "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E\")";
+
+function NavLink({
+  href,
+  label,
+  icon: Icon,
+  active,
+}: {
+  href: string;
+  label: string;
+  icon: typeof Home;
+  active: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "my-px flex items-center gap-2.5 rounded-md border-l-2 border-transparent px-3 py-2.5 text-sm font-medium transition-all duration-150",
+        active ? "border-primary-light bg-primary/25 text-white" : "text-white/60 hover:bg-white/[0.07] hover:text-white/90"
+      )}
+    >
+      <Icon className="size-4.5 shrink-0" />
+      {label}
+    </Link>
+  );
+}
+
+export function Sidebar({
+  userEmail,
+  unreadAlertCount = 0,
+}: {
+  userEmail: string;
+  unreadAlertCount?: number;
+}) {
   const pathname = usePathname();
+  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
   return (
     <>
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col bg-slate-900 lg:flex">
-        <div className="flex h-16 items-center px-6">
-          <span className="text-lg font-semibold tracking-tight text-white">SentraTrack</span>
+      <aside
+        className="fixed inset-y-0 left-0 z-30 hidden w-[248px] flex-col bg-surface-sidebar lg:flex"
+        style={{ backgroundImage: NOISE_BACKGROUND }}
+      >
+        <div className="flex h-16 items-center gap-2 px-6">
+          <span className="text-lg text-primary-light">◈</span>
+          <span className="font-display text-lg font-semibold text-white">SentraTrack</span>
         </div>
 
-        <nav className="flex-1 space-y-1 px-3 py-2">
-          {DESKTOP_NAV_ITEMS.map((item) => {
-            const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                  active
-                    ? "bg-indigo-600 text-white"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                )}
-              >
-                <item.icon className="size-4.5 shrink-0" />
-                {item.label}
-              </Link>
-            );
-          })}
+        <VehicleSwitcher />
+
+        <nav className="flex-1 space-y-0.5 overflow-y-auto px-2 pb-2">
+          {NAV_SECTIONS.map((section) => (
+            <div key={section.label}>
+              <p className="px-3 pt-4 pb-1.5 text-[10px] font-semibold tracking-wider text-white/30 uppercase">
+                {section.label}
+              </p>
+              {section.items.map((item) => (
+                <NavLink key={item.href} {...item} active={isActive(item.href)} />
+              ))}
+            </div>
+          ))}
         </nav>
 
-        <div className="border-t border-slate-800 p-3">
-          <p className="truncate px-3 py-1 text-xs text-slate-400">{userEmail}</p>
+        <div className="space-y-0.5 border-t border-white/10 px-2 py-2">
+          <Link
+            href="/alerts"
+            className={cn(
+              "my-px flex items-center gap-2.5 rounded-md border-l-2 border-transparent px-3 py-2.5 text-sm font-medium transition-all duration-150",
+              isActive("/alerts")
+                ? "border-primary-light bg-primary/25 text-white"
+                : "text-white/60 hover:bg-white/[0.07] hover:text-white/90"
+            )}
+          >
+            <Bell className="size-4.5 shrink-0" />
+            <span className="flex-1">Alerts</span>
+            {unreadAlertCount > 0 && (
+              <span className="flex size-5 items-center justify-center rounded-full bg-danger text-[10px] font-semibold text-white">
+                {unreadAlertCount > 9 ? "9+" : unreadAlertCount}
+              </span>
+            )}
+          </Link>
+          <NavLink href="/settings" label="Settings" icon={Settings} active={isActive("/settings")} />
+        </div>
+
+        <div className="border-t border-white/10 p-3">
+          <div className="flex items-center gap-2.5 px-3 py-1.5">
+            <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
+              {userEmail.charAt(0).toUpperCase() || "?"}
+            </div>
+            <p className="truncate text-xs text-white/50">{userEmail}</p>
+          </div>
           <form action={logout}>
             <button
               type="submit"
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+              className="flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium text-white/60 transition-colors hover:bg-white/[0.07] hover:text-white/90"
             >
               <LogOut className="size-4.5 shrink-0" />
               Log out
@@ -73,16 +155,16 @@ export function Sidebar({ userEmail }: { userEmail: string }) {
         </div>
       </aside>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-slate-200 bg-white lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-black/[0.08] bg-surface-card lg:hidden">
         {MOBILE_NAV_ITEMS.map((item) => {
-          const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+          const active = isActive(item.href);
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium",
-                active ? "text-indigo-600" : "text-slate-500"
+                "flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-colors",
+                active ? "text-primary" : "text-text-muted"
               )}
             >
               <item.icon className="size-5" />

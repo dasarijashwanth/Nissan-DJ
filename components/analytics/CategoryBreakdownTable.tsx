@@ -13,7 +13,7 @@ export interface CategoryBreakdownRow {
 export function CategoryBreakdownTable({ rows }: { rows: CategoryBreakdownRow[] }) {
   if (rows.length === 0) {
     return (
-      <Card className="flex h-72 items-center justify-center p-5 text-sm text-slate-500">
+      <Card className="flex h-72 items-center justify-center p-5 text-sm text-text-muted">
         No spending data for this period.
       </Card>
     );
@@ -24,7 +24,7 @@ export function CategoryBreakdownTable({ rows }: { rows: CategoryBreakdownRow[] 
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-200 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
+            <tr className="border-b border-black/[0.08] text-left text-xs font-medium uppercase tracking-wide text-text-muted">
               <th className="px-4 py-3">Category</th>
               <th className="px-4 py-3 text-right">Amount</th>
               <th className="px-4 py-3 text-right">% of Total</th>
@@ -38,20 +38,20 @@ export function CategoryBreakdownTable({ rows }: { rows: CategoryBreakdownRow[] 
                 <tr
                   key={row.category}
                   className={cn(
-                    "border-b border-slate-100 last:border-0 hover:bg-slate-50",
+                    "border-b border-black/[0.08] last:border-0 hover:bg-slate-50",
                     i < 3 && "bg-amber-50/40"
                   )}
                 >
-                  <td className="px-4 py-3 font-medium text-slate-900">{row.category}</td>
+                  <td className="px-4 py-3 font-medium text-text-primary">{row.category}</td>
                   <td className="px-4 py-3 text-right tabular-nums">{formatCurrency(row.amount)}</td>
-                  <td className="px-4 py-3 text-right tabular-nums text-slate-500">
+                  <td className="px-4 py-3 text-right tabular-nums text-text-muted">
                     {row.percentage.toFixed(1)}%
                   </td>
                   <td className="px-4 py-3 text-right">
                     <span
                       className={cn(
                         "inline-flex items-center gap-0.5 tabular-nums",
-                        direction === "up" ? "text-red-600" : direction === "down" ? "text-emerald-600" : "text-slate-400"
+                        direction === "up" ? "text-red-600" : direction === "down" ? "text-emerald-600" : "text-text-muted"
                       )}
                     >
                       {direction === "up" && <ArrowUp className="size-3" />}

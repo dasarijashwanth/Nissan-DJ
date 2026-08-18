@@ -12,8 +12,8 @@ export default function SignupPage() {
 
   return (
     <Card className="p-6">
-      <h1 className="mb-1 text-lg font-semibold text-slate-900">Create an account</h1>
-      <p className="mb-6 text-sm text-slate-500">Start tracking your income, expenses, and car costs.</p>
+      <h1 className="mb-1 text-lg font-semibold text-text-primary">Create an account</h1>
+      <p className="mb-6 text-sm text-text-muted">Start tracking your income, expenses, and car costs.</p>
 
       <form action={formAction} className="space-y-4">
         <Input label="Email" id="email" name="email" type="email" autoComplete="email" required />
@@ -43,7 +43,7 @@ export default function SignupPage() {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-slate-500">
+      <p className="mt-6 text-center text-sm text-text-muted">
         Already have an account?{" "}
         <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-700">
           Log in

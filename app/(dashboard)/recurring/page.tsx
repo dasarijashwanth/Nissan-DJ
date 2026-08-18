@@ -12,8 +12,8 @@ export default async function RecurringPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-slate-900">Recurring Transactions</h1>
-        <p className="text-sm text-slate-500">Salary, rent, and subscriptions that post automatically.</p>
+        <h1 className="text-xl font-semibold text-text-primary">Recurring Transactions</h1>
+        <p className="text-sm text-text-muted">Salary, rent, and subscriptions that post automatically.</p>
       </div>
 
       <RecurringList recurring={recurring} />

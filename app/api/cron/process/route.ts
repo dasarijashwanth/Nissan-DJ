@@ -3,8 +3,8 @@ import { Prisma } from "@/lib/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { postRecurringTransaction } from "@/lib/recurringQueries";
 import { createAlertIfNotDuplicate } from "@/lib/alertQueries";
-import { getCurrentOdometer } from "@/lib/carQueries";
-import { daysUntil } from "@/lib/carUtils";
+import { getCurrentOdometer } from "@/lib/vehicleQueries";
+import { daysUntil } from "@/lib/vehicleUtils";
 import type { AlertType, UserPreferences } from "@/lib/types";
 
 const MAINTENANCE_DUE_DAYS = 14;
@@ -57,19 +57,19 @@ export async function GET(request: Request) {
     if (posted) recurringPosted++;
   }
 
-  const cars = await prisma.car.findMany();
-  for (const car of cars) {
+  const vehicles = await prisma.vehicle.findMany();
+  for (const vehicle of vehicles) {
     const [maintenanceLogs, latestPolicy, currentOdometer] = await Promise.all([
-      prisma.maintenanceLog.findMany({ where: { carId: car.id } }),
-      prisma.insurance.findFirst({ where: { carId: car.id }, orderBy: { renewalDate: "desc" } }),
-      getCurrentOdometer(car.id),
+      prisma.maintenanceLog.findMany({ where: { vehicleId: vehicle.id } }),
+      prisma.insurance.findFirst({ where: { vehicleId: vehicle.id }, orderBy: { renewalDate: "desc" } }),
+      getCurrentOdometer(vehicle.id),
     ]);
 
     for (const log of maintenanceLogs) {
       if (log.nextDueMiles != null && currentOdometer >= log.nextDueMiles - OIL_CHANGE_DUE_MILES) {
         const remaining = Math.max(0, Math.round(log.nextDueMiles - currentOdometer));
         const created = await createAlertIfNotDuplicate(
-          car.userId,
+          vehicle.userId,
           "oil_change_due" satisfies AlertType,
           `${log.type} due soon`,
           `${log.type} due in ~${remaining} miles`,
@@ -82,7 +82,7 @@ export async function GET(request: Request) {
         const days = daysUntil(log.nextDueDate.toISOString());
         if (days <= MAINTENANCE_DUE_DAYS) {
           const created = await createAlertIfNotDuplicate(
-            car.userId,
+            vehicle.userId,
             "maintenance_due" satisfies AlertType,
             `${log.type} due soon`,
             days <= 0 ? `${log.type} is overdue` : `${log.type} due in ${days} days`,
@@ -97,7 +97,7 @@ export async function GET(request: Request) {
       const days = daysUntil(latestPolicy.renewalDate.toISOString());
       if (days <= INSURANCE_DUE_DAYS) {
         const created = await createAlertIfNotDuplicate(
-          car.userId,
+          vehicle.userId,
           "insurance_due" satisfies AlertType,
           `${latestPolicy.provider} insurance renewal`,
           days <= 0 ? `${latestPolicy.provider} insurance has renewed` : `Insurance renews in ${days} days`,

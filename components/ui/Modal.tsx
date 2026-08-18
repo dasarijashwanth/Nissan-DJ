@@ -56,17 +56,17 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
         aria-modal="true"
         aria-label={title}
         className={cn(
-          "relative flex h-full w-full max-w-md flex-col bg-white shadow-xl",
+          "relative flex h-full w-full max-w-md flex-col bg-surface-card shadow-xl",
           "transition-transform duration-200 ease-out",
           visible ? "translate-x-0" : "translate-x-full"
         )}
       >
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-          <h2 className="text-base font-semibold text-slate-900">{title}</h2>
+        <div className="flex items-center justify-between border-b border-black/[0.08] px-6 py-4">
+          <h2 className="text-base font-semibold text-text-primary">{title}</h2>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            className="rounded-md p-1.5 text-text-muted hover:bg-black/[0.06] hover:text-text-secondary"
           >
             <X className="size-5" />
           </button>

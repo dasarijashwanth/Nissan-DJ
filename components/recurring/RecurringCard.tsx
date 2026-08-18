@@ -68,7 +68,7 @@ export function RecurringCard({
     <Card className={cn("p-5", !recurring.isActive && "opacity-60")}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-slate-900">{recurring.title}</p>
+          <p className="truncate text-sm font-semibold text-text-primary">{recurring.title}</p>
           <p
             className={cn(
               "text-lg font-semibold tabular-nums",
@@ -80,14 +80,14 @@ export function RecurringCard({
           </p>
         </div>
         <div className="flex shrink-0 gap-1">
-          <button onClick={onEdit} aria-label="Edit" className="rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
+          <button onClick={onEdit} aria-label="Edit" className="rounded-md p-1.5 text-text-muted hover:bg-slate-100 hover:text-text-secondary">
             <Pencil className="size-4" />
           </button>
           <button
             onClick={handleDelete}
             disabled={busy}
             aria-label="Delete"
-            className="rounded-md p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+            className="rounded-md p-1.5 text-text-muted hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
           >
             <Trash2 className="size-4" />
           </button>
@@ -101,7 +101,7 @@ export function RecurringCard({
         </Badge>
       </div>
 
-      <p className="mt-2 text-xs text-slate-500">Next: {formatDate(recurring.nextDueDate)}</p>
+      <p className="mt-2 text-xs text-text-muted">Next: {formatDate(recurring.nextDueDate)}</p>
 
       <div className="mt-4 flex gap-2">
         <Button variant="outline" size="sm" className="flex-1" onClick={toggleActive} disabled={busy}>

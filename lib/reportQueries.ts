@@ -1,12 +1,12 @@
 import { getTransactions } from "@/lib/queries";
 import {
-  getOrCreateCar,
+  getOrCreatePrimaryVehicle,
   getFuelLogs,
   getMaintenanceLogs,
   getRepairLogs,
   getOdometerLogs,
   getInsurancePolicies,
-} from "@/lib/carQueries";
+} from "@/lib/vehicleQueries";
 import { getBudgetsWithSpending } from "@/lib/budgetQueries";
 import { calcSavingsRate, groupByCategory, getBudgetStatus, getTopCategories } from "@/lib/analyticsUtils";
 import { monthRange, monthLabel } from "@/lib/utils";
@@ -19,9 +19,9 @@ export async function getMonthlyReport(userId: string, month: number, year: numb
     return d >= start && d < end;
   };
 
-  const [allTransactions, car, budgets] = await Promise.all([
+  const [allTransactions, vehicle, budgets] = await Promise.all([
     getTransactions(userId),
-    getOrCreateCar(userId),
+    getOrCreatePrimaryVehicle(userId),
     getBudgetsWithSpending(userId, month, year),
   ]);
 
@@ -33,11 +33,11 @@ export async function getMonthlyReport(userId: string, month: number, year: numb
   const expensesTotal = expenseTransactions.reduce((sum, t) => sum + t.amount, 0);
 
   const [fuelLogs, maintenanceLogs, repairLogs, odometerLogs, insurancePolicies] = await Promise.all([
-    getFuelLogs(car.id),
-    getMaintenanceLogs(car.id),
-    getRepairLogs(car.id),
-    getOdometerLogs(car.id),
-    getInsurancePolicies(car.id),
+    getFuelLogs(vehicle.id),
+    getMaintenanceLogs(vehicle.id),
+    getRepairLogs(vehicle.id),
+    getOdometerLogs(vehicle.id),
+    getInsurancePolicies(vehicle.id),
   ]);
 
   const monthFuelLogs = fuelLogs.filter((l) => inRange(l.date));

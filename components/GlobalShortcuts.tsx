@@ -1,8 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { CreditCard, Fuel, MapPin, Wrench } from "lucide-react";
 import { TransactionForm } from "@/components/TransactionForm";
-import { FuelLogForm } from "@/components/car/FuelLogForm";
+import { FuelLogForm } from "@/components/vehicles/FuelLogForm";
+import { MaintenanceForm } from "@/components/vehicles/MaintenanceForm";
+import { OdometerForm } from "@/components/vehicles/OdometerForm";
+import { Fab } from "@/components/ui/Fab";
 
 function isTypingTarget(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) return false;
@@ -12,9 +16,11 @@ function isTypingTarget(target: EventTarget | null) {
   );
 }
 
-export function GlobalShortcuts({ carId, currentOdometer }: { carId: string; currentOdometer: number }) {
+export function GlobalShortcuts({ vehicleId, currentOdometer }: { vehicleId: string; currentOdometer: number }) {
   const [transactionOpen, setTransactionOpen] = useState(false);
   const [fuelOpen, setFuelOpen] = useState(false);
+  const [maintenanceOpen, setMaintenanceOpen] = useState(false);
+  const [odometerOpen, setOdometerOpen] = useState(false);
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -35,6 +41,14 @@ export function GlobalShortcuts({ carId, currentOdometer }: { carId: string; cur
 
   return (
     <>
+      <Fab
+        actions={[
+          { label: "Fuel", icon: Fuel, onClick: () => setFuelOpen(true) },
+          { label: "Odometer", icon: MapPin, onClick: () => setOdometerOpen(true) },
+          { label: "Transaction", icon: CreditCard, onClick: () => setTransactionOpen(true) },
+          { label: "Maintenance", icon: Wrench, onClick: () => setMaintenanceOpen(true) },
+        ]}
+      />
       <TransactionForm
         key={transactionOpen ? "transaction-open" : "transaction-closed"}
         open={transactionOpen}
@@ -44,8 +58,21 @@ export function GlobalShortcuts({ carId, currentOdometer }: { carId: string; cur
         key={fuelOpen ? "fuel-open" : "fuel-closed"}
         open={fuelOpen}
         onClose={() => setFuelOpen(false)}
-        carId={carId}
+        vehicleId={vehicleId}
         previousOdometer={currentOdometer}
+      />
+      <MaintenanceForm
+        key={maintenanceOpen ? "maintenance-open" : "maintenance-closed"}
+        open={maintenanceOpen}
+        onClose={() => setMaintenanceOpen(false)}
+        vehicleId={vehicleId}
+      />
+      <OdometerForm
+        key={odometerOpen ? "odometer-open" : "odometer-closed"}
+        open={odometerOpen}
+        onClose={() => setOdometerOpen(false)}
+        vehicleId={vehicleId}
+        currentOdometer={currentOdometer}
       />
     </>
   );

@@ -31,8 +31,8 @@ export function BudgetDefaultsSection({ defaultBudgets }: { defaultBudgets: Reco
 
   return (
     <Card className="p-5">
-      <p className="mb-1 text-sm font-semibold text-slate-900">Budget Defaults</p>
-      <p className="mb-4 text-xs text-slate-500">
+      <p className="mb-1 text-sm font-semibold text-text-primary">Budget Defaults</p>
+      <p className="mb-4 text-xs text-text-muted">
         These amounts automatically create a budget for each category when a new month starts.
       </p>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -49,7 +49,7 @@ export function BudgetDefaultsSection({ defaultBudgets }: { defaultBudgets: Reco
           />
         ))}
       </div>
-      {saving && <p className="mt-2 text-xs text-slate-400">Saving…</p>}
+      {saving && <p className="mt-2 text-xs text-text-muted">Saving…</p>}
     </Card>
   );
 }

@@ -53,10 +53,10 @@ export function AlertList({ alerts: initialAlerts }: { alerts: Alert[] }) {
     return (
       <Card className="flex flex-col items-center justify-center gap-3 py-16 text-center">
         <div className="flex size-12 items-center justify-center rounded-full bg-slate-100">
-          <Bell className="size-6 text-slate-400" />
+          <Bell className="size-6 text-text-muted" />
         </div>
-        <p className="text-sm font-medium text-slate-700">No alerts yet</p>
-        <p className="max-w-xs text-sm text-slate-500">
+        <p className="text-sm font-medium text-text-secondary">No alerts yet</p>
+        <p className="max-w-xs text-sm text-text-muted">
           Budget warnings, car maintenance reminders, and recurring transaction alerts will show up here.
         </p>
       </Card>
@@ -88,10 +88,10 @@ export function AlertList({ alerts: initialAlerts }: { alerts: Alert[] }) {
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-12 text-center">
             <Inbox className="size-5 text-slate-300" />
-            <p className="text-sm text-slate-500">No alerts in this category.</p>
+            <p className="text-sm text-text-muted">No alerts in this category.</p>
           </div>
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-black/[0.08]">
             {pageItems.map((a) => (
               <li
                 key={a.id}
@@ -105,15 +105,15 @@ export function AlertList({ alerts: initialAlerts }: { alerts: Alert[] }) {
                     <Link
                       href={a.link}
                       onClick={() => !a.isRead && markRead(a.id)}
-                      className="text-sm font-medium text-slate-900 hover:text-indigo-600"
+                      className="text-sm font-medium text-text-primary hover:text-indigo-600"
                     >
                       {a.title}
                     </Link>
                   ) : (
-                    <p className="text-sm font-medium text-slate-900">{a.title}</p>
+                    <p className="text-sm font-medium text-text-primary">{a.title}</p>
                   )}
-                  <p className="mt-0.5 text-sm text-slate-500">{a.message}</p>
-                  <p className="mt-1 text-xs text-slate-400">{formatDate(a.createdAt)}</p>
+                  <p className="mt-0.5 text-sm text-text-muted">{a.message}</p>
+                  <p className="mt-1 text-xs text-text-muted">{formatDate(a.createdAt)}</p>
                 </div>
                 <div className="flex shrink-0 gap-1">
                   {!a.isRead && (
@@ -127,7 +127,7 @@ export function AlertList({ alerts: initialAlerts }: { alerts: Alert[] }) {
                   <button
                     onClick={() => deleteAlert(a.id)}
                     aria-label="Delete alert"
-                    className="rounded-md p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600"
+                    className="rounded-md p-1.5 text-text-muted hover:bg-red-50 hover:text-red-600"
                   >
                     <Trash2 className="size-4" />
                   </button>
@@ -138,8 +138,8 @@ export function AlertList({ alerts: initialAlerts }: { alerts: Alert[] }) {
         )}
 
         {totalPages > 1 && (
-          <div className="flex items-center justify-between border-t border-slate-200 px-4 py-3">
-            <p className="text-sm text-slate-500">
+          <div className="flex items-center justify-between border-t border-black/[0.08] px-4 py-3">
+            <p className="text-sm text-text-muted">
               Page {currentPage} of {totalPages}
             </p>
             <div className="flex gap-2">

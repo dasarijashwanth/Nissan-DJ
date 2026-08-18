@@ -9,16 +9,17 @@ export async function DELETE() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const car = await prisma.car.findUnique({ where: { userId: user.id }, select: { id: true } });
+  const vehicles = await prisma.vehicle.findMany({ where: { userId: user.id }, select: { id: true } });
+  const vehicleIds = vehicles.map((v) => v.id);
 
   await prisma.$transaction(async (tx) => {
-    if (car) {
-      await tx.fuelLog.deleteMany({ where: { carId: car.id } });
-      await tx.maintenanceLog.deleteMany({ where: { carId: car.id } });
-      await tx.repairLog.deleteMany({ where: { carId: car.id } });
-      await tx.odometerLog.deleteMany({ where: { carId: car.id } });
-      await tx.insurance.deleteMany({ where: { carId: car.id } });
-      await tx.car.delete({ where: { id: car.id } });
+    if (vehicleIds.length > 0) {
+      await tx.fuelLog.deleteMany({ where: { vehicleId: { in: vehicleIds } } });
+      await tx.maintenanceLog.deleteMany({ where: { vehicleId: { in: vehicleIds } } });
+      await tx.repairLog.deleteMany({ where: { vehicleId: { in: vehicleIds } } });
+      await tx.odometerLog.deleteMany({ where: { vehicleId: { in: vehicleIds } } });
+      await tx.insurance.deleteMany({ where: { vehicleId: { in: vehicleIds } } });
+      await tx.vehicle.deleteMany({ where: { id: { in: vehicleIds } } });
     }
     await tx.transaction.deleteMany({ where: { userId: user.id } });
     await tx.budget.deleteMany({ where: { userId: user.id } });

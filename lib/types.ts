@@ -3,6 +3,7 @@ export type TransactionType = "income" | "expense";
 export const CATEGORIES = [
   "Salary",
   "Freelance",
+  "Rides",
   "Food",
   "Fuel",
   "Rent",
@@ -54,9 +55,10 @@ export const COVERAGE_TYPES = ["Liability", "Comprehensive", "Full Coverage"] as
 
 export type CoverageType = (typeof COVERAGE_TYPES)[number];
 
-export type Car = {
+export type Vehicle = {
   id: string;
   userId: string;
+  nickname: string;
   make: string;
   model: string;
   year: number;
@@ -66,12 +68,14 @@ export type Car = {
   purchasePrice: number | null;
   purchaseDate: string | null;
   startOdometer: number | null;
+  isActive: boolean;
+  isPrimary: boolean;
   createdAt: string;
 };
 
 export type FuelLog = {
   id: string;
-  carId: string;
+  vehicleId: string;
   date: string;
   gallons: number;
   pricePerGallon: number;
@@ -79,12 +83,13 @@ export type FuelLog = {
   odometer: number;
   station: string | null;
   notes: string | null;
+  type: string; // "per_fill" | "weekly_summary"
   createdAt: string;
 };
 
 export type MaintenanceLog = {
   id: string;
-  carId: string;
+  vehicleId: string;
   date: string;
   type: string;
   cost: number;
@@ -98,7 +103,7 @@ export type MaintenanceLog = {
 
 export type RepairLog = {
   id: string;
-  carId: string;
+  vehicleId: string;
   date: string;
   description: string;
   cost: number;
@@ -112,16 +117,26 @@ export type RepairLog = {
 
 export type OdometerLog = {
   id: string;
-  carId: string;
+  vehicleId: string;
   date: string;
   miles: number;
   notes: string | null;
   createdAt: string;
 };
 
+export type DailyOdometer = {
+  id: string;
+  vehicleId: string;
+  date: string;
+  miles: number;
+  driven: number;
+  notes: string | null;
+  createdAt: string;
+};
+
 export type Insurance = {
   id: string;
-  carId: string;
+  vehicleId: string;
   provider: string;
   policyNumber: string | null;
   monthlyCost: number;

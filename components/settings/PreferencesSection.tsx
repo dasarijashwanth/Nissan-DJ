@@ -27,8 +27,8 @@ export function PreferencesSection({ preferences }: { preferences: UserPreferenc
   return (
     <Card className="p-5">
       <div className="mb-4 flex items-center justify-between">
-        <p className="text-sm font-semibold text-slate-900">Preferences</p>
-        {saving && <span className="text-xs text-slate-400">Saving…</span>}
+        <p className="text-sm font-semibold text-text-primary">Preferences</p>
+        {saving && <span className="text-xs text-text-muted">Saving…</span>}
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Select

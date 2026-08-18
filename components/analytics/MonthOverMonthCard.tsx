@@ -22,7 +22,7 @@ export function MonthOverMonthCard({ data }: { data: MonthOverMonthDatum[] }) {
 
   return (
     <Card className="p-5">
-      <p className="mb-4 text-sm font-medium text-slate-700">Month over Month by Category</p>
+      <p className="mb-4 text-sm font-medium text-text-secondary">Month over Month by Category</p>
       <div className="h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData} barGap={4}>

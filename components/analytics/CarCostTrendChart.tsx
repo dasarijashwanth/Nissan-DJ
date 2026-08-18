@@ -45,7 +45,7 @@ export function CarCostTrendChart({
   return (
     <div className="space-y-4">
       <Card className="p-5">
-        <p className="mb-4 text-sm font-medium text-slate-700">Car Cost by Category</p>
+        <p className="mb-4 text-sm font-medium text-text-secondary">Car Cost by Category</p>
         <div className="h-72 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={monthlyCosts}>
@@ -73,7 +73,7 @@ export function CarCostTrendChart({
       </Card>
 
       <Card className="p-5">
-        <p className="mb-4 text-sm font-medium text-slate-700">Cost per Mile Trend</p>
+        <p className="mb-4 text-sm font-medium text-text-secondary">Cost per Mile Trend</p>
         <div className="h-56 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={costPerMileTrend}>
@@ -84,10 +84,10 @@ export function CarCostTrendChart({
                 axisLine={false}
                 tick={{ fill: "#64748b", fontSize: 12 }}
                 width={56}
-                tickFormatter={(value: number) => `$${value.toFixed(2)}`}
+                tickFormatter={(value: number) => formatCurrency(value)}
               />
               <Tooltip
-                formatter={(value) => `$${Number(value).toFixed(2)} / mi`}
+                formatter={(value) => `${formatCurrency(Number(value))} / mi`}
                 contentStyle={{ borderRadius: 8, borderColor: "#e2e8f0", fontSize: 13 }}
               />
               <Line type="monotone" dataKey="costPerMile" stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} />

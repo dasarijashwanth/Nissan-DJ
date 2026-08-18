@@ -12,7 +12,7 @@ model User {
   email        String                 @unique
   createdAt    DateTime               @default(now())
   transactions Transaction[]
-  car          Car?
+  vehicles     Vehicle[]
   budgets      Budget[]
   recurring    RecurringTransaction[]
   alerts       Alert[]
@@ -82,30 +82,36 @@ model Transaction {
   @@index([date])
 }
 
-model Car {
+model Vehicle {
   id              String           @id @default(uuid())
-  userId          String           @unique
-  make            String           @default("Nissan")
-  model           String           @default("Sentra")
-  year            Int              @default(2015)
-  color           String           @default("Silver")
+  userId          String
+  nickname        String
+  make            String
+  model           String
+  year            Int
+  color           String
   licensePlate    String?
   photoUrl        String?
   purchasePrice   Float?
   purchaseDate    DateTime?
   startOdometer   Float?
+  isActive        Boolean          @default(true)
+  isPrimary       Boolean          @default(false)
   createdAt       DateTime         @default(now())
   user            User             @relation(fields: [userId], references: [id])
   fuelLogs        FuelLog[]
   maintenanceLogs MaintenanceLog[]
   repairLogs      RepairLog[]
   odometerLogs    OdometerLog[]
+  dailyOdometers  DailyOdometer[]
   insurance       Insurance[]
+
+  @@index([userId])
 }
 
 model FuelLog {
   id             String   @id @default(uuid())
-  carId          String
+  vehicleId      String
   date           DateTime
   gallons        Float
   pricePerGallon Float
@@ -113,16 +119,17 @@ model FuelLog {
   odometer       Float
   station        String?
   notes          String?
+  type           String   @default("per_fill") // "per_fill" | "weekly_summary"
   createdAt      DateTime @default(now())
-  car            Car      @relation(fields: [carId], references: [id])
+  vehicle        Vehicle  @relation(fields: [vehicleId], references: [id])
 
-  @@index([carId])
+  @@index([vehicleId])
   @@index([date])
 }
 
 model MaintenanceLog {
   id           String    @id @default(uuid())
-  carId        String
+  vehicleId    String
   date         DateTime
   type         String // "Oil Change" | "Tire Rotation" | "Air Filter" | "Brake Pad" | "Battery" | "Wiper Blades" | "Other"
   cost         Float
@@ -132,15 +139,15 @@ model MaintenanceLog {
   nextDueDate  DateTime?
   nextDueMiles Float?
   createdAt    DateTime  @default(now())
-  car          Car       @relation(fields: [carId], references: [id])
+  vehicle      Vehicle   @relation(fields: [vehicleId], references: [id])
 
-  @@index([carId])
+  @@index([vehicleId])
   @@index([date])
 }
 
 model RepairLog {
   id          String   @id @default(uuid())
-  carId       String
+  vehicleId   String
   date        DateTime
   description String
   cost        Float
@@ -150,28 +157,44 @@ model RepairLog {
   laborCost   Float?
   notes       String?
   createdAt   DateTime @default(now())
-  car         Car      @relation(fields: [carId], references: [id])
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id])
 
-  @@index([carId])
+  @@index([vehicleId])
   @@index([date])
 }
 
 model OdometerLog {
   id        String   @id @default(uuid())
-  carId     String
+  vehicleId String
   date      DateTime
   miles     Float
   notes     String?
   createdAt DateTime @default(now())
-  car       Car      @relation(fields: [carId], references: [id])
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
 
-  @@index([carId])
+  @@index([vehicleId])
   @@index([date])
+}
+
+/**
+ * One-per-day odometer log (Part B daily tracking) — a stricter, separate model from OdometerLog.
+ */
+model DailyOdometer {
+  id        String   @id @default(uuid())
+  vehicleId String
+  date      DateTime @db.Date
+  miles     Float
+  driven    Float
+  notes     String?
+  createdAt DateTime @default(now())
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
+
+  @@unique([vehicleId, date])
 }
 
 model Insurance {
   id           String   @id @default(uuid())
-  carId        String
+  vehicleId    String
   provider     String
   policyNumber String?
   monthlyCost  Float
@@ -180,7 +203,7 @@ model Insurance {
   coverageType String // "Liability" | "Comprehensive" | "Full Coverage"
   notes        String?
   createdAt    DateTime @default(now())
-  car          Car      @relation(fields: [carId], references: [id])
+  vehicle      Vehicle  @relation(fields: [vehicleId], references: [id])
 
-  @@index([carId])
+  @@index([vehicleId])
 }

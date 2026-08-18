@@ -22,7 +22,7 @@ export interface MonthlyChartDatum {
 export function MonthlyChart({ data }: { data: MonthlyChartDatum[] }) {
   return (
     <Card className="p-5">
-      <p className="mb-4 text-sm font-medium text-slate-700">Income vs Expenses (last 6 months)</p>
+      <p className="mb-4 text-sm font-medium text-text-secondary">Income vs Expenses (last 6 months)</p>
       <div className="h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} barGap={4}>

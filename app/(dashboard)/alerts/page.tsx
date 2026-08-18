@@ -12,8 +12,8 @@ export default async function AlertsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-slate-900">Alerts</h1>
-        <p className="text-sm text-slate-500">Budget, car, and recurring transaction notifications.</p>
+        <h1 className="text-xl font-semibold text-text-primary">Alerts</h1>
+        <p className="text-sm text-text-muted">Budget, car, and recurring transaction notifications.</p>
       </div>
 
       <AlertList alerts={alerts} />

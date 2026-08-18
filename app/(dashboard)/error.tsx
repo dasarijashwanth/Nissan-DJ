@@ -15,8 +15,8 @@ export default function DashboardError({ error, reset }: { error: Error & { dige
       <div className="flex size-12 items-center justify-center rounded-full bg-red-50">
         <AlertTriangle className="size-6 text-red-500" />
       </div>
-      <p className="text-sm font-medium text-slate-700">Something went wrong</p>
-      <p className="max-w-xs text-sm text-slate-500">
+      <p className="text-sm font-medium text-text-secondary">Something went wrong</p>
+      <p className="max-w-xs text-sm text-text-muted">
         This page hit an unexpected error. You can try again, or head back to the dashboard.
       </p>
       <Button onClick={reset} className="mt-2">

@@ -19,7 +19,7 @@ export function BudgetCard({
   return (
     <Card className="p-5">
       <div className="flex items-start justify-between">
-        <p className="text-sm font-semibold text-slate-900">{budget.category}</p>
+        <p className="text-sm font-semibold text-text-primary">{budget.category}</p>
         <button
           onClick={onDelete}
           disabled={deleting}
@@ -34,7 +34,7 @@ export function BudgetCard({
         <BudgetProgressBar spent={budget.spent} budget={budget.amount} />
       </div>
 
-      <p className="mt-2 text-sm text-slate-500">
+      <p className="mt-2 text-sm text-text-muted">
         You&apos;ve spent {formatCurrency(budget.spent)} of {formatCurrency(budget.amount)} this month
       </p>
       <p className={isOver ? "text-sm font-medium text-red-600" : "text-sm font-medium text-emerald-600"}>
