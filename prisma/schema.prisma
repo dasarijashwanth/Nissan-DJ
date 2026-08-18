@@ -1,0 +1,186 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String                 @id @default(uuid())
+  email        String                 @unique
+  createdAt    DateTime               @default(now())
+  transactions Transaction[]
+  car          Car?
+  budgets      Budget[]
+  recurring    RecurringTransaction[]
+  alerts       Alert[]
+  preferences  Json?
+}
+
+model Budget {
+  id        String   @id @default(uuid())
+  userId    String
+  category  String
+  amount    Float
+  month     Int // 1-12
+  year      Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, category, month, year])
+}
+
+model RecurringTransaction {
+  id          String    @id @default(uuid())
+  userId      String
+  title       String
+  amount      Float
+  type        String // "income" | "expense"
+  category    String
+  frequency   String // "weekly" | "biweekly" | "monthly" | "yearly"
+  startDate   DateTime
+  nextDueDate DateTime
+  lastCreated DateTime?
+  isActive    Boolean   @default(true)
+  notes       String?
+  createdAt   DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model Alert {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String // "budget_exceeded" | "budget_warning" | "maintenance_due" | "insurance_due" | "oil_change_due" | "recurring_due"
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([userId, isRead])
+}
+
+model Transaction {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  amount    Float
+  type      String // "income" | "expense"
+  category  String
+  date      DateTime
+  notes     String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([date])
+}
+
+model Car {
+  id              String           @id @default(uuid())
+  userId          String           @unique
+  make            String           @default("Nissan")
+  model           String           @default("Sentra")
+  year            Int              @default(2015)
+  color           String           @default("Silver")
+  licensePlate    String?
+  photoUrl        String?
+  purchasePrice   Float?
+  purchaseDate    DateTime?
+  startOdometer   Float?
+  createdAt       DateTime         @default(now())
+  user            User             @relation(fields: [userId], references: [id])
+  fuelLogs        FuelLog[]
+  maintenanceLogs MaintenanceLog[]
+  repairLogs      RepairLog[]
+  odometerLogs    OdometerLog[]
+  insurance       Insurance[]
+}
+
+model FuelLog {
+  id             String   @id @default(uuid())
+  carId          String
+  date           DateTime
+  gallons        Float
+  pricePerGallon Float
+  totalCost      Float
+  odometer       Float
+  station        String?
+  notes          String?
+  createdAt      DateTime @default(now())
+  car            Car      @relation(fields: [carId], references: [id])
+
+  @@index([carId])
+  @@index([date])
+}
+
+model MaintenanceLog {
+  id           String    @id @default(uuid())
+  carId        String
+  date         DateTime
+  type         String // "Oil Change" | "Tire Rotation" | "Air Filter" | "Brake Pad" | "Battery" | "Wiper Blades" | "Other"
+  cost         Float
+  odometer     Float
+  shop         String?
+  notes        String?
+  nextDueDate  DateTime?
+  nextDueMiles Float?
+  createdAt    DateTime  @default(now())
+  car          Car       @relation(fields: [carId], references: [id])
+
+  @@index([carId])
+  @@index([date])
+}
+
+model RepairLog {
+  id          String   @id @default(uuid())
+  carId       String
+  date        DateTime
+  description String
+  cost        Float
+  odometer    Float
+  shop        String?
+  partsCost   Float?
+  laborCost   Float?
+  notes       String?
+  createdAt   DateTime @default(now())
+  car         Car      @relation(fields: [carId], references: [id])
+
+  @@index([carId])
+  @@index([date])
+}
+
+model OdometerLog {
+  id        String   @id @default(uuid())
+  carId     String
+  date      DateTime
+  miles     Float
+  notes     String?
+  createdAt DateTime @default(now())
+  car       Car      @relation(fields: [carId], references: [id])
+
+  @@index([carId])
+  @@index([date])
+}
+
+model Insurance {
+  id           String   @id @default(uuid())
+  carId        String
+  provider     String
+  policyNumber String?
+  monthlyCost  Float
+  startDate    DateTime
+  renewalDate  DateTime
+  coverageType String // "Liability" | "Comprehensive" | "Full Coverage"
+  notes        String?
+  createdAt    DateTime @default(now())
+  car          Car      @relation(fields: [carId], references: [id])
+
+  @@index([carId])
+}
