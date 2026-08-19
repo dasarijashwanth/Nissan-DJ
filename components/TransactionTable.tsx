@@ -6,7 +6,7 @@ import { ArrowUpDown, Pencil, Trash2, Receipt, Plus } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { Select } from "@/components/ui/Input";
+import { Input, Select } from "@/components/ui/Input";
 import { TransactionForm } from "@/components/TransactionForm";
 import { CATEGORIES, type Transaction } from "@/lib/types";
 import { cn, formatCurrency, formatDate } from "@/lib/utils";
@@ -17,6 +17,7 @@ type SortKey = "date" | "amount" | "title";
 export function TransactionTable({ transactions }: { transactions: Transaction[] }) {
   const router = useRouter();
 
+  const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<"all" | "income" | "expense">("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [sortKey, setSortKey] = useState<SortKey>("date");
@@ -27,9 +28,11 @@ export function TransactionTable({ transactions }: { transactions: Transaction[]
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
+    const query = search.trim().toLowerCase();
     return transactions
       .filter((t) => typeFilter === "all" || t.type === typeFilter)
       .filter((t) => categoryFilter === "all" || t.category === categoryFilter)
+      .filter((t) => query === "" || t.title.toLowerCase().includes(query) || (t.notes ?? "").toLowerCase().includes(query))
       .sort((a, b) => {
         let cmp = 0;
         if (sortKey === "date") cmp = new Date(a.date).getTime() - new Date(b.date).getTime();
@@ -37,7 +40,7 @@ export function TransactionTable({ transactions }: { transactions: Transaction[]
         else cmp = a.title.localeCompare(b.title);
         return sortDir === "asc" ? cmp : -cmp;
       });
-  }, [transactions, typeFilter, categoryFilter, sortKey, sortDir]);
+  }, [transactions, search, typeFilter, categoryFilter, sortKey, sortDir]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -105,6 +108,16 @@ export function TransactionTable({ transactions }: { transactions: Transaction[]
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
+          <Input
+            type="search"
+            placeholder="Search transactions..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            className="w-full sm:w-56"
+          />
           <Select
             value={typeFilter}
             onChange={(e) => {

@@ -2,12 +2,13 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Car as CarIcon, Camera, Pencil, Check, X } from "lucide-react";
+import { Car as CarIcon, Camera, Pencil, Check, X, Box } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { VehicleForm } from "@/components/vehicles/VehicleForm";
-import { formatMiles } from "@/lib/utils";
+import { formatMiles, cn } from "@/lib/utils";
 import type { Vehicle } from "@/lib/types";
 
 const MAX_WIDTH = 800;
@@ -163,14 +164,20 @@ export function VehicleHeroCard({ vehicle, currentOdometer }: { vehicle: Vehicle
             <span className="font-medium text-text-primary">{formatMiles(currentOdometer)}</span>
           </p>
 
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-1 w-fit"
-            onClick={() => setDetailsOpen(true)}
-          >
-            Edit vehicle details
-          </Button>
+          <div className="mt-1 flex flex-wrap gap-2">
+            <Button variant="outline" size="sm" className="w-fit" onClick={() => setDetailsOpen(true)}>
+              Edit vehicle details
+            </Button>
+            <Link
+              href={`/vehicles/${vehicle.id}/view3d`}
+              className={cn(
+                "inline-flex h-8 w-fit items-center justify-center gap-1.5 rounded-lg border border-black/[0.08] px-3 text-sm font-medium text-text-secondary transition-all duration-150 hover:bg-black/[0.04] active:scale-[0.98]"
+              )}
+            >
+              <Box className="size-3.5" />
+              View in 3D
+            </Link>
+          </div>
         </div>
       </div>
 

@@ -13,6 +13,7 @@ import {
   Car,
   Settings,
   LogOut,
+  ShieldCheck,
 } from "lucide-react";
 import { logout } from "@/app/(auth)/actions";
 import { cn } from "@/lib/utils";
@@ -37,16 +38,17 @@ const NAV_SECTIONS = [
   },
   {
     label: "My Vehicles",
-    items: [{ href: "/vehicles", label: "My Sentra", icon: Car }],
+    items: [{ href: "/vehicles", label: "Vehicles", icon: Car }],
   },
 ] as const;
 
-// Mobile bottom nav only has room for ~5 items; the rest stay reachable from
+// Mobile bottom nav only has room for a handful of items; the rest stay reachable from
 // the desktop sidebar or in-app links (dashboard budget strip, sentra hub, etc).
 const MOBILE_NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: Home },
+  { href: "/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/transactions", label: "Transactions", icon: CreditCard },
-  { href: "/vehicles", label: "Sentra", icon: Car },
+  { href: "/vehicles", label: "Vehicles", icon: Car },
   { href: "/budgets", label: "Budgets", icon: Target },
   { href: "/settings", label: "Settings", icon: Settings },
 ] as const;
@@ -82,9 +84,11 @@ function NavLink({
 export function Sidebar({
   userEmail,
   unreadAlertCount = 0,
+  isAdmin = false,
 }: {
   userEmail: string;
   unreadAlertCount?: number;
+  isAdmin?: boolean;
 }) {
   const pathname = usePathname();
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
@@ -134,6 +138,7 @@ export function Sidebar({
             )}
           </Link>
           <NavLink href="/settings" label="Settings" icon={Settings} active={isActive("/settings")} />
+          {isAdmin && <NavLink href="/admin" label="Admin" icon={ShieldCheck} active={isActive("/admin")} />}
         </div>
 
         <div className="border-t border-white/10 p-3">
@@ -163,11 +168,11 @@ export function Sidebar({
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-colors",
+                "flex flex-1 flex-col items-center gap-0.5 px-0.5 py-2 text-center text-[10px] leading-tight font-medium transition-colors",
                 active ? "text-primary" : "text-text-muted"
               )}
             >
-              <item.icon className="size-5" />
+              <item.icon className="size-5 shrink-0" />
               {item.label}
             </Link>
           );

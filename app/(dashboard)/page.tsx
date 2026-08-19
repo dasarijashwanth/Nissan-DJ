@@ -1,11 +1,11 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { redirect } from "next/navigation";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Car as CarIcon } from "lucide-react";
 import { getAuthUser } from "@/lib/supabase";
 import { getSummary, getMonthlyChartData } from "@/lib/queries";
 import {
-  getOrCreatePrimaryVehicle,
+  getPrimaryVehicle,
   getFuelLogs,
   getMaintenanceLogs,
   getRepairLogs,
@@ -40,19 +40,21 @@ export default async function DashboardPage() {
   const [summary, chartData, vehicle, budgets, dueTodayCount, preferences] = await Promise.all([
     getSummary(user.id, start, end),
     getMonthlyChartData(user.id),
-    getOrCreatePrimaryVehicle(user.id),
+    getPrimaryVehicle(user.id),
     getBudgetsWithSpending(user.id, month, year),
     getDueTodayCount(user.id),
     getUserPreferences(user.id),
   ]);
 
-  const [fuelLogs, maintenanceLogs, repairLogs, insurancePolicies, odometerLogs] = await Promise.all([
-    getFuelLogs(vehicle.id),
-    getMaintenanceLogs(vehicle.id),
-    getRepairLogs(vehicle.id),
-    getInsurancePolicies(vehicle.id),
-    getOdometerLogs(vehicle.id),
-  ]);
+  const [fuelLogs, maintenanceLogs, repairLogs, insurancePolicies, odometerLogs] = vehicle
+    ? await Promise.all([
+        getFuelLogs(vehicle.id),
+        getMaintenanceLogs(vehicle.id),
+        getRepairLogs(vehicle.id),
+        getInsurancePolicies(vehicle.id),
+        getOdometerLogs(vehicle.id),
+      ])
+    : [[], [], [], [], []];
 
   const carCostThisMonth = calcMonthVehicleCost(fuelLogs, maintenanceLogs, repairLogs, insurancePolicies, now);
   const savingsRate = calcSavingsRate(summary.totalIncome, summary.totalExpenses);
@@ -91,16 +93,31 @@ export default async function DashboardPage() {
         <div className="sm:col-span-2 lg:col-span-3">
           <SummaryCards {...summary} />
         </div>
-        <Card
-          className="card-stat p-5"
-          style={{ "--card-accent-color": "var(--color-accent)", animationDelay: "180ms" } as CSSProperties}
-        >
-          <p className="text-sm font-medium text-text-muted">Car Cost</p>
-          <p className="mt-4 text-2xl font-semibold tabular-nums text-amber-600">
-            {formatCurrency(carCostThisMonth)}
-          </p>
-        </Card>
-        <WeeklyMileageCard {...weeklyStats} style={{ animationDelay: "240ms" }} />
+        {vehicle ? (
+          <>
+            <Card
+              className="card-stat p-5"
+              style={{ "--card-accent-color": "var(--color-accent)", animationDelay: "180ms" } as CSSProperties}
+            >
+              <p className="text-sm font-medium text-text-muted">Car Cost</p>
+              <p className="mt-4 text-2xl font-semibold tabular-nums text-amber-600">
+                {formatCurrency(carCostThisMonth)}
+              </p>
+            </Card>
+            <WeeklyMileageCard {...weeklyStats} style={{ animationDelay: "240ms" }} />
+          </>
+        ) : (
+          <Card
+            className="flex flex-col items-center justify-center gap-2 p-5 text-center sm:col-span-2"
+            style={{ animationDelay: "180ms" }}
+          >
+            <CarIcon className="size-6 text-amber-500" />
+            <p className="text-sm font-medium text-text-secondary">No vehicle yet</p>
+            <Link href="/vehicles/new" className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
+              Add your vehicle →
+            </Link>
+          </Card>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">

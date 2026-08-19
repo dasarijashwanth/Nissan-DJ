@@ -183,7 +183,9 @@ export type AlertType =
   | "maintenance_due"
   | "insurance_due"
   | "oil_change_due"
-  | "recurring_due";
+  | "recurring_due"
+  | "mpg_drop"
+  | "fuel_price_spike";
 
 export type Alert = {
   id: string;
@@ -222,6 +224,21 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
     carMaintenanceAlerts: true,
     recurringReminders: true,
   },
+};
+
+export type Vehicle3DStats = {
+  currentOdometer: number;
+  todayMiles: number;
+  monthMiles: number;
+  avgMilesPerDay: number;
+  streak: number;
+  avgMPG: number;
+  lastFillMPG: number | null;
+  monthCost: number;
+  monthCostDeltaPercent: number | null;
+  costPerMile: number;
+  oilChangeDueSoon: boolean;
+  nextService: { type: string; milesAway: number | null; daysAway: number | null } | null;
 };
 
 export type MonthlyReport = {

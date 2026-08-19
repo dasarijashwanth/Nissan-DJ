@@ -1,5 +1,15 @@
-import type { FuelLog, MaintenanceLog, RepairLog, Insurance, OdometerLog } from "@/lib/types";
+import type { FuelLog, MaintenanceLog, RepairLog, Insurance, OdometerLog, Vehicle3DStats } from "@/lib/types";
 import { monthRange, shortMonthLabel } from "@/lib/utils";
+import {
+  calcAvgMPG,
+  calcFillMPG,
+  calcCostPerMile,
+  calcTotalVehicleSpend,
+  calcMonthVehicleCost,
+  isMaintenanceDueSoon,
+  daysUntil,
+} from "@/lib/vehicleUtils";
+import type { DailyOdometerStats } from "@/lib/dailyOdometerQueries";
 
 function maxOdometerBeforeFn(
   fuelLogs: FuelLog[],
@@ -151,4 +161,75 @@ export function getWeeklyFuelTrend(
     const rollingAvgMpg = window.length > 0 ? window.reduce((sum, r) => sum + r.mpg, 0) / window.length : 0;
     return { ...w, rollingAvgMpg: Number(rollingAvgMpg.toFixed(1)) };
   });
+}
+
+function calcLastFillMPG(fuelLogs: FuelLog[]): number | null {
+  const sorted = [...fuelLogs].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  if (sorted.length < 2) return null;
+  const last = sorted[sorted.length - 1];
+  const previous = sorted[sorted.length - 2];
+  const mpg = calcFillMPG(last.odometer, previous.odometer, last.gallons);
+  return mpg > 0 ? mpg : null;
+}
+
+/** The soonest-due maintenance across types, using only the latest log per type (older logs' due fields are stale). */
+function findNextService(maintenanceLogs: MaintenanceLog[], currentOdometer: number): Vehicle3DStats["nextService"] {
+  const latestByType = new Map<string, MaintenanceLog>();
+  for (const log of maintenanceLogs) {
+    const existing = latestByType.get(log.type);
+    if (!existing || new Date(log.date) > new Date(existing.date)) latestByType.set(log.type, log);
+  }
+
+  const candidates = [...latestByType.values()]
+    .filter((l) => l.nextDueDate || l.nextDueMiles != null)
+    .map((l) => ({
+      type: l.type,
+      milesAway: l.nextDueMiles != null ? l.nextDueMiles - currentOdometer : null,
+      daysAway: l.nextDueDate ? daysUntil(l.nextDueDate) : null,
+    }));
+
+  if (candidates.length === 0) return null;
+
+  candidates.sort((a, b) => {
+    const aRank = a.milesAway ?? a.daysAway ?? Infinity;
+    const bRank = b.milesAway ?? b.daysAway ?? Infinity;
+    return aRank - bRank;
+  });
+
+  return candidates[0];
+}
+
+/** Assembles the stats shown across the Phase 5 3D components, from data pages already fetch for their existing 2D views. */
+export function buildVehicle3DStats(
+  fuelLogs: FuelLog[],
+  maintenanceLogs: MaintenanceLog[],
+  repairLogs: RepairLog[],
+  insurancePolicies: Insurance[],
+  startOdometer: number,
+  dailyStats: DailyOdometerStats,
+  now: Date
+): Vehicle3DStats {
+  const totalSpend = calcTotalVehicleSpend(fuelLogs, maintenanceLogs, repairLogs, insurancePolicies);
+  const monthCost = calcMonthVehicleCost(fuelLogs, maintenanceLogs, repairLogs, insurancePolicies, now);
+  const lastMonthDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1));
+  const lastMonthCost = calcMonthVehicleCost(fuelLogs, maintenanceLogs, repairLogs, insurancePolicies, lastMonthDate);
+
+  const latestOilChange = [...maintenanceLogs]
+    .filter((l) => l.type === "Oil Change")
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+
+  return {
+    currentOdometer: dailyStats.currentOdometer,
+    todayMiles: dailyStats.todayMiles,
+    monthMiles: dailyStats.monthMiles,
+    avgMilesPerDay: dailyStats.avgMilesPerDay,
+    streak: dailyStats.currentStreak,
+    avgMPG: calcAvgMPG(fuelLogs),
+    lastFillMPG: calcLastFillMPG(fuelLogs),
+    monthCost,
+    monthCostDeltaPercent: lastMonthCost > 0 ? ((monthCost - lastMonthCost) / lastMonthCost) * 100 : null,
+    costPerMile: calcCostPerMile(totalSpend, startOdometer, dailyStats.currentOdometer),
+    oilChangeDueSoon: latestOilChange ? isMaintenanceDueSoon(latestOilChange, dailyStats.currentOdometer) : false,
+    nextService: findNextService(maintenanceLogs, dailyStats.currentOdometer),
+  };
 }

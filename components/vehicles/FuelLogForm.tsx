@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { Modal } from "@/components/ui/Modal";
 import { Input, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { cn, toDateInputValue } from "@/lib/utils";
+import { cn, toDateInputValue, toStoredDateInputValue } from "@/lib/utils";
 import { calcFillMPG } from "@/lib/vehicleUtils";
+import type { FuelLog } from "@/lib/types";
 import {
   validateFuelLog,
   validateWeeklyFuelLog,
@@ -30,6 +31,18 @@ function emptyValues(): FuelLogFormValues {
     totalCost: "",
     odometer: "",
     notes: "",
+  };
+}
+
+function valuesFromLog(log: FuelLog): FuelLogFormValues {
+  return {
+    date: toStoredDateInputValue(log.date),
+    station: log.station ?? "",
+    gallons: String(log.gallons),
+    pricePerGallon: String(log.pricePerGallon),
+    totalCost: String(log.totalCost),
+    odometer: String(log.odometer),
+    notes: log.notes ?? "",
   };
 }
 
@@ -75,14 +88,17 @@ export interface FuelLogFormProps {
   onClose: () => void;
   vehicleId: string;
   previousOdometer: number;
+  log?: FuelLog | null;
 }
 
-export function FuelLogForm({ open, onClose, vehicleId, previousOdometer }: FuelLogFormProps) {
+export function FuelLogForm({ open, onClose, vehicleId, previousOdometer, log }: FuelLogFormProps) {
   const router = useRouter();
+  const isEdit = !!log;
   const [mode, setMode] = useState<"per_fill" | "weekly_summary">("per_fill");
 
-  const [values, setValues] = useState<FuelLogFormValues>(emptyValues);
+  const [values, setValues] = useState<FuelLogFormValues>(() => (log ? valuesFromLog(log) : emptyValues()));
   const [totalTouched, setTotalTouched] = useState(false);
+  const [gallonsTouched, setGallonsTouched] = useState(false);
   const [errors, setErrors] = useState<FuelLogFieldErrors>({});
 
   const [weeklyValues, setWeeklyValues] = useState<WeeklyFuelFormValues>(emptyWeeklyValues);
@@ -121,6 +137,10 @@ export function FuelLogForm({ open, onClose, vehicleId, previousOdometer }: Fuel
   function set<K extends keyof FuelLogFormValues>(key: K, value: FuelLogFormValues[K]) {
     setValues((prev) => {
       const next = { ...prev, [key]: value };
+
+      // Two independent auto-calcs, each skipped once the user has directly typed into its own
+      // output field: gallons+price -> total (the original flow), and price+total -> gallons (for
+      // the common case of knowing the price per gallon and the amount paid at the pump).
       if ((key === "gallons" || key === "pricePerGallon") && !totalTouched) {
         const gallons = Number(key === "gallons" ? value : next.gallons);
         const price = Number(key === "pricePerGallon" ? value : next.pricePerGallon);
@@ -128,6 +148,15 @@ export function FuelLogForm({ open, onClose, vehicleId, previousOdometer }: Fuel
           next.totalCost = (gallons * price).toFixed(2);
         }
       }
+
+      if ((key === "pricePerGallon" || key === "totalCost") && !gallonsTouched) {
+        const price = Number(key === "pricePerGallon" ? value : next.pricePerGallon);
+        const total = Number(key === "totalCost" ? value : next.totalCost);
+        if (price > 0 && total > 0) {
+          next.gallons = (total / price).toFixed(3);
+        }
+      }
+
       return next;
     });
   }
@@ -180,8 +209,9 @@ export function FuelLogForm({ open, onClose, vehicleId, previousOdometer }: Fuel
     setFormError(null);
 
     try {
-      const res = await fetch(`/api/vehicles/${vehicleId}/fuel`, {
-        method: "POST",
+      const url = isEdit ? `/api/vehicles/${vehicleId}/fuel/${log!.id}` : `/api/vehicles/${vehicleId}/fuel`;
+      const res = await fetch(url, {
+        method: isEdit ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(mode === "weekly_summary" ? { type: "weekly_summary", ...weeklyValues } : values),
       });
@@ -206,35 +236,37 @@ export function FuelLogForm({ open, onClose, vehicleId, previousOdometer }: Fuel
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Log Fuel">
-      <div className="mb-4 flex gap-1 rounded-lg bg-black/[0.06] p-1">
-        <button
-          type="button"
-          onClick={() => setMode("per_fill")}
-          className={cn(
-            "flex-1 rounded-md py-1.5 text-sm font-medium transition-colors",
-            mode === "per_fill"
-              ? "bg-surface-card text-text-primary shadow-sm"
-              : "text-text-muted hover:text-text-secondary"
-          )}
-        >
-          Per fill-up
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode("weekly_summary")}
-          className={cn(
-            "flex-1 rounded-md py-1.5 text-sm font-medium transition-colors",
-            mode === "weekly_summary"
-              ? "bg-surface-card text-text-primary shadow-sm"
-              : "text-text-muted hover:text-text-secondary"
-          )}
-        >
-          Weekly summary
-        </button>
-      </div>
+    <Modal open={open} onClose={onClose} title={isEdit ? "Edit Fuel Log" : "Log Fuel"}>
+      {!isEdit && (
+        <div className="mb-4 flex gap-1 rounded-lg bg-black/[0.06] p-1">
+          <button
+            type="button"
+            onClick={() => setMode("per_fill")}
+            className={cn(
+              "flex-1 rounded-md py-1.5 text-sm font-medium transition-colors",
+              mode === "per_fill"
+                ? "bg-surface-card text-text-primary shadow-sm"
+                : "text-text-muted hover:text-text-secondary"
+            )}
+          >
+            Per fill-up
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("weekly_summary")}
+            className={cn(
+              "flex-1 rounded-md py-1.5 text-sm font-medium transition-colors",
+              mode === "weekly_summary"
+                ? "bg-surface-card text-text-primary shadow-sm"
+                : "text-text-muted hover:text-text-secondary"
+            )}
+          >
+            Weekly summary
+          </button>
+        </div>
+      )}
 
-      {mode === "per_fill" ? (
+      {isEdit || mode === "per_fill" ? (
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             label="Date"
@@ -252,10 +284,13 @@ export function FuelLogForm({ open, onClose, vehicleId, previousOdometer }: Fuel
             <Input
               label="Gallons"
               type="number"
-              step="0.01"
+              step="0.001"
               min="0"
               value={values.gallons}
-              onChange={(e) => set("gallons", e.target.value)}
+              onChange={(e) => {
+                setGallonsTouched(true);
+                set("gallons", e.target.value);
+              }}
               error={errors.gallons}
             />
             <Input
@@ -303,7 +338,7 @@ export function FuelLogForm({ open, onClose, vehicleId, previousOdometer }: Fuel
               Cancel
             </Button>
             <Button type="submit" className="flex-1 bg-amber-500 hover:bg-amber-600" loading={submitting}>
-              Log Fuel
+              {isEdit ? "Save Changes" : "Log Fuel"}
             </Button>
           </div>
         </form>

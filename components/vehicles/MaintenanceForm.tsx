@@ -5,13 +5,15 @@ import { useRouter } from "next/navigation";
 import { Modal } from "@/components/ui/Modal";
 import { Input, Select, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { MAINTENANCE_TYPES } from "@/lib/types";
-import { toDateInputValue } from "@/lib/utils";
+import { MAINTENANCE_TYPES, type MaintenanceLog } from "@/lib/types";
+import { toDateInputValue, toStoredDateInputValue } from "@/lib/utils";
 import {
   validateMaintenanceLog,
   type MaintenanceFieldErrors,
   type MaintenanceFormValues,
 } from "@/lib/vehicleValidation";
+
+const OIL_CHANGE_INTERVAL_MILES = 3000;
 
 function emptyValues(): MaintenanceFormValues {
   return {
@@ -26,22 +28,62 @@ function emptyValues(): MaintenanceFormValues {
   };
 }
 
+function valuesFromLog(log: MaintenanceLog): MaintenanceFormValues {
+  return {
+    date: toStoredDateInputValue(log.date),
+    type: log.type,
+    cost: String(log.cost),
+    odometer: String(log.odometer),
+    shop: log.shop ?? "",
+    nextDueDate: log.nextDueDate ? toStoredDateInputValue(log.nextDueDate) : "",
+    nextDueMiles: log.nextDueMiles != null ? String(log.nextDueMiles) : "",
+    notes: log.notes ?? "",
+  };
+}
+
 export interface MaintenanceFormProps {
   open: boolean;
   onClose: () => void;
   vehicleId: string;
+  log?: MaintenanceLog | null;
 }
 
-export function MaintenanceForm({ open, onClose, vehicleId }: MaintenanceFormProps) {
+export function MaintenanceForm({ open, onClose, vehicleId, log }: MaintenanceFormProps) {
   const router = useRouter();
+  const isEdit = !!log;
 
-  const [values, setValues] = useState<MaintenanceFormValues>(emptyValues);
+  const [values, setValues] = useState<MaintenanceFormValues>(() => (log ? valuesFromLog(log) : emptyValues()));
+  const [nextDueMilesTouched, setNextDueMilesTouched] = useState(false);
+  // Distinct from nextDueMilesTouched: tracks whether the current nextDueMiles value was actually
+  // just auto-suggested this session, so the hint below doesn't reappear for an edit form's
+  // already-saved value just because it happens to still say "Oil Change".
+  const [nextDueMilesAutoSet, setNextDueMilesAutoSet] = useState(false);
   const [errors, setErrors] = useState<MaintenanceFieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   function set<K extends keyof MaintenanceFormValues>(key: K, value: MaintenanceFormValues[K]) {
-    setValues((prev) => ({ ...prev, [key]: value }));
+    // Oil changes are due every 3,000 miles — suggest the next-due odometer reading as soon as
+    // both the type and odometer are known, unless the user has already typed their own value.
+    if ((key === "type" || key === "odometer") && !nextDueMilesTouched) {
+      const type = key === "type" ? value : values.type;
+      const odometer = Number(key === "odometer" ? value : values.odometer);
+      setNextDueMilesAutoSet(type === "Oil Change" && odometer > 0);
+    }
+
+    setValues((prev) => {
+      const next = { ...prev, [key]: value };
+
+      if ((key === "type" || key === "odometer") && !nextDueMilesTouched) {
+        const type = key === "type" ? value : next.type;
+        const odometer = Number(key === "odometer" ? value : next.odometer);
+        if (type === "Oil Change" && odometer > 0) {
+          next.nextDueMiles = String(odometer + OIL_CHANGE_INTERVAL_MILES);
+        }
+      }
+
+      return next;
+    });
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -57,8 +99,11 @@ export function MaintenanceForm({ open, onClose, vehicleId }: MaintenanceFormPro
     setFormError(null);
 
     try {
-      const res = await fetch(`/api/vehicles/${vehicleId}/maintenance`, {
-        method: "POST",
+      const url = isEdit
+        ? `/api/vehicles/${vehicleId}/maintenance/${log!.id}`
+        : `/api/vehicles/${vehicleId}/maintenance`;
+      const res = await fetch(url, {
+        method: isEdit ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
@@ -80,7 +125,7 @@ export function MaintenanceForm({ open, onClose, vehicleId }: MaintenanceFormPro
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Log Maintenance">
+    <Modal open={open} onClose={onClose} title={isEdit ? "Edit Maintenance" : "Log Maintenance"}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
           label="Date"
@@ -143,10 +188,18 @@ export function MaintenanceForm({ open, onClose, vehicleId }: MaintenanceFormPro
             step="1"
             min="0"
             value={values.nextDueMiles}
-            onChange={(e) => set("nextDueMiles", e.target.value)}
+            onChange={(e) => {
+              setNextDueMilesTouched(true);
+              set("nextDueMiles", e.target.value);
+            }}
             error={errors.nextDueMiles}
           />
         </div>
+        {nextDueMilesAutoSet && (
+          <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm font-medium text-amber-700">
+            Suggested from a {OIL_CHANGE_INTERVAL_MILES.toLocaleString()}-mile oil change interval
+          </p>
+        )}
         <Textarea
           label="Notes (optional)"
           value={values.notes}
@@ -160,7 +213,7 @@ export function MaintenanceForm({ open, onClose, vehicleId }: MaintenanceFormPro
             Cancel
           </Button>
           <Button type="submit" className="flex-1 bg-amber-500 hover:bg-amber-600" loading={submitting}>
-            Log Maintenance
+            {isEdit ? "Save Changes" : "Log Maintenance"}
           </Button>
         </div>
       </form>

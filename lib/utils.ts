@@ -37,6 +37,14 @@ export function toDateInputValue(date: string | Date) {
   return local.toISOString().slice(0, 10);
 }
 
+// A stored calendar-day date has no real time component (see formatDate above) — reinterpreting
+// it through toDateInputValue's local-timezone shift rolls it back a day for anyone west of UTC.
+// Use this instead whenever prefilling a date <input> from an already-stored value (e.g. editing
+// an existing record); reserve toDateInputValue() itself for a genuine moment like `new Date()`.
+export function toStoredDateInputValue(date: string) {
+  return date.slice(0, 10);
+}
+
 const MONTH_NAMES = [
   "January",
   "February",

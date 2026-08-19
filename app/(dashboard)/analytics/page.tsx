@@ -5,7 +5,7 @@ import { Wallet, Receipt, Tag, Car as CarIcon } from "lucide-react";
 import { getAuthUser } from "@/lib/supabase";
 import { getTransactions } from "@/lib/queries";
 import {
-  getOrCreatePrimaryVehicle,
+  getPrimaryVehicle,
   getVehiclesForUser,
   getVehicleComparisonData,
   getFuelLogs,
@@ -63,15 +63,17 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
   const rawTab = Array.isArray(params.tab) ? params.tab[0] : params.tab;
   const selectedTab: TopTab = TOP_TABS.some((t) => t.key === rawTab) ? (rawTab as TopTab) : "overview";
 
-  const [transactions, vehicle] = await Promise.all([getTransactions(user.id), getOrCreatePrimaryVehicle(user.id)]);
+  const [transactions, vehicle] = await Promise.all([getTransactions(user.id), getPrimaryVehicle(user.id)]);
 
-  const [fuelLogs, maintenanceLogs, repairLogs, odometerLogs, insurancePolicies] = await Promise.all([
-    getFuelLogs(vehicle.id),
-    getMaintenanceLogs(vehicle.id),
-    getRepairLogs(vehicle.id),
-    getOdometerLogs(vehicle.id),
-    getInsurancePolicies(vehicle.id),
-  ]);
+  const [fuelLogs, maintenanceLogs, repairLogs, odometerLogs, insurancePolicies] = vehicle
+    ? await Promise.all([
+        getFuelLogs(vehicle.id),
+        getMaintenanceLogs(vehicle.id),
+        getRepairLogs(vehicle.id),
+        getOdometerLogs(vehicle.id),
+        getInsurancePolicies(vehicle.id),
+      ])
+    : [[], [], [], [], []];
 
   const earliestDate =
     transactions.length > 0

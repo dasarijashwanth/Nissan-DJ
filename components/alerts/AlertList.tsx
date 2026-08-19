@@ -16,7 +16,7 @@ type FilterKey = "all" | "budget" | "car" | "recurring";
 const FILTER_GROUPS: Record<FilterKey, AlertType[] | null> = {
   all: null,
   budget: ["budget_warning", "budget_exceeded"],
-  car: ["maintenance_due", "insurance_due", "oil_change_due"],
+  car: ["maintenance_due", "insurance_due", "oil_change_due", "mpg_drop", "fuel_price_spike"],
   recurring: ["recurring_due"],
 };
 

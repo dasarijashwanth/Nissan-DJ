@@ -6,7 +6,7 @@ import { Modal } from "@/components/ui/Modal";
 import { Input, Select, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { COVERAGE_TYPES, type Insurance } from "@/lib/types";
-import { toDateInputValue } from "@/lib/utils";
+import { toDateInputValue, toStoredDateInputValue } from "@/lib/utils";
 import {
   validateInsurance,
   type InsuranceFieldErrors,
@@ -30,8 +30,8 @@ function valuesFromPolicy(policy: Insurance): InsuranceFormValues {
     provider: policy.provider,
     policyNumber: policy.policyNumber ?? "",
     monthlyCost: String(policy.monthlyCost),
-    startDate: toDateInputValue(policy.startDate),
-    renewalDate: toDateInputValue(policy.renewalDate),
+    startDate: toStoredDateInputValue(policy.startDate),
+    renewalDate: toStoredDateInputValue(policy.renewalDate),
     coverageType: policy.coverageType,
     notes: policy.notes ?? "",
   };

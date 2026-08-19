@@ -1,12 +1,12 @@
 import { redirect } from "next/navigation";
 import { getAuthUser } from "@/lib/supabase";
-import { getOrCreatePrimaryVehicle } from "@/lib/vehicleQueries";
+import { getPrimaryVehicle } from "@/lib/vehicleQueries";
 
 // Kept as a redirect for backwards compatibility with old links/bookmarks.
 export default async function SentraRepairsRedirectPage() {
   const user = await getAuthUser();
   if (!user) redirect("/login");
 
-  const vehicle = await getOrCreatePrimaryVehicle(user.id);
-  redirect(`/vehicles/${vehicle.id}/repairs`);
+  const vehicle = await getPrimaryVehicle(user.id);
+  redirect(vehicle ? `/vehicles/${vehicle.id}/repairs` : "/vehicles");
 }

@@ -107,3 +107,41 @@ export function isInsuranceRenewalSoon(policy: Insurance): boolean {
 export function daysUntil(date: string): number {
   return Math.ceil((new Date(date).getTime() - Date.now()) / DAY_MS);
 }
+
+/** Most recent maintenance log of a given type — older due-date/due-mileage fields for that type are stale. */
+export function findLatestMaintenanceByType(logs: MaintenanceLog[], type: string): MaintenanceLog | null {
+  const matches = logs
+    .filter((l) => l.type === type)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  return matches[0] ?? null;
+}
+
+/** Same miles-per-gallon-per-fill math as calcAvgMPG, but only counting fills that landed in [start, end) — the odometer delta still comes from each fill's actual previous fill, even if that prior fill was outside the range. */
+export function calcAvgMPGInRange(fuelLogs: FuelLog[], start: Date, end: Date): number {
+  const sorted = [...fuelLogs].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  let milesSum = 0;
+  let gallonsSum = 0;
+
+  for (let i = 1; i < sorted.length; i++) {
+    const fillDate = new Date(sorted[i].date);
+    if (fillDate < start || fillDate >= end) continue;
+
+    const miles = sorted[i].odometer - sorted[i - 1].odometer;
+    if (miles > 0) {
+      milesSum += miles;
+      gallonsSum += sorted[i].gallons;
+    }
+  }
+
+  return gallonsSum > 0 ? milesSum / gallonsSum : 0;
+}
+
+export function calcAvgPricePerGallonInRange(fuelLogs: FuelLog[], start: Date, end: Date): number {
+  const inRange = fuelLogs.filter((l) => {
+    const d = new Date(l.date);
+    return d >= start && d < end;
+  });
+  if (inRange.length === 0) return 0;
+  return inRange.reduce((sum, l) => sum + l.pricePerGallon, 0) / inRange.length;
+}

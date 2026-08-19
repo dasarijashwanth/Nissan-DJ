@@ -11,6 +11,7 @@ model User {
   id           String                 @id @default(uuid())
   email        String                 @unique
   createdAt    DateTime               @default(now())
+  isAdmin      Boolean                @default(false)
   transactions Transaction[]
   vehicles     Vehicle[]
   budgets      Budget[]
@@ -54,7 +55,7 @@ model RecurringTransaction {
 model Alert {
   id        String   @id @default(uuid())
   userId    String
-  type      String // "budget_exceeded" | "budget_warning" | "maintenance_due" | "insurance_due" | "oil_change_due" | "recurring_due"
+  type      String // "budget_exceeded" | "budget_warning" | "maintenance_due" | "insurance_due" | "oil_change_due" | "recurring_due" | "mpg_drop" | "fuel_price_spike"
   title     String
   message   String
   isRead    Boolean  @default(false)

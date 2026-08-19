@@ -29,7 +29,11 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
+  // Every /api route already does its own getAuthUser()/secret-based auth and returns a proper
+  // 401 JSON response — routing it through this cookie-session redirect first breaks any
+  // unauthenticated machine caller (e.g. Vercel Cron hitting /api/cron/process with a bearer
+  // token, no session cookie), since it gets redirected to /login before its own check runs.
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|serwist/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|serwist/|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

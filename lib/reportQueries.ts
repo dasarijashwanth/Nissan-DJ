@@ -1,6 +1,6 @@
 import { getTransactions } from "@/lib/queries";
 import {
-  getOrCreatePrimaryVehicle,
+  getPrimaryVehicle,
   getFuelLogs,
   getMaintenanceLogs,
   getRepairLogs,
@@ -21,7 +21,7 @@ export async function getMonthlyReport(userId: string, month: number, year: numb
 
   const [allTransactions, vehicle, budgets] = await Promise.all([
     getTransactions(userId),
-    getOrCreatePrimaryVehicle(userId),
+    getPrimaryVehicle(userId),
     getBudgetsWithSpending(userId, month, year),
   ]);
 
@@ -32,13 +32,15 @@ export async function getMonthlyReport(userId: string, month: number, year: numb
   const incomeTotal = incomeTransactions.reduce((sum, t) => sum + t.amount, 0);
   const expensesTotal = expenseTransactions.reduce((sum, t) => sum + t.amount, 0);
 
-  const [fuelLogs, maintenanceLogs, repairLogs, odometerLogs, insurancePolicies] = await Promise.all([
-    getFuelLogs(vehicle.id),
-    getMaintenanceLogs(vehicle.id),
-    getRepairLogs(vehicle.id),
-    getOdometerLogs(vehicle.id),
-    getInsurancePolicies(vehicle.id),
-  ]);
+  const [fuelLogs, maintenanceLogs, repairLogs, odometerLogs, insurancePolicies] = vehicle
+    ? await Promise.all([
+        getFuelLogs(vehicle.id),
+        getMaintenanceLogs(vehicle.id),
+        getRepairLogs(vehicle.id),
+        getOdometerLogs(vehicle.id),
+        getInsurancePolicies(vehicle.id),
+      ])
+    : [[], [], [], [], []];
 
   const monthFuelLogs = fuelLogs.filter((l) => inRange(l.date));
   const monthMaintenanceLogs = maintenanceLogs.filter((l) => inRange(l.date));

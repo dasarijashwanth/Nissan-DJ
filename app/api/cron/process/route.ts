@@ -3,13 +3,16 @@ import { Prisma } from "@/lib/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { postRecurringTransaction } from "@/lib/recurringQueries";
 import { createAlertIfNotDuplicate } from "@/lib/alertQueries";
-import { getCurrentOdometer } from "@/lib/vehicleQueries";
-import { daysUntil } from "@/lib/vehicleUtils";
+import { getCurrentOdometer, getFuelLogs } from "@/lib/vehicleQueries";
+import { daysUntil, calcAvgMPGInRange, calcAvgPricePerGallonInRange } from "@/lib/vehicleUtils";
+import { monthRange } from "@/lib/utils";
 import type { AlertType, UserPreferences } from "@/lib/types";
 
 const MAINTENANCE_DUE_DAYS = 14;
 const OIL_CHANGE_DUE_MILES = 500;
 const INSURANCE_DUE_DAYS = 30;
+const MPG_DROP_THRESHOLD = 0.85; // alert if this month's MPG is below 85% of last month's
+const FUEL_PRICE_SPIKE_THRESHOLD = 1.1; // alert if this month's avg price/gallon is above 110% of last month's
 
 export async function GET(request: Request) {
   // Vercel Cron sends `Authorization: Bearer <CRON_SECRET>` automatically; `x-cron-secret` is
@@ -59,10 +62,11 @@ export async function GET(request: Request) {
 
   const vehicles = await prisma.vehicle.findMany();
   for (const vehicle of vehicles) {
-    const [maintenanceLogs, latestPolicy, currentOdometer] = await Promise.all([
+    const [maintenanceLogs, latestPolicy, currentOdometer, fuelLogs] = await Promise.all([
       prisma.maintenanceLog.findMany({ where: { vehicleId: vehicle.id } }),
       prisma.insurance.findFirst({ where: { vehicleId: vehicle.id }, orderBy: { renewalDate: "desc" } }),
       getCurrentOdometer(vehicle.id),
+      getFuelLogs(vehicle.id),
     ]);
 
     for (const log of maintenanceLogs) {
@@ -105,6 +109,38 @@ export async function GET(request: Request) {
         );
         if (created) alertsCreated++;
       }
+    }
+
+    const thisMonth = monthRange(now.getUTCFullYear(), now.getUTCMonth());
+    const lastMonthDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1));
+    const lastMonth = monthRange(lastMonthDate.getUTCFullYear(), lastMonthDate.getUTCMonth());
+
+    const thisMonthMPG = calcAvgMPGInRange(fuelLogs, thisMonth.start, thisMonth.end);
+    const lastMonthMPG = calcAvgMPGInRange(fuelLogs, lastMonth.start, lastMonth.end);
+    if (thisMonthMPG > 0 && lastMonthMPG > 0 && thisMonthMPG < lastMonthMPG * MPG_DROP_THRESHOLD) {
+      const dropPercent = Math.round((1 - thisMonthMPG / lastMonthMPG) * 100);
+      const created = await createAlertIfNotDuplicate(
+        vehicle.userId,
+        "mpg_drop" satisfies AlertType,
+        "MPG has dropped",
+        `Your average MPG is down ${dropPercent}% this month (${thisMonthMPG.toFixed(1)} vs ${lastMonthMPG.toFixed(1)} last month)`,
+        `/vehicles/${vehicle.id}/fuel`
+      );
+      if (created) alertsCreated++;
+    }
+
+    const thisMonthPrice = calcAvgPricePerGallonInRange(fuelLogs, thisMonth.start, thisMonth.end);
+    const lastMonthPrice = calcAvgPricePerGallonInRange(fuelLogs, lastMonth.start, lastMonth.end);
+    if (thisMonthPrice > 0 && lastMonthPrice > 0 && thisMonthPrice > lastMonthPrice * FUEL_PRICE_SPIKE_THRESHOLD) {
+      const increasePercent = Math.round((thisMonthPrice / lastMonthPrice - 1) * 100);
+      const created = await createAlertIfNotDuplicate(
+        vehicle.userId,
+        "fuel_price_spike" satisfies AlertType,
+        "Fuel prices are up",
+        `You're paying ${increasePercent}% more per gallon this month ($${thisMonthPrice.toFixed(2)} vs $${lastMonthPrice.toFixed(2)} last month)`,
+        `/vehicles/${vehicle.id}/fuel`
+      );
+      if (created) alertsCreated++;
     }
   }
 

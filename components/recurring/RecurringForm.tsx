@@ -6,7 +6,7 @@ import { Modal } from "@/components/ui/Modal";
 import { Input, Select, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { CATEGORIES, type RecurringTransaction } from "@/lib/types";
-import { toDateInputValue, cn } from "@/lib/utils";
+import { toDateInputValue, toStoredDateInputValue, cn } from "@/lib/utils";
 import {
   validateRecurring,
   type RecurringFieldErrors,
@@ -39,7 +39,7 @@ function valuesFromRecurring(r: RecurringTransaction): RecurringFormValues {
     type: r.type,
     category: r.category,
     frequency: r.frequency,
-    startDate: toDateInputValue(r.startDate),
+    startDate: toStoredDateInputValue(r.startDate),
     notes: r.notes ?? "",
   };
 }

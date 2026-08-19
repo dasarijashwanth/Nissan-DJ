@@ -6,7 +6,7 @@ import { Modal } from "@/components/ui/Modal";
 import { Input, Select, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { CATEGORIES, type Transaction } from "@/lib/types";
-import { toDateInputValue, cn } from "@/lib/utils";
+import { toDateInputValue, toStoredDateInputValue, cn } from "@/lib/utils";
 import {
   validateTransactionInput,
   type TransactionFieldErrors,
@@ -30,7 +30,7 @@ function valuesFromTransaction(transaction: Transaction): TransactionFormValues 
     amount: String(transaction.amount),
     type: transaction.type,
     category: transaction.category,
-    date: toDateInputValue(transaction.date),
+    date: toStoredDateInputValue(transaction.date),
     notes: transaction.notes ?? "",
   };
 }

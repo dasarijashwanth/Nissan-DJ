@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { toDateInputValue } from "@/lib/utils";
+import { toStoredDateInputValue } from "@/lib/utils";
 import type { Vehicle } from "@/lib/types";
 
 type FormValues = {
@@ -29,7 +29,7 @@ function valuesFromVehicle(vehicle: Vehicle): FormValues {
     color: vehicle.color,
     licensePlate: vehicle.licensePlate ?? "",
     purchasePrice: vehicle.purchasePrice != null ? String(vehicle.purchasePrice) : "",
-    purchaseDate: vehicle.purchaseDate ? toDateInputValue(vehicle.purchaseDate) : "",
+    purchaseDate: vehicle.purchaseDate ? toStoredDateInputValue(vehicle.purchaseDate) : "",
     startOdometer: vehicle.startOdometer != null ? String(vehicle.startOdometer) : "",
   };
 }
@@ -44,6 +44,7 @@ export function VehicleForm({ open, onClose, vehicle }: VehicleFormProps) {
   const router = useRouter();
 
   const [values, setValues] = useState<FormValues>(() => valuesFromVehicle(vehicle));
+  const [errors, setErrors] = useState<Partial<Record<keyof FormValues, string>>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -53,6 +54,21 @@ export function VehicleForm({ open, onClose, vehicle }: VehicleFormProps) {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+
+    const fieldErrors: Partial<Record<keyof FormValues, string>> = {};
+    if (!values.nickname.trim()) fieldErrors.nickname = "Give your vehicle a nickname.";
+    if (!values.make.trim()) fieldErrors.make = "Make is required.";
+    if (!values.model.trim()) fieldErrors.model = "Model is required.";
+    if (!values.color.trim()) fieldErrors.color = "Color is required.";
+    if (Number.isNaN(Number(values.year)) || Number(values.year) < 1900) {
+      fieldErrors.year = "Enter a valid year.";
+    }
+    if (Object.keys(fieldErrors).length > 0) {
+      setErrors(fieldErrors);
+      return;
+    }
+    setErrors({});
+
     setSubmitting(true);
     setFormError(null);
 
@@ -61,11 +77,11 @@ export function VehicleForm({ open, onClose, vehicle }: VehicleFormProps) {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          nickname: values.nickname.trim() || vehicle.nickname,
-          make: values.make.trim() || "Nissan",
-          model: values.model.trim() || "Sentra",
+          nickname: values.nickname.trim(),
+          make: values.make.trim(),
+          model: values.model.trim(),
           year: values.year,
-          color: values.color.trim() || "Silver",
+          color: values.color.trim(),
           licensePlate: values.licensePlate.trim() || null,
           purchasePrice: values.purchasePrice === "" ? null : values.purchasePrice,
           purchaseDate: values.purchaseDate || null,
@@ -94,10 +110,16 @@ export function VehicleForm({ open, onClose, vehicle }: VehicleFormProps) {
           label="Nickname"
           value={values.nickname}
           onChange={(e) => set("nickname", e.target.value)}
+          error={errors.nickname}
         />
         <div className="grid grid-cols-2 gap-3">
-          <Input label="Make" value={values.make} onChange={(e) => set("make", e.target.value)} />
-          <Input label="Model" value={values.model} onChange={(e) => set("model", e.target.value)} />
+          <Input label="Make" value={values.make} onChange={(e) => set("make", e.target.value)} error={errors.make} />
+          <Input
+            label="Model"
+            value={values.model}
+            onChange={(e) => set("model", e.target.value)}
+            error={errors.model}
+          />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <Input
@@ -105,8 +127,14 @@ export function VehicleForm({ open, onClose, vehicle }: VehicleFormProps) {
             type="number"
             value={values.year}
             onChange={(e) => set("year", e.target.value)}
+            error={errors.year}
           />
-          <Input label="Color" value={values.color} onChange={(e) => set("color", e.target.value)} />
+          <Input
+            label="Color"
+            value={values.color}
+            onChange={(e) => set("color", e.target.value)}
+            error={errors.color}
+          />
         </div>
         <Input
           label="License plate"

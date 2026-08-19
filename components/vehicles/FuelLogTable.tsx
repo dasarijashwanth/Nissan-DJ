@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, type CSSProperties } from "react";
-import { Fuel, Plus } from "lucide-react";
+import { Fuel, Plus, Pencil } from "lucide-react";
 import {
   CartesianGrid,
   Line,
@@ -13,13 +13,29 @@ import {
 } from "recharts";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { FuelLogForm } from "@/components/vehicles/FuelLogForm";
 import { calcAvgMPG, calcFillMPG } from "@/lib/vehicleUtils";
 import { formatCurrency, formatDate, formatMiles } from "@/lib/utils";
 import type { FuelLog } from "@/lib/types";
 
+const PAGE_SIZE = 10;
+
 export function FuelLogTable({ fuelLogs, vehicleId }: { fuelLogs: FuelLog[]; vehicleId: string }) {
   const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState<FuelLog | null>(null);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+
+  function openAdd() {
+    setEditing(null);
+    setFormOpen(true);
+  }
+
+  function openEdit(log: FuelLog) {
+    setEditing(log);
+    setFormOpen(true);
+  }
 
   const chronological = useMemo(
     () => [...fuelLogs].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
@@ -48,6 +64,18 @@ export function FuelLogTable({ fuelLogs, vehicleId }: { fuelLogs: FuelLog[]; veh
     .filter((l) => mpgById.has(l.id))
     .map((l) => ({ date: formatDate(l.date), mpg: Number(mpgById.get(l.id)!.toFixed(1)) }));
 
+  const filteredLogs = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (query === "") return fuelLogs;
+    return fuelLogs.filter(
+      (l) => (l.station ?? "").toLowerCase().includes(query) || (l.notes ?? "").toLowerCase().includes(query)
+    );
+  }, [fuelLogs, search]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredLogs.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pageItems = filteredLogs.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
   if (fuelLogs.length === 0) {
     return (
       <>
@@ -59,17 +87,18 @@ export function FuelLogTable({ fuelLogs, vehicleId }: { fuelLogs: FuelLog[]; veh
           <p className="max-w-xs text-sm text-text-muted">
             Log your first fill-up to start tracking MPG and fuel spend.
           </p>
-          <Button onClick={() => setFormOpen(true)} className="mt-2 bg-amber-500 hover:bg-amber-600">
+          <Button onClick={openAdd} className="mt-2 bg-amber-500 hover:bg-amber-600">
             <Plus className="size-4" />
             Log Fuel
           </Button>
         </Card>
         <FuelLogForm
-          key={formOpen ? "open" : "closed"}
+          key={formOpen ? (editing?.id ?? "new") : "closed"}
           open={formOpen}
           onClose={() => setFormOpen(false)}
           vehicleId={vehicleId}
           previousOdometer={previousOdometer}
+          log={editing}
         />
       </>
     );
@@ -104,14 +133,27 @@ export function FuelLogTable({ fuelLogs, vehicleId }: { fuelLogs: FuelLog[]; veh
         </Card>
       )}
 
-      <div className="flex justify-end">
-        <Button onClick={() => setFormOpen(true)} className="bg-amber-500 hover:bg-amber-600">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Input
+          type="search"
+          placeholder="Search station or notes..."
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
+          className="w-full sm:w-56"
+        />
+        <Button onClick={openAdd} className="bg-amber-500 hover:bg-amber-600">
           <Plus className="size-4" />
           Log Fuel
         </Button>
       </div>
 
       <Card className="overflow-hidden p-0">
+        {filteredLogs.length === 0 ? (
+          <div className="py-16 text-center text-sm text-text-muted">No fuel logs match your search.</div>
+        ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -123,10 +165,11 @@ export function FuelLogTable({ fuelLogs, vehicleId }: { fuelLogs: FuelLog[]; veh
                 <th className="px-4 py-3 text-right">Total</th>
                 <th className="px-4 py-3 text-right">Odometer</th>
                 <th className="px-4 py-3 text-right">MPG</th>
+                <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {fuelLogs.map((l) => {
+              {pageItems.map((l) => {
                 const isWeekly = l.type === "weekly_summary";
                 return (
                   <tr key={l.id} className="border-b border-black/[0.08] last:border-0 hover:bg-slate-50">
@@ -157,20 +200,57 @@ export function FuelLogTable({ fuelLogs, vehicleId }: { fuelLogs: FuelLog[]; veh
                     <td className="px-4 py-3 text-right tabular-nums text-text-muted">
                       {mpgById.has(l.id) ? mpgById.get(l.id)!.toFixed(1) : "—"}
                     </td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        onClick={() => openEdit(l)}
+                        aria-label="Edit fuel log"
+                        className="rounded-md p-1.5 text-text-muted hover:bg-slate-100 hover:text-text-secondary"
+                      >
+                        <Pencil className="size-4" />
+                      </button>
+                    </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
         </div>
+        )}
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between border-t border-black/[0.08] px-4 py-3">
+            <p className="text-sm text-text-muted">
+              Page {currentPage} of {totalPages}
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={currentPage === 1}
+                onClick={() => setPage((p) => p - 1)}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={currentPage === totalPages}
+                onClick={() => setPage((p) => p + 1)}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        )}
       </Card>
 
       <FuelLogForm
-        key={formOpen ? "open" : "closed"}
+        key={formOpen ? (editing?.id ?? "new") : "closed"}
         open={formOpen}
         onClose={() => setFormOpen(false)}
         vehicleId={vehicleId}
         previousOdometer={previousOdometer}
+        log={editing}
       />
     </div>
   );

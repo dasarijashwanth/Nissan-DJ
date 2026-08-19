@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { Modal } from "@/components/ui/Modal";
 import { Input, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { toDateInputValue } from "@/lib/utils";
+import { toDateInputValue, toStoredDateInputValue } from "@/lib/utils";
+import type { RepairLog } from "@/lib/types";
 import {
   validateRepairLog,
   type RepairFieldErrors,
@@ -25,16 +26,31 @@ function emptyValues(): RepairFormValues {
   };
 }
 
+function valuesFromLog(log: RepairLog): RepairFormValues {
+  return {
+    date: toStoredDateInputValue(log.date),
+    description: log.description,
+    shop: log.shop ?? "",
+    partsCost: log.partsCost != null ? String(log.partsCost) : "",
+    laborCost: log.laborCost != null ? String(log.laborCost) : "",
+    cost: String(log.cost),
+    odometer: String(log.odometer),
+    notes: log.notes ?? "",
+  };
+}
+
 export interface RepairFormProps {
   open: boolean;
   onClose: () => void;
   vehicleId: string;
+  log?: RepairLog | null;
 }
 
-export function RepairForm({ open, onClose, vehicleId }: RepairFormProps) {
+export function RepairForm({ open, onClose, vehicleId, log }: RepairFormProps) {
   const router = useRouter();
+  const isEdit = !!log;
 
-  const [values, setValues] = useState<RepairFormValues>(emptyValues);
+  const [values, setValues] = useState<RepairFormValues>(() => (log ? valuesFromLog(log) : emptyValues()));
   const [costTouched, setCostTouched] = useState(false);
   const [errors, setErrors] = useState<RepairFieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
@@ -67,8 +83,9 @@ export function RepairForm({ open, onClose, vehicleId }: RepairFormProps) {
     setFormError(null);
 
     try {
-      const res = await fetch(`/api/vehicles/${vehicleId}/repairs`, {
-        method: "POST",
+      const url = isEdit ? `/api/vehicles/${vehicleId}/repairs/${log!.id}` : `/api/vehicles/${vehicleId}/repairs`;
+      const res = await fetch(url, {
+        method: isEdit ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
@@ -90,7 +107,7 @@ export function RepairForm({ open, onClose, vehicleId }: RepairFormProps) {
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Log Repair">
+    <Modal open={open} onClose={onClose} title={isEdit ? "Edit Repair" : "Log Repair"}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
           label="Date"
@@ -164,7 +181,7 @@ export function RepairForm({ open, onClose, vehicleId }: RepairFormProps) {
             Cancel
           </Button>
           <Button type="submit" className="flex-1 bg-amber-500 hover:bg-amber-600" loading={submitting}>
-            Log Repair
+            {isEdit ? "Save Changes" : "Log Repair"}
           </Button>
         </div>
       </form>

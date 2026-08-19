@@ -24,8 +24,20 @@ export function VehicleSwitcher() {
     router.push(`/vehicles/${vehicle.id}${suffix}`);
   }
 
-  if (isLoading || !activeVehicle) {
+  if (isLoading) {
     return <div className="mx-3 mb-2 h-[42px] animate-pulse rounded-md bg-white/5" />;
+  }
+
+  if (!activeVehicle) {
+    return (
+      <Link
+        href="/vehicles/new"
+        className="mx-3 mb-2 flex items-center gap-2 rounded-md border border-dashed border-white/15 px-3 py-2 text-sm text-white/60 transition-colors hover:border-white/30 hover:text-white/90"
+      >
+        <Plus className="size-4 shrink-0" />
+        Add your vehicle
+      </Link>
+    );
   }
 
   return (

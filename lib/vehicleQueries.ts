@@ -15,16 +15,12 @@ export function serializeVehicle(vehicle: {
   } as Vehicle;
 }
 
-/** All of a user's active vehicles, primary first. Bootstraps a default vehicle if they have none. */
+/** All of a user's active vehicles, primary first. Empty array if they haven't added one yet. */
 export async function getVehiclesForUser(userId: string): Promise<Vehicle[]> {
   const vehicles = await prisma.vehicle.findMany({
     where: { userId, isActive: true },
     orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
   });
-
-  if (vehicles.length === 0) {
-    return [await getOrCreatePrimaryVehicle(userId)];
-  }
 
   return vehicles.map(serializeVehicle);
 }
@@ -65,31 +61,13 @@ export async function setPrimaryVehicle(userId: string, vehicleId: string): Prom
   ]);
 }
 
-/**
- * Until the full multi-vehicle UI (Steps 8-9) lands, every existing page just wants "the" vehicle —
- * the primary one, or the user's default "My Sentra" auto-created on first visit. userId is no
- * longer unique, so a plain upsert isn't possible; a rare concurrent-first-visit race could create
- * two default vehicles instead of one, which the future "manage vehicles" UI can clean up.
- */
-export async function getOrCreatePrimaryVehicle(userId: string): Promise<Vehicle> {
-  const existing = await prisma.vehicle.findFirst({
+/** The user's primary vehicle (or their oldest active one if none is marked primary) — null if they haven't added one yet. Never fabricates a placeholder; a new user is meant to add their own via /vehicles/new. */
+export async function getPrimaryVehicle(userId: string): Promise<Vehicle | null> {
+  const vehicle = await prisma.vehicle.findFirst({
     where: { userId, isActive: true },
     orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
   });
-  if (existing) return serializeVehicle(existing);
-
-  const created = await prisma.vehicle.create({
-    data: {
-      userId,
-      nickname: "My Sentra",
-      make: "Nissan",
-      model: "Sentra",
-      year: 2015,
-      color: "Silver",
-      isPrimary: true,
-    },
-  });
-  return serializeVehicle(created);
+  return vehicle ? serializeVehicle(vehicle) : null;
 }
 
 export async function isVehicleOwnedBy(vehicleId: string, userId: string): Promise<boolean> {
