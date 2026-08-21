@@ -18,6 +18,7 @@ export async function DELETE() {
       await tx.maintenanceLog.deleteMany({ where: { vehicleId: { in: vehicleIds } } });
       await tx.repairLog.deleteMany({ where: { vehicleId: { in: vehicleIds } } });
       await tx.odometerLog.deleteMany({ where: { vehicleId: { in: vehicleIds } } });
+      await tx.dailyOdometer.deleteMany({ where: { vehicleId: { in: vehicleIds } } });
       await tx.insurance.deleteMany({ where: { vehicleId: { in: vehicleIds } } });
       await tx.vehicle.deleteMany({ where: { id: { in: vehicleIds } } });
     }

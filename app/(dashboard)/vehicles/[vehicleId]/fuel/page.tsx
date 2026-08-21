@@ -10,8 +10,10 @@ import {
   getOdometerLogs,
 } from "@/lib/vehicleQueries";
 import { getWeeklyFuelTrend } from "@/lib/vehicleAnalytics";
+import { getFuelEfficiencyInsight } from "@/lib/vehicleUtils";
 import { FuelLogTable } from "@/components/vehicles/FuelLogTable";
 import { FuelTrendChart } from "@/components/vehicles/FuelTrendChart";
+import { FuelEfficiencyInsights } from "@/components/vehicles/FuelEfficiencyInsights";
 
 export default async function FuelPage({ params }: { params: Promise<{ vehicleId: string }> }) {
   const user = await getAuthUser();
@@ -29,6 +31,7 @@ export default async function FuelPage({ params }: { params: Promise<{ vehicleId
   ]);
 
   const weeklyTrend = getWeeklyFuelTrend(fuelLogs, maintenanceLogs, repairLogs, odometerLogs, 12, new Date());
+  const efficiencyInsight = getFuelEfficiencyInsight(fuelLogs);
 
   return (
     <div className="space-y-6">
@@ -40,6 +43,8 @@ export default async function FuelPage({ params }: { params: Promise<{ vehicleId
         <h1 className="mt-1 text-xl font-semibold text-white">Fuel Log</h1>
         <p className="text-sm text-slate-400">Every fill-up, MPG trend, and fuel spend.</p>
       </div>
+
+      <FuelEfficiencyInsights insight={efficiencyInsight} />
 
       <FuelLogTable fuelLogs={fuelLogs} vehicleId={vehicle.id} />
 

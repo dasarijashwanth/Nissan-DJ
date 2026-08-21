@@ -35,6 +35,38 @@ export function calcAvgMPG(fuelLogs: FuelLog[]): number {
   return gallonsSum > 0 ? milesSum / gallonsSum : 0;
 }
 
+export type FuelEfficiencyInsight = {
+  latestMPG: number | null;
+  avgMPG: number | null;
+  deltaPercent: number | null;
+};
+
+/**
+ * Compares the most recent fill's MPG against the average of every fill *before* it, for the "how
+ * am I doing" prompt shown right after logging fuel. Deliberately excludes the latest fill from
+ * that average — comparing a fill against a number that already includes itself mutes the delta
+ * and makes it mathematically impossible to differ at exactly 2 logs. avgMPG is null until there's
+ * at least one prior MPG data point to average (i.e. at least 3 total fills).
+ */
+export function getFuelEfficiencyInsight(fuelLogs: FuelLog[]): FuelEfficiencyInsight {
+  const sorted = [...fuelLogs].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  if (sorted.length < 2) {
+    return { latestMPG: null, avgMPG: null, deltaPercent: null };
+  }
+
+  const last = sorted[sorted.length - 1];
+  const previous = sorted[sorted.length - 2];
+  const fillMPG = calcFillMPG(last.odometer, previous.odometer, last.gallons);
+  const latestMPG = fillMPG > 0 ? fillMPG : null;
+
+  const priorMPG = calcAvgMPG(sorted.slice(0, -1));
+  const avgMPG = priorMPG > 0 ? priorMPG : null;
+  const deltaPercent = latestMPG != null && avgMPG != null ? ((latestMPG - avgMPG) / avgMPG) * 100 : null;
+
+  return { latestMPG, avgMPG, deltaPercent };
+}
+
 export function calcCostPerMile(
   totalSpend: number,
   startOdometer: number,

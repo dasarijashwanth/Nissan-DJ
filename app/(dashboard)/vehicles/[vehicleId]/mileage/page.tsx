@@ -5,6 +5,7 @@ import { getAuthUser } from "@/lib/supabase";
 import { getVehicleById } from "@/lib/vehicleQueries";
 import { getDailyOdometerEntries } from "@/lib/dailyOdometerQueries";
 import { OdometerHistoryChart } from "@/components/vehicles/OdometerHistoryChart";
+import { DailyOdometerWidget } from "@/components/vehicles/DailyOdometerWidget";
 
 export default async function MileagePage({ params }: { params: Promise<{ vehicleId: string }> }) {
   const user = await getAuthUser();
@@ -26,9 +27,11 @@ export default async function MileagePage({ params }: { params: Promise<{ vehicl
           <ChevronLeft className="size-4" />
           {vehicle.nickname}
         </Link>
-        <h1 className="mt-1 text-xl font-semibold text-white">Mileage History</h1>
-        <p className="text-sm text-slate-400">Daily odometer readings for the last 90 days.</p>
+        <h1 className="mt-1 text-xl font-semibold text-white">Mileage Dashboard</h1>
+        <p className="text-sm text-slate-400">Log today&apos;s drive and see your last 90 days of odometer readings.</p>
       </div>
+
+      <DailyOdometerWidget vehicleId={vehicle.id} />
 
       <OdometerHistoryChart entries={entries} />
     </div>

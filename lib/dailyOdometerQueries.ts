@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { getCurrentOdometer } from "@/lib/vehicleQueries";
+import { getCurrentOdometer, getStartOdometer } from "@/lib/vehicleQueries";
 import type { DailyOdometer } from "@/lib/types";
 
 function toDateOnlyString(date: Date): string {
@@ -30,14 +30,22 @@ export async function getDailyOdometerEntries(vehicleId: string, from: Date, to:
   return entries.map(serializeEntry);
 }
 
-/** The reading a new entry's `driven` is measured against: the most recent prior daily log, or the vehicle's overall current odometer if this would be its first ever. */
+/**
+ * The reading a new entry's `driven` is measured against: the most recent prior daily log, or,
+ * for the vehicle's first-ever entry, the higher of its logged current odometer and its
+ * Vehicle.startOdometer — current-odometer alone is 0 for a brand-new vehicle with a set starting
+ * mileage but no other logs yet, which would wrongly count the owner's whole starting mileage as
+ * "driven today".
+ */
 async function getBaselineOdometer(vehicleId: string, beforeDate: Date): Promise<number> {
   const previous = await prisma.dailyOdometer.findFirst({
     where: { vehicleId, date: { lt: beforeDate } },
     orderBy: { date: "desc" },
   });
   if (previous) return previous.miles;
-  return getCurrentOdometer(vehicleId);
+
+  const [current, start] = await Promise.all([getCurrentOdometer(vehicleId), getStartOdometer(vehicleId)]);
+  return Math.max(current, start);
 }
 
 export async function upsertDailyOdometer(
