@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getAuthUser } from "@/lib/supabase";
 import { getTransactions } from "@/lib/queries";
+import { getTrackingMode, scopeWhereForMode } from "@/lib/trackingMode";
 import { TransactionTable } from "@/components/TransactionTable";
 import { Download } from "lucide-react";
 
@@ -8,14 +9,17 @@ export default async function TransactionsPage() {
   const user = await getAuthUser();
   if (!user) redirect("/login");
 
-  const transactions = await getTransactions(user.id);
+  const trackingMode = await getTrackingMode();
+  const transactions = await getTransactions(user.id, undefined, undefined, scopeWhereForMode(trackingMode));
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold text-text-primary">Transactions</h1>
-          <p className="text-sm text-text-muted">All your income and expenses.</p>
+          <p className="text-sm text-text-muted">
+            {trackingMode === "vehicle" ? "All your vehicle-related income and expenses." : "All your daily-life income and expenses."}
+          </p>
         </div>
         <a
           href="/api/export/csv"

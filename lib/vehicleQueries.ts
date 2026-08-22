@@ -210,6 +210,7 @@ export async function createVehicleTransaction(
       amount,
       type: "expense",
       category: CATEGORY_BY_KIND[kind],
+      scope: "vehicle",
       date,
     },
   });

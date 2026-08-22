@@ -18,6 +18,7 @@ import {
 import { logout } from "@/app/(auth)/actions";
 import { cn } from "@/lib/utils";
 import { VehicleSwitcher } from "@/components/layout/VehicleSwitcher";
+import type { TrackingMode } from "@/lib/trackingMode";
 
 const NAV_SECTIONS = [
   {
@@ -85,13 +86,18 @@ export function Sidebar({
   userEmail,
   unreadAlertCount = 0,
   isAdmin = false,
+  trackingMode = "life",
 }: {
   userEmail: string;
   unreadAlertCount?: number;
   isAdmin?: boolean;
+  trackingMode?: TrackingMode;
 }) {
   const pathname = usePathname();
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
+  const isVehicleMode = trackingMode === "vehicle";
+  const navSections = isVehicleMode ? NAV_SECTIONS : NAV_SECTIONS.filter((s) => s.label !== "My Vehicles");
+  const mobileNavItems = isVehicleMode ? MOBILE_NAV_ITEMS : MOBILE_NAV_ITEMS.filter((i) => i.href !== "/vehicles");
 
   return (
     <>
@@ -104,10 +110,10 @@ export function Sidebar({
           <span className="font-display text-lg font-semibold text-white">SentraTrack</span>
         </div>
 
-        <VehicleSwitcher />
+        {isVehicleMode && <VehicleSwitcher />}
 
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-2 pb-2">
-          {NAV_SECTIONS.map((section) => (
+          {navSections.map((section) => (
             <div key={section.label}>
               <p className="px-3 pt-4 pb-1.5 text-[10px] font-semibold tracking-wider text-white/30 uppercase">
                 {section.label}
@@ -161,7 +167,7 @@ export function Sidebar({
       </aside>
 
       <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-black/[0.08] bg-surface-card lg:hidden">
-        {MOBILE_NAV_ITEMS.map((item) => {
+        {mobileNavItems.map((item) => {
           const active = isActive(item.href);
           return (
             <Link

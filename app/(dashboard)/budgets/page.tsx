@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getAuthUser } from "@/lib/supabase";
 import { getBudgetsWithSpending } from "@/lib/budgetQueries";
+import { getTrackingMode, categoryWhereForMode } from "@/lib/trackingMode";
 import { monthLabel, formatCurrency } from "@/lib/utils";
 import { Card } from "@/components/ui/Card";
 import { BudgetOverviewGrid } from "@/components/budgets/BudgetOverviewGrid";
@@ -16,7 +17,8 @@ export default async function BudgetsPage({ searchParams }: PageProps<"/budgets"
   const year = Number(params.year) || now.getUTCFullYear();
   const month = params.month ? Number(params.month) : now.getUTCMonth() + 1;
 
-  const budgets = await getBudgetsWithSpending(user.id, month, year);
+  const trackingMode = await getTrackingMode();
+  const budgets = await getBudgetsWithSpending(user.id, month, year, categoryWhereForMode(trackingMode));
 
   const totalBudgeted = budgets.reduce((sum, b) => sum + b.amount, 0);
   const totalSpent = budgets.reduce((sum, b) => sum + b.spent, 0);

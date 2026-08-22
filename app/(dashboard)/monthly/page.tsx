@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { ChevronLeft, ChevronRight, PieChart } from "lucide-react";
 import { getAuthUser } from "@/lib/supabase";
 import { getTransactions, getSummary, getCategoryTotals } from "@/lib/queries";
+import { getTrackingMode, scopeWhereForMode } from "@/lib/trackingMode";
 import { monthLabel, monthRange, formatCurrency, cn } from "@/lib/utils";
 import { SummaryCards } from "@/components/SummaryCards";
 import { TransactionTable } from "@/components/TransactionTable";
@@ -20,11 +21,13 @@ export default async function MonthlyPage({ searchParams }: PageProps<"/monthly"
   const { start, end } = monthRange(year, month);
   const prev = shiftMonth(year, month, -1);
   const next = shiftMonth(year, month, 1);
+  const trackingMode = await getTrackingMode();
+  const scopeWhere = scopeWhereForMode(trackingMode);
 
   const [transactions, summary, categoryTotals] = await Promise.all([
-    getTransactions(user.id, start, end),
-    getSummary(user.id, start, end),
-    getCategoryTotals(user.id, start, end),
+    getTransactions(user.id, start, end, scopeWhere),
+    getSummary(user.id, start, end, scopeWhere),
+    getCategoryTotals(user.id, start, end, scopeWhere),
   ]);
 
   return (

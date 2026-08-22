@@ -74,6 +74,7 @@ model Transaction {
   amount    Float
   type      String // "income" | "expense"
   category  String
+  scope     String   @default("life") // "life" | "vehicle" — which tracking-mode bucket this belongs to
   date      DateTime
   notes     String?
   createdAt DateTime @default(now())
@@ -81,6 +82,7 @@ model Transaction {
 
   @@index([userId])
   @@index([date])
+  @@index([userId, scope])
 }
 
 model Vehicle {

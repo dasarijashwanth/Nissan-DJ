@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { redirect } from "next/navigation";
-import { Wallet, Receipt, Tag, Car as CarIcon } from "lucide-react";
+import { Wallet, Receipt, Tag } from "lucide-react";
 import { getAuthUser } from "@/lib/supabase";
 import { getTransactions } from "@/lib/queries";
 import {
@@ -23,7 +23,7 @@ import {
   type AnalyticsPeriod,
 } from "@/lib/analyticsUtils";
 import { getMonthlyVehicleCosts, getCostPerMileTrend } from "@/lib/vehicleAnalytics";
-import { calcTotalVehicleSpend } from "@/lib/vehicleUtils";
+import { getTrackingMode, scopeWhereForMode } from "@/lib/trackingMode";
 import { formatCurrency, monthRange, cn } from "@/lib/utils";
 import { Card } from "@/components/ui/Card";
 import { SavingsRateCard } from "@/components/analytics/SavingsRateCard";
@@ -60,20 +60,26 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
     ? (rawPeriod as AnalyticsPeriod)
     : "month";
 
+  const trackingMode = await getTrackingMode();
+  const isVehicleMode = trackingMode === "vehicle";
   const rawTab = Array.isArray(params.tab) ? params.tab[0] : params.tab;
-  const selectedTab: TopTab = TOP_TABS.some((t) => t.key === rawTab) ? (rawTab as TopTab) : "overview";
+  const selectedTab: TopTab = isVehicleMode && TOP_TABS.some((t) => t.key === rawTab) ? (rawTab as TopTab) : "overview";
 
-  const [transactions, vehicle] = await Promise.all([getTransactions(user.id), getPrimaryVehicle(user.id)]);
+  const [transactions, vehicle] = await Promise.all([
+    getTransactions(user.id, undefined, undefined, scopeWhereForMode(trackingMode)),
+    getPrimaryVehicle(user.id),
+  ]);
 
-  const [fuelLogs, maintenanceLogs, repairLogs, odometerLogs, insurancePolicies] = vehicle
-    ? await Promise.all([
-        getFuelLogs(vehicle.id),
-        getMaintenanceLogs(vehicle.id),
-        getRepairLogs(vehicle.id),
-        getOdometerLogs(vehicle.id),
-        getInsurancePolicies(vehicle.id),
-      ])
-    : [[], [], [], [], []];
+  const [fuelLogs, maintenanceLogs, repairLogs, odometerLogs, insurancePolicies] =
+    vehicle && isVehicleMode
+      ? await Promise.all([
+          getFuelLogs(vehicle.id),
+          getMaintenanceLogs(vehicle.id),
+          getRepairLogs(vehicle.id),
+          getOdometerLogs(vehicle.id),
+          getInsurancePolicies(vehicle.id),
+        ])
+      : [[], [], [], [], []];
 
   const earliestDate =
     transactions.length > 0
@@ -82,7 +88,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
 
   const { start, end, months } = getPeriodRange(selectedPeriod, earliestDate);
 
-  const vehicles = await getVehiclesForUser(user.id);
+  const vehicles = isVehicleMode ? await getVehiclesForUser(user.id) : [];
   const vehicleComparison =
     selectedTab === "vehicles" && vehicles.length >= 2 ? await getVehicleComparisonData(vehicles, months) : [];
   const inPeriod = (date: string) => {
@@ -99,20 +105,6 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
 
   const expenseTransactions = periodTransactions.filter((t) => t.type === "expense");
   const biggestCategory = getTopCategories(expenseTransactions, 1)[0];
-
-  const periodCarLogs = {
-    fuel: fuelLogs.filter((l) => inPeriod(l.date)),
-    maintenance: maintenanceLogs.filter((l) => inPeriod(l.date)),
-    repair: repairLogs.filter((l) => inPeriod(l.date)),
-    insurance: insurancePolicies.filter((p) => new Date(p.startDate) < end && new Date(p.renewalDate) >= start),
-  };
-  const carCostInPeriod = calcTotalVehicleSpend(
-    periodCarLogs.fuel,
-    periodCarLogs.maintenance,
-    periodCarLogs.repair,
-    periodCarLogs.insurance
-  );
-  const carCostPercent = periodExpenses > 0 ? (carCostInPeriod / periodExpenses) * 100 : 0;
 
   const trendData = getMonthlyTrend(transactions, months);
 
@@ -166,27 +158,31 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-xl font-semibold text-text-primary">Analytics</h1>
-          <p className="text-sm text-text-muted">Deep dive into your finances and car costs.</p>
+          <p className="text-sm text-text-muted">
+            {isVehicleMode ? "Deep dive into your vehicle costs." : "Deep dive into your daily-life finances."}
+          </p>
         </div>
         <ExportMenu month={now.getUTCMonth() + 1} year={now.getUTCFullYear()} userEmail={user.email ?? ""} />
       </div>
 
-      <div className="flex flex-wrap gap-2 border-b border-black/[0.08] pb-3">
-        {TOP_TABS.map((tab) => (
-          <Link
-            key={tab.key}
-            href={`/analytics?tab=${tab.key}&period=${selectedPeriod}`}
-            className={cn(
-              "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
-              selectedTab === tab.key
-                ? "bg-slate-900 text-white"
-                : "border border-black/[0.08] bg-surface-card text-text-secondary hover:bg-black/[0.04]"
-            )}
-          >
-            {tab.label}
-          </Link>
-        ))}
-      </div>
+      {isVehicleMode && (
+        <div className="flex flex-wrap gap-2 border-b border-black/[0.08] pb-3">
+          {TOP_TABS.map((tab) => (
+            <Link
+              key={tab.key}
+              href={`/analytics?tab=${tab.key}&period=${selectedPeriod}`}
+              className={cn(
+                "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
+                selectedTab === tab.key
+                  ? "bg-slate-900 text-white"
+                  : "border border-black/[0.08] bg-surface-card text-text-secondary hover:bg-black/[0.04]"
+              )}
+            >
+              {tab.label}
+            </Link>
+          ))}
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-2">
         {PERIOD_TABS.map((tab) => (
@@ -209,7 +205,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
         <VehicleComparisonChart data={vehicleComparison} />
       ) : (
         <>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="p-5" style={{ animationDelay: "0ms" } as CSSProperties}>
           <div className="flex items-center gap-3">
             <div className="flex size-10 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
@@ -254,15 +250,6 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
           <p className="text-sm text-text-muted">{biggestCategory ? formatCurrency(biggestCategory.amount) : ""}</p>
         </Card>
 
-        <Card className="p-5" style={{ animationDelay: "240ms" } as CSSProperties}>
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
-              <CarIcon className="size-5" />
-            </div>
-            <p className="text-sm font-medium text-text-muted">Car Cost %</p>
-          </div>
-          <p className="mt-4 text-2xl font-semibold tabular-nums text-amber-600">{carCostPercent.toFixed(1)}%</p>
-        </Card>
       </div>
 
       <IncomeExpenseTrend data={trendData} />
@@ -272,7 +259,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
         <CategoryBreakdownTable rows={categoryBreakdownRows} />
       </div>
 
-      <CarCostTrendChart monthlyCosts={monthlyCarCosts} costPerMileTrend={costPerMileTrend} />
+      {isVehicleMode && <CarCostTrendChart monthlyCosts={monthlyCarCosts} costPerMileTrend={costPerMileTrend} />}
 
       <MonthOverMonthCard data={momComparisonData} />
         </>

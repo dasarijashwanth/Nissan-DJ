@@ -3,6 +3,7 @@ import { getAuthUser } from "@/lib/supabase";
 import { prisma } from "@/lib/prisma";
 import { validateTransactionInput, type TransactionFormValues } from "@/lib/validation";
 import { checkBudgetAlertForTransaction } from "@/lib/alertChecks";
+import { getTrackingMode } from "@/lib/trackingMode";
 
 export async function GET() {
   const user = await getAuthUser();
@@ -39,6 +40,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ errors }, { status: 400 });
   }
 
+  const scope = await getTrackingMode();
+
   const transaction = await prisma.transaction.create({
     data: {
       userId: user.id,
@@ -46,6 +49,7 @@ export async function POST(request: Request) {
       amount,
       type: values.type,
       category: values.category,
+      scope,
       date: new Date(values.date),
       notes: values.notes.trim() || null,
     },

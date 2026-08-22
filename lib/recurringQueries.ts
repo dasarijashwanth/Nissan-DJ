@@ -4,10 +4,17 @@ import { computeNextDueDate } from "@/lib/recurringUtils";
 import { createAlertIfNotDuplicate } from "@/lib/alertQueries";
 import { checkBudgetAlertForTransaction } from "@/lib/alertChecks";
 import { formatCurrency } from "@/lib/utils";
+import { VEHICLE_CATEGORIES } from "@/lib/trackingMode";
+import type { categoryWhereForMode } from "@/lib/trackingMode";
 
-export async function getRecurringTransactions(userId: string): Promise<RecurringTransaction[]> {
+type CategoryWhere = ReturnType<typeof categoryWhereForMode>;
+
+export async function getRecurringTransactions(
+  userId: string,
+  categoryWhere?: CategoryWhere
+): Promise<RecurringTransaction[]> {
   const items = await prisma.recurringTransaction.findMany({
-    where: { userId },
+    where: { userId, ...categoryWhere },
     orderBy: { nextDueDate: "asc" },
   });
 
@@ -27,12 +34,12 @@ export async function isRecurringOwnedBy(id: string, userId: string): Promise<bo
   return r?.userId === userId;
 }
 
-export async function getDueTodayCount(userId: string): Promise<number> {
+export async function getDueTodayCount(userId: string, categoryWhere?: CategoryWhere): Promise<number> {
   const endOfToday = new Date();
   endOfToday.setUTCHours(23, 59, 59, 999);
 
   return prisma.recurringTransaction.count({
-    where: { userId, isActive: true, nextDueDate: { lte: endOfToday } },
+    where: { userId, isActive: true, nextDueDate: { lte: endOfToday }, ...categoryWhere },
   });
 }
 
@@ -45,6 +52,7 @@ export async function postRecurringTransaction(recurringId: string, options: { a
   if (!recurring || !recurring.isActive) return null;
 
   const now = new Date();
+  const scope = (VEHICLE_CATEGORIES as readonly string[]).includes(recurring.category) ? "vehicle" : "life";
   const transaction = await prisma.transaction.create({
     data: {
       userId: recurring.userId,
@@ -52,6 +60,7 @@ export async function postRecurringTransaction(recurringId: string, options: { a
       amount: recurring.amount,
       type: recurring.type,
       category: recurring.category,
+      scope,
       date: recurring.nextDueDate,
       notes: recurring.notes,
     },

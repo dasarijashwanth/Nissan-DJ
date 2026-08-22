@@ -1,16 +1,21 @@
 import { prisma } from "@/lib/prisma";
 import { monthRange, shortMonthLabel } from "@/lib/utils";
 import type { Transaction, TransactionType } from "@/lib/types";
+import type { scopeWhereForMode } from "@/lib/trackingMode";
+
+type ScopeWhere = ReturnType<typeof scopeWhereForMode>;
 
 export async function getTransactions(
   userId: string,
   start?: Date,
-  end?: Date
+  end?: Date,
+  scopeWhere?: ScopeWhere
 ): Promise<Transaction[]> {
   const transactions = await prisma.transaction.findMany({
     where: {
       userId,
       ...(start && end ? { date: { gte: start, lt: end } } : {}),
+      ...scopeWhere,
     },
     orderBy: { date: "desc" },
   });
@@ -23,14 +28,14 @@ export async function getTransactions(
   }));
 }
 
-export async function getSummary(userId: string, start: Date, end: Date) {
+export async function getSummary(userId: string, start: Date, end: Date, scopeWhere?: ScopeWhere) {
   const [income, expense] = await Promise.all([
     prisma.transaction.aggregate({
-      where: { userId, type: "income", date: { gte: start, lt: end } },
+      where: { userId, type: "income", date: { gte: start, lt: end }, ...scopeWhere },
       _sum: { amount: true },
     }),
     prisma.transaction.aggregate({
-      where: { userId, type: "expense", date: { gte: start, lt: end } },
+      where: { userId, type: "expense", date: { gte: start, lt: end }, ...scopeWhere },
       _sum: { amount: true },
     }),
   ]);
@@ -41,7 +46,7 @@ export async function getSummary(userId: string, start: Date, end: Date) {
   return { totalIncome, totalExpenses, netBalance: totalIncome - totalExpenses };
 }
 
-export async function getMonthlyChartData(userId: string, months = 6) {
+export async function getMonthlyChartData(userId: string, months = 6, scopeWhere?: ScopeWhere) {
   const now = new Date();
   const currentYear = now.getUTCFullYear();
   const currentMonth = now.getUTCMonth();
@@ -56,7 +61,7 @@ export async function getMonthlyChartData(userId: string, months = 6) {
   const { end } = monthRange(buckets[buckets.length - 1].year, buckets[buckets.length - 1].month);
 
   const transactions = await prisma.transaction.findMany({
-    where: { userId, date: { gte: start, lt: end } },
+    where: { userId, date: { gte: start, lt: end }, ...scopeWhere },
     select: { date: true, amount: true, type: true },
   });
 
@@ -76,10 +81,10 @@ export async function getMonthlyChartData(userId: string, months = 6) {
   });
 }
 
-export async function getCategoryTotals(userId: string, start: Date, end: Date) {
+export async function getCategoryTotals(userId: string, start: Date, end: Date, scopeWhere?: ScopeWhere) {
   const totals = await prisma.transaction.groupBy({
     by: ["category", "type"],
-    where: { userId, date: { gte: start, lt: end } },
+    where: { userId, date: { gte: start, lt: end }, ...scopeWhere },
     _sum: { amount: true },
   });
 

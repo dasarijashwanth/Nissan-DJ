@@ -1,10 +1,18 @@
 import { prisma } from "@/lib/prisma";
 import { monthRange } from "@/lib/utils";
 import type { Budget } from "@/lib/types";
+import type { categoryWhereForMode } from "@/lib/trackingMode";
 
-export async function getBudgets(userId: string, month: number, year: number): Promise<Budget[]> {
+type CategoryWhere = ReturnType<typeof categoryWhereForMode>;
+
+export async function getBudgets(
+  userId: string,
+  month: number,
+  year: number,
+  categoryWhere?: CategoryWhere
+): Promise<Budget[]> {
   const budgets = await prisma.budget.findMany({
-    where: { userId, month, year },
+    where: { userId, month, year, ...categoryWhere },
     orderBy: { category: "asc" },
   });
   return budgets.map((b) => ({ ...b, createdAt: b.createdAt.toISOString() }));
@@ -34,10 +42,11 @@ export type BudgetWithSpending = Budget & { spent: number };
 export async function getBudgetsWithSpending(
   userId: string,
   month: number,
-  year: number
+  year: number,
+  categoryWhere?: CategoryWhere
 ): Promise<BudgetWithSpending[]> {
   const [budgets, spending] = await Promise.all([
-    getBudgets(userId, month, year),
+    getBudgets(userId, month, year, categoryWhere),
     getSpendingByCategory(userId, month, year),
   ]);
 
