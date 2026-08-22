@@ -93,7 +93,7 @@ export function OdometerForm({ open, onClose, vehicleId, currentOdometer }: Odom
           error={errors.miles}
         />
         {milesSinceLast > 0 && (
-          <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm font-medium text-amber-700">
+          <p className="rounded-lg bg-amber-500/10 px-3 py-2 text-sm font-medium text-amber-700 dark:text-amber-400">
             {formatMiles(milesSinceLast)} since your last log
           </p>
         )}

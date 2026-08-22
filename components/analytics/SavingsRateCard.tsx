@@ -4,8 +4,13 @@ import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 
 export function SavingsRateCard({ rate, style }: { rate: number; style?: CSSProperties }) {
-  const color = rate > 20 ? "text-emerald-600" : rate >= 10 ? "text-amber-600" : "text-red-600";
-  const iconBg = rate > 20 ? "bg-emerald-50" : rate >= 10 ? "bg-amber-50" : "bg-red-50";
+  const color =
+    rate > 20
+      ? "text-emerald-600 dark:text-emerald-400"
+      : rate >= 10
+        ? "text-amber-600 dark:text-amber-400"
+        : "text-red-600 dark:text-red-400";
+  const iconBg = rate > 20 ? "bg-emerald-500/12" : rate >= 10 ? "bg-amber-500/12" : "bg-red-500/12";
 
   return (
     <Card className="p-5" style={style}>

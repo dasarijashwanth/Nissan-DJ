@@ -3,9 +3,9 @@ import { cn } from "@/lib/utils";
 import type { BudgetStatus } from "@/lib/types";
 
 const STATUS_CLASSES: Record<BudgetStatus, string> = {
-  on_track: "bg-emerald-50 text-emerald-700",
-  warning: "bg-amber-50 text-amber-700",
-  exceeded: "bg-red-50 text-red-700",
+  on_track: "bg-emerald-500/12 text-emerald-700 dark:text-emerald-400",
+  warning: "bg-amber-500/12 text-amber-700 dark:text-amber-400",
+  exceeded: "bg-red-500/12 text-red-700 dark:text-red-400",
 };
 
 export interface BudgetPill {

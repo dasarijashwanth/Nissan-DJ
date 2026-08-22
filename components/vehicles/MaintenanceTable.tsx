@@ -68,7 +68,7 @@ export function MaintenanceTable({
     return (
       <>
         <Card className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-          <div className="flex size-12 items-center justify-center rounded-full bg-amber-50">
+          <div className="flex size-12 items-center justify-center rounded-full bg-amber-500/12">
             <Wrench className="size-6 text-amber-500" />
           </div>
           <p className="text-sm font-medium text-text-secondary">No maintenance logged yet</p>
@@ -94,9 +94,9 @@ export function MaintenanceTable({
   return (
     <div className="space-y-4">
       {dueSoon.length > 0 && (
-        <Card className="flex items-center gap-3 border-amber-200 bg-amber-50 p-4">
+        <Card className="flex items-center gap-3 border-amber-500/30 bg-amber-500/10 p-4">
           <AlertTriangle className="size-5 shrink-0 text-amber-600" />
-          <p className="text-sm font-medium text-amber-800">
+          <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
             {dueSoon.length} item{dueSoon.length > 1 ? "s" : ""} due soon: {dueSoon.map((l) => l.type).join(", ")}
           </p>
         </Card>
@@ -138,7 +138,7 @@ export function MaintenanceTable({
             </thead>
             <tbody>
               {pageItems.map((l) => (
-                <tr key={l.id} className="border-b border-black/[0.08] last:border-0 hover:bg-slate-50">
+                <tr key={l.id} className="border-b border-black/[0.08] last:border-0 hover:bg-black/[0.04]">
                   <td className="px-4 py-3 text-text-muted">{formatDate(l.date)}</td>
                   <td className="px-4 py-3">
                     <Badge color={TYPE_BADGE_COLOR[l.type] ?? "slate"}>{l.type}</Badge>
@@ -159,7 +159,7 @@ export function MaintenanceTable({
                     <button
                       onClick={() => openEdit(l)}
                       aria-label="Edit maintenance log"
-                      className="rounded-md p-1.5 text-text-muted hover:bg-slate-100 hover:text-text-secondary"
+                      className="rounded-md p-1.5 text-text-muted hover:bg-black/[0.06] hover:text-text-secondary"
                     >
                       <Pencil className="size-4" />
                     </button>

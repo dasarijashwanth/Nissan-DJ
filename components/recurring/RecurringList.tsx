@@ -42,7 +42,7 @@ export function RecurringList({ recurring }: { recurring: RecurringTransaction[]
     return (
       <>
         <Card className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-          <div className="flex size-12 items-center justify-center rounded-full bg-slate-100">
+          <div className="flex size-12 items-center justify-center rounded-full bg-black/[0.06]">
             <Repeat className="size-6 text-text-muted" />
           </div>
           <p className="text-sm font-medium text-text-secondary">No recurring transactions yet</p>
@@ -62,10 +62,10 @@ export function RecurringList({ recurring }: { recurring: RecurringTransaction[]
   return (
     <div className="space-y-4">
       {dueToday.length > 0 && (
-        <Card className="flex flex-wrap items-center justify-between gap-3 border-amber-200 bg-amber-50 p-4">
+        <Card className="flex flex-wrap items-center justify-between gap-3 border-amber-500/30 bg-amber-500/10 p-4">
           <div className="flex items-center gap-3">
             <AlertCircle className="size-5 shrink-0 text-amber-600" />
-            <p className="text-sm font-medium text-amber-800">
+            <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
               {dueToday.length} recurring transaction{dueToday.length > 1 ? "s are" : " is"} due today
             </p>
           </div>

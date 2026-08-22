@@ -80,14 +80,14 @@ export function RecurringCard({
           </p>
         </div>
         <div className="flex shrink-0 gap-1">
-          <button onClick={onEdit} aria-label="Edit" className="rounded-md p-1.5 text-text-muted hover:bg-slate-100 hover:text-text-secondary">
+          <button onClick={onEdit} aria-label="Edit" className="rounded-md p-1.5 text-text-muted hover:bg-black/[0.06] hover:text-text-secondary">
             <Pencil className="size-4" />
           </button>
           <button
             onClick={handleDelete}
             disabled={busy}
             aria-label="Delete"
-            className="rounded-md p-1.5 text-text-muted hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+            className="rounded-md p-1.5 text-text-muted hover:bg-red-500/10 hover:text-red-600 disabled:opacity-50"
           >
             <Trash2 className="size-4" />
           </button>

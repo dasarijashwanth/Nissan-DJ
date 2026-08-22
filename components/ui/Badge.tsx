@@ -4,12 +4,12 @@ import { cn } from "@/lib/utils";
 type BadgeColor = "green" | "red" | "indigo" | "slate" | "blue" | "amber";
 
 const COLOR_CLASSES: Record<BadgeColor, string> = {
-  green: "bg-emerald-50 text-emerald-700",
-  red: "bg-red-50 text-red-700",
-  indigo: "bg-indigo-50 text-indigo-700",
-  slate: "bg-slate-100 text-slate-600",
-  blue: "bg-blue-50 text-blue-700",
-  amber: "bg-amber-50 text-amber-700",
+  green: "bg-emerald-500/12 text-emerald-700 dark:text-emerald-400",
+  red: "bg-red-500/12 text-red-700 dark:text-red-400",
+  indigo: "bg-indigo-500/12 text-indigo-700 dark:text-indigo-400",
+  slate: "bg-black/[0.06] text-text-secondary",
+  blue: "bg-blue-500/12 text-blue-700 dark:text-blue-400",
+  amber: "bg-amber-500/12 text-amber-700 dark:text-amber-400",
 };
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {

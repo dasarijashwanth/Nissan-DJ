@@ -2,9 +2,12 @@ export type TransactionType = "income" | "expense";
 
 export const CATEGORIES = [
   "Salary",
+  "Stylecraft",
   "Freelance",
   "Rides",
   "Food",
+  "Subway",
+  "Store",
   "Fuel",
   "Rent",
   "Insurance",

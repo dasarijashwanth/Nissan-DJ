@@ -24,7 +24,7 @@ export function BudgetCard({
           onClick={onDelete}
           disabled={deleting}
           aria-label={`Remove ${budget.category} budget`}
-          className="rounded-md p-1 text-slate-300 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+          className="rounded-md p-1 text-slate-300 hover:bg-red-500/10 hover:text-red-600 disabled:opacity-50"
         >
           <Trash2 className="size-3.5" />
         </button>

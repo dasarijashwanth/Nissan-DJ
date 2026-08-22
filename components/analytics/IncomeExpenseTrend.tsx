@@ -17,18 +17,25 @@ export function IncomeExpenseTrend({ data }: { data: TrendDatum[] }) {
       <div className="h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
-            <CartesianGrid vertical={false} stroke="#e2e8f0" />
-            <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: "#64748b", fontSize: 12 }} />
+            <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
+            <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: "var(--chart-axis)", fontSize: 12 }} />
             <YAxis
               tickLine={false}
               axisLine={false}
-              tick={{ fill: "#64748b", fontSize: 12 }}
+              tick={{ fill: "var(--chart-axis)", fontSize: 12 }}
               width={80}
               tickFormatter={(value: number) => formatCurrency(value)}
             />
             <Tooltip
               formatter={(value) => formatCurrency(Number(value))}
-              contentStyle={{ borderRadius: 8, borderColor: "#e2e8f0", fontSize: 13 }}
+              contentStyle={{
+                borderRadius: 8,
+                border: "1px solid var(--chart-grid)",
+                backgroundColor: "var(--chart-tooltip-bg)",
+                fontSize: 13,
+              }}
+              labelStyle={{ color: "var(--text-primary)" }}
+              itemStyle={{ color: "var(--text-secondary)" }}
             />
             <Legend
               wrapperStyle={{ fontSize: 13 }}

@@ -23,7 +23,7 @@ export default async function TransactionsPage() {
         </div>
         <a
           href="/api/export/csv"
-          className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 px-3 text-sm font-medium text-text-secondary transition-colors hover:bg-slate-50"
+          className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-black/[0.08] px-3 text-sm font-medium text-text-secondary transition-colors hover:bg-black/[0.04]"
         >
           <Download className="size-4" />
           Export CSV

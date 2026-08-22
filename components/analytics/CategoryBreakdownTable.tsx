@@ -38,8 +38,8 @@ export function CategoryBreakdownTable({ rows }: { rows: CategoryBreakdownRow[] 
                 <tr
                   key={row.category}
                   className={cn(
-                    "border-b border-black/[0.08] last:border-0 hover:bg-slate-50",
-                    i < 3 && "bg-amber-50/40"
+                    "border-b border-black/[0.08] last:border-0 hover:bg-black/[0.04]",
+                    i < 3 && "bg-amber-500/10"
                   )}
                 >
                   <td className="px-4 py-3 font-medium text-text-primary">{row.category}</td>

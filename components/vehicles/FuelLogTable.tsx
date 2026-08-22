@@ -80,7 +80,7 @@ export function FuelLogTable({ fuelLogs, vehicleId }: { fuelLogs: FuelLog[]; veh
     return (
       <>
         <Card className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-          <div className="flex size-12 items-center justify-center rounded-full bg-amber-50">
+          <div className="flex size-12 items-center justify-center rounded-full bg-amber-500/12">
             <Fuel className="size-6 text-amber-500" />
           </div>
           <p className="text-sm font-medium text-text-secondary">No fuel logs yet</p>
@@ -119,12 +119,19 @@ export function FuelLogTable({ fuelLogs, vehicleId }: { fuelLogs: FuelLog[]; veh
           <div className="h-56 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
-                <CartesianGrid vertical={false} stroke="#e2e8f0" />
-                <XAxis dataKey="date" tickLine={false} axisLine={false} tick={{ fill: "#64748b", fontSize: 12 }} />
-                <YAxis tickLine={false} axisLine={false} tick={{ fill: "#64748b", fontSize: 12 }} width={40} />
+                <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
+                <XAxis dataKey="date" tickLine={false} axisLine={false} tick={{ fill: "var(--chart-axis)", fontSize: 12 }} />
+                <YAxis tickLine={false} axisLine={false} tick={{ fill: "var(--chart-axis)", fontSize: 12 }} width={40} />
                 <Tooltip
                   formatter={(value) => `${value} MPG`}
-                  contentStyle={{ borderRadius: 8, borderColor: "#e2e8f0", fontSize: 13 }}
+                  contentStyle={{
+                    borderRadius: 8,
+                    border: "1px solid var(--chart-grid)",
+                    backgroundColor: "var(--chart-tooltip-bg)",
+                    fontSize: 13,
+                  }}
+                  labelStyle={{ color: "var(--text-primary)" }}
+                  itemStyle={{ color: "var(--text-secondary)" }}
                 />
                 <Line type="monotone" dataKey="mpg" stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>
@@ -172,12 +179,12 @@ export function FuelLogTable({ fuelLogs, vehicleId }: { fuelLogs: FuelLog[]; veh
               {pageItems.map((l) => {
                 const isWeekly = l.type === "weekly_summary";
                 return (
-                  <tr key={l.id} className="border-b border-black/[0.08] last:border-0 hover:bg-slate-50">
+                  <tr key={l.id} className="border-b border-black/[0.08] last:border-0 hover:bg-black/[0.04]">
                     <td className="px-4 py-3 text-text-muted">
                       <div className="flex items-center gap-2">
                         {formatDate(l.date)}
                         {isWeekly && (
-                          <span className="rounded-full bg-indigo-50 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-indigo-600 uppercase">
+                          <span className="rounded-full bg-indigo-500/12 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-indigo-600 uppercase dark:text-indigo-400">
                             Weekly
                           </span>
                         )}
@@ -204,7 +211,7 @@ export function FuelLogTable({ fuelLogs, vehicleId }: { fuelLogs: FuelLog[]; veh
                       <button
                         onClick={() => openEdit(l)}
                         aria-label="Edit fuel log"
-                        className="rounded-md p-1.5 text-text-muted hover:bg-slate-100 hover:text-text-secondary"
+                        className="rounded-md p-1.5 text-text-muted hover:bg-black/[0.06] hover:text-text-secondary"
                       >
                         <Pencil className="size-4" />
                       </button>

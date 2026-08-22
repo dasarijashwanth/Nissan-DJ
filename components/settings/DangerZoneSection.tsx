@@ -44,25 +44,25 @@ export function DangerZoneSection() {
   }
 
   return (
-    <Card className="border-red-200 p-5">
-      <p className="mb-4 text-sm font-semibold text-red-700">Danger Zone</p>
+    <Card className="border-red-500/30 p-5">
+      <p className="mb-4 text-sm font-semibold text-red-700 dark:text-red-400">Danger Zone</p>
 
       <div className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-red-100 pb-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-red-500/15 pb-4">
           <div>
             <p className="text-sm font-medium text-text-primary">Export all my data</p>
             <p className="text-xs text-text-muted">Download a JSON file of everything in your account.</p>
           </div>
           <a
             href="/api/settings/export-data"
-            className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-black/[0.08] px-3 text-sm font-medium text-text-secondary hover:bg-slate-50"
+            className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-black/[0.08] px-3 text-sm font-medium text-text-secondary hover:bg-black/[0.04]"
           >
             <Download className="size-4" />
             Export JSON
           </a>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-red-100 pb-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-red-500/15 pb-4">
           <div>
             <p className="text-sm font-medium text-text-primary">Delete all transactions</p>
             <p className="text-xs text-text-muted">Removes every income/expense entry. Car data is kept.</p>
@@ -88,8 +88,8 @@ export function DangerZoneSection() {
           </div>
 
           {showDeleteAccount && (
-            <div className="mt-3 space-y-3 rounded-lg bg-red-50 p-4">
-              <p className="text-sm text-red-800">
+            <div className="mt-3 space-y-3 rounded-lg bg-red-500/10 p-4">
+              <p className="text-sm text-red-800 dark:text-red-300">
                 Type <span className="font-semibold">DELETE</span> to confirm. This cannot be undone.
               </p>
               <Input value={confirmText} onChange={(e) => setConfirmText(e.target.value)} placeholder="DELETE" />

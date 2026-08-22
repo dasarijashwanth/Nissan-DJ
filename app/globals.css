@@ -63,6 +63,12 @@
 
   /* Blur (glassmorphism) */
   --blur-glass: blur(16px);
+
+  /* Chart primitives (Recharts needs literal color values, not Tailwind classes) */
+  --chart-grid: #e2e8f0; /* slate-200 */
+  --chart-axis: #64748b; /* slate-500 */
+  --chart-cursor: rgba(15, 23, 42, 0.04);
+  --chart-tooltip-bg: #ffffff;
 }
 
 /* Dark mode — explicit opt-in via [data-theme="dark"] on <html> */
@@ -75,6 +81,11 @@
   --text-secondary: #94a3b8;
   --text-muted: #475569;
   --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+
+  --chart-grid: rgba(255, 255, 255, 0.08);
+  --chart-axis: #94a3b8; /* slate-400 — brighter than --text-muted for legible axis labels on dark */
+  --chart-cursor: rgba(255, 255, 255, 0.06);
+  --chart-tooltip-bg: #131929;
 }
 
 @theme inline {

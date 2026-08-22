@@ -47,7 +47,7 @@ export function RepairTable({ repairLogs, vehicleId }: { repairLogs: RepairLog[]
     return (
       <>
         <Card className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-          <div className="flex size-12 items-center justify-center rounded-full bg-amber-50">
+          <div className="flex size-12 items-center justify-center rounded-full bg-amber-500/12">
             <Hammer className="size-6 text-amber-500" />
           </div>
           <p className="text-sm font-medium text-text-secondary">No repairs logged yet</p>
@@ -115,7 +115,7 @@ export function RepairTable({ repairLogs, vehicleId }: { repairLogs: RepairLog[]
             </thead>
             <tbody>
               {pageItems.map((l) => (
-                <tr key={l.id} className="border-b border-black/[0.08] last:border-0 hover:bg-slate-50">
+                <tr key={l.id} className="border-b border-black/[0.08] last:border-0 hover:bg-black/[0.04]">
                   <td className="px-4 py-3 text-text-muted">{formatDate(l.date)}</td>
                   <td className="px-4 py-3 font-medium text-text-primary">{l.description}</td>
                   <td className="px-4 py-3 text-text-muted">{l.shop || "—"}</td>
@@ -130,7 +130,7 @@ export function RepairTable({ repairLogs, vehicleId }: { repairLogs: RepairLog[]
                     <button
                       onClick={() => openEdit(l)}
                       aria-label="Edit repair log"
-                      className="rounded-md p-1.5 text-text-muted hover:bg-slate-100 hover:text-text-secondary"
+                      className="rounded-md p-1.5 text-text-muted hover:bg-black/[0.06] hover:text-text-secondary"
                     >
                       <Pencil className="size-4" />
                     </button>

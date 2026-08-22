@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Modal } from "@/components/ui/Modal";
 import { Input, Select, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { CATEGORIES, type Transaction } from "@/lib/types";
+import { CATEGORIES, type Category, type Transaction } from "@/lib/types";
 import { toDateInputValue, toStoredDateInputValue, cn } from "@/lib/utils";
 import {
   validateTransactionInput,
@@ -49,6 +49,9 @@ export function TransactionForm({ open, onClose, transaction }: TransactionFormP
 
   const [values, setValues] = useState<TransactionFormValues>(() =>
     transaction ? valuesFromTransaction(transaction) : emptyValues()
+  );
+  const [customCategory, setCustomCategory] = useState(
+    () => !!transaction && !CATEGORIES.includes(transaction.category as Category)
   );
   const [errors, setErrors] = useState<TransactionFieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
@@ -107,9 +110,9 @@ export function TransactionForm({ open, onClose, transaction }: TransactionFormP
                 "flex-1 rounded-lg border px-3 py-2 text-sm font-medium capitalize transition-colors",
                 values.type === type
                   ? type === "income"
-                    ? "border-emerald-600 bg-emerald-50 text-emerald-700"
-                    : "border-red-600 bg-red-50 text-red-700"
-                  : "border-slate-200 text-text-muted hover:bg-slate-50"
+                    ? "border-emerald-600 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400"
+                    : "border-red-600 bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-400"
+                  : "border-black/[0.08] text-text-muted hover:bg-black/[0.04]"
               )}
             >
               {type}
@@ -135,21 +138,51 @@ export function TransactionForm({ open, onClose, transaction }: TransactionFormP
           error={errors.amount}
         />
 
-        <Select
-          label="Category"
-          value={values.category}
-          onChange={(e) => set("category", e.target.value)}
-          error={errors.category}
-        >
-          <option value="" disabled>
-            Select a category
-          </option>
-          {CATEGORIES.map((category) => (
-            <option key={category} value={category}>
-              {category}
+        {customCategory ? (
+          <div className="space-y-1.5">
+            <Input
+              label="Category"
+              value={values.category}
+              onChange={(e) => set("category", e.target.value)}
+              error={errors.category}
+              placeholder="e.g. Gym membership"
+            />
+            <button
+              type="button"
+              onClick={() => {
+                setCustomCategory(false);
+                set("category", "");
+              }}
+              className="text-xs font-medium text-indigo-600 hover:text-indigo-700"
+            >
+              Choose from list instead
+            </button>
+          </div>
+        ) : (
+          <Select
+            label="Category"
+            value={values.category}
+            onChange={(e) => {
+              if (e.target.value === "__custom__") {
+                setCustomCategory(true);
+                set("category", "");
+              } else {
+                set("category", e.target.value);
+              }
+            }}
+            error={errors.category}
+          >
+            <option value="" disabled>
+              Select a category
             </option>
-          ))}
-        </Select>
+            {CATEGORIES.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+            <option value="__custom__">+ Add new category…</option>
+          </Select>
+        )}
 
         <Input
           label="Date"

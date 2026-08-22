@@ -12,7 +12,7 @@ export default function DashboardError({ error, reset }: { error: Error & { dige
 
   return (
     <Card className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-      <div className="flex size-12 items-center justify-center rounded-full bg-red-50">
+      <div className="flex size-12 items-center justify-center rounded-full bg-red-500/12">
         <AlertTriangle className="size-6 text-red-500" />
       </div>
       <p className="text-sm font-medium text-text-secondary">Something went wrong</p>

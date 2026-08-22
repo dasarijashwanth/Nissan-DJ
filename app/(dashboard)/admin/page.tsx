@@ -38,7 +38,7 @@ export default async function AdminPage() {
             </thead>
             <tbody>
               {users.map((u) => (
-                <tr key={u.id} className="border-b border-black/[0.08] last:border-0 hover:bg-slate-50">
+                <tr key={u.id} className="border-b border-black/[0.08] last:border-0 hover:bg-black/[0.04]">
                   <td className="px-4 py-3 font-medium text-text-primary">
                     <div className="flex items-center gap-2">
                       {u.email}

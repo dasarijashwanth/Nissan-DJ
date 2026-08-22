@@ -83,7 +83,7 @@ export function VehicleHeroCard({ vehicle, currentOdometer }: { vehicle: Vehicle
   return (
     <Card className="overflow-hidden p-0">
       <div className="flex flex-col sm:flex-row">
-        <div className="relative aspect-video w-full shrink-0 bg-slate-100 sm:aspect-auto sm:w-72">
+        <div className="relative aspect-video w-full shrink-0 bg-black/[0.06] sm:aspect-auto sm:w-72">
           {vehicle.photoUrl ? (
             <Image src={vehicle.photoUrl} alt={`${vehicle.make} ${vehicle.model}`} fill className="object-cover" />
           ) : (
@@ -132,7 +132,7 @@ export function VehicleHeroCard({ vehicle, currentOdometer }: { vehicle: Vehicle
                   onClick={savePlate}
                   disabled={savingPlate}
                   aria-label="Save license plate"
-                  className="rounded-md p-1 text-emerald-600 hover:bg-emerald-50"
+                  className="rounded-md p-1 text-emerald-600 hover:bg-emerald-500/12"
                 >
                   <Check className="size-4" />
                 </button>
@@ -142,7 +142,7 @@ export function VehicleHeroCard({ vehicle, currentOdometer }: { vehicle: Vehicle
                     setEditingPlate(false);
                   }}
                   aria-label="Cancel"
-                  className="rounded-md p-1 text-text-muted hover:bg-slate-100"
+                  className="rounded-md p-1 text-text-muted hover:bg-black/[0.06]"
                 >
                   <X className="size-4" />
                 </button>
@@ -150,7 +150,7 @@ export function VehicleHeroCard({ vehicle, currentOdometer }: { vehicle: Vehicle
             ) : (
               <button
                 onClick={() => setEditingPlate(true)}
-                className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-text-secondary hover:bg-slate-100"
+                className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-text-secondary hover:bg-black/[0.06]"
               >
                 {vehicle.licensePlate || <span className="text-text-muted">Add plate</span>}
                 <Pencil className="size-3" />

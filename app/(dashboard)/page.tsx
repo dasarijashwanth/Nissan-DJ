@@ -88,10 +88,10 @@ export default async function DashboardPage() {
       </div>
 
       {dueTodayCount > 0 && (
-        <Card className="flex flex-wrap items-center justify-between gap-3 border-amber-200 bg-amber-50 p-4">
+        <Card className="flex flex-wrap items-center justify-between gap-3 border-amber-500/30 bg-amber-500/10 p-4">
           <div className="flex items-center gap-3">
             <AlertCircle className="size-5 shrink-0 text-amber-600" />
-            <p className="text-sm font-medium text-amber-800">
+            <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
               {dueTodayCount} recurring transaction{dueTodayCount > 1 ? "s are" : " is"} due today
             </p>
           </div>

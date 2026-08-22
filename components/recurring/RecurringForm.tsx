@@ -114,9 +114,9 @@ export function RecurringForm({ open, onClose, recurring }: RecurringFormProps) 
                 "flex-1 rounded-lg border px-3 py-2 text-sm font-medium capitalize transition-colors",
                 values.type === type
                   ? type === "income"
-                    ? "border-emerald-600 bg-emerald-50 text-emerald-700"
-                    : "border-red-600 bg-red-50 text-red-700"
-                  : "border-slate-200 text-text-muted hover:bg-slate-50"
+                    ? "border-emerald-600 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400"
+                    : "border-red-600 bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-400"
+                  : "border-black/[0.08] text-text-muted hover:bg-black/[0.04]"
               )}
             >
               {type}

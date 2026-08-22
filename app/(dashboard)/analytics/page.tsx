@@ -208,7 +208,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="p-5" style={{ animationDelay: "0ms" } as CSSProperties}>
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
+            <div className="flex size-10 items-center justify-center rounded-lg bg-indigo-500/12 text-indigo-600 dark:text-indigo-400">
               <Wallet className="size-5" />
             </div>
             <p className="text-sm font-medium text-text-muted">Net Savings</p>

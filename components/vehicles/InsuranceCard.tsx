@@ -31,7 +31,7 @@ export function InsuranceCard({ policies, vehicleId }: { policies: Insurance[]; 
     return (
       <>
         <Card className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-          <div className="flex size-12 items-center justify-center rounded-full bg-amber-50">
+          <div className="flex size-12 items-center justify-center rounded-full bg-amber-500/12">
             <Shield className="size-6 text-amber-500" />
           </div>
           <p className="text-sm font-medium text-text-secondary">No insurance policy on file</p>
@@ -61,7 +61,7 @@ export function InsuranceCard({ policies, vehicleId }: { policies: Insurance[]; 
       <Card className="p-6">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+            <div className="flex size-10 items-center justify-center rounded-lg bg-amber-500/12 text-amber-600 dark:text-amber-400">
               <Shield className="size-5" />
             </div>
             <div>
@@ -72,7 +72,7 @@ export function InsuranceCard({ policies, vehicleId }: { policies: Insurance[]; 
           <button
             onClick={() => openEdit(active)}
             aria-label="Edit policy"
-            className="rounded-md p-1.5 text-text-muted hover:bg-slate-100 hover:text-text-secondary"
+            className="rounded-md p-1.5 text-text-muted hover:bg-black/[0.06] hover:text-text-secondary"
           >
             <Pencil className="size-4" />
           </button>
@@ -126,7 +126,7 @@ export function InsuranceCard({ policies, vehicleId }: { policies: Insurance[]; 
               </thead>
               <tbody>
                 {history.map((p) => (
-                  <tr key={p.id} className="border-b border-black/[0.08] last:border-0 hover:bg-slate-50">
+                  <tr key={p.id} className="border-b border-black/[0.08] last:border-0 hover:bg-black/[0.04]">
                     <td className="px-4 py-3 font-medium text-text-primary">{p.provider}</td>
                     <td className="px-4 py-3 text-text-muted">{p.coverageType}</td>
                     <td className="px-4 py-3 text-right tabular-nums">{formatCurrency(p.monthlyCost)}</td>
@@ -136,7 +136,7 @@ export function InsuranceCard({ policies, vehicleId }: { policies: Insurance[]; 
                       <button
                         onClick={() => openEdit(p)}
                         aria-label={`Edit ${p.provider} policy`}
-                        className="rounded-md p-1.5 text-text-muted hover:bg-slate-100 hover:text-text-secondary"
+                        className="rounded-md p-1.5 text-text-muted hover:bg-black/[0.06] hover:text-text-secondary"
                       >
                         <Pencil className="size-4" />
                       </button>

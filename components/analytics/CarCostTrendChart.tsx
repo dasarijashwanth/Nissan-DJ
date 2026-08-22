@@ -49,24 +49,31 @@ export function CarCostTrendChart({
         <div className="h-72 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={monthlyCosts}>
-              <CartesianGrid vertical={false} stroke="#e2e8f0" />
-              <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: "#64748b", fontSize: 12 }} />
+              <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
+              <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: "var(--chart-axis)", fontSize: 12 }} />
               <YAxis
                 tickLine={false}
                 axisLine={false}
-                tick={{ fill: "#64748b", fontSize: 12 }}
+                tick={{ fill: "var(--chart-axis)", fontSize: 12 }}
                 width={64}
                 tickFormatter={(value: number) => formatCurrency(value)}
               />
               <Tooltip
                 formatter={(value, name) => [formatCurrency(Number(value)), SERIES_LABEL[String(name)] ?? name]}
-                contentStyle={{ borderRadius: 8, borderColor: "#e2e8f0", fontSize: 13 }}
+                contentStyle={{
+                  borderRadius: 8,
+                  border: "1px solid var(--chart-grid)",
+                  backgroundColor: "var(--chart-tooltip-bg)",
+                  fontSize: 13,
+                }}
+                labelStyle={{ color: "var(--text-primary)" }}
+                itemStyle={{ color: "var(--text-secondary)" }}
               />
               <Legend wrapperStyle={{ fontSize: 13 }} formatter={(value) => SERIES_LABEL[value] ?? value} />
-              <Area type="monotone" dataKey="fuel" stackId="1" stroke="#f59e0b" fill="#fde68a" />
-              <Area type="monotone" dataKey="maintenance" stackId="1" stroke="#10b981" fill="#a7f3d0" />
-              <Area type="monotone" dataKey="repair" stackId="1" stroke="#ef4444" fill="#fecaca" />
-              <Area type="monotone" dataKey="insurance" stackId="1" stroke="#4f46e5" fill="#c7d2fe" />
+              <Area type="monotone" dataKey="fuel" stackId="1" stroke="#f59e0b" fill="#f59e0b" fillOpacity={0.25} />
+              <Area type="monotone" dataKey="maintenance" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.25} />
+              <Area type="monotone" dataKey="repair" stackId="1" stroke="#ef4444" fill="#ef4444" fillOpacity={0.25} />
+              <Area type="monotone" dataKey="insurance" stackId="1" stroke="#4f46e5" fill="#4f46e5" fillOpacity={0.25} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -77,18 +84,25 @@ export function CarCostTrendChart({
         <div className="h-56 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={costPerMileTrend}>
-              <CartesianGrid vertical={false} stroke="#e2e8f0" />
-              <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: "#64748b", fontSize: 12 }} />
+              <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
+              <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: "var(--chart-axis)", fontSize: 12 }} />
               <YAxis
                 tickLine={false}
                 axisLine={false}
-                tick={{ fill: "#64748b", fontSize: 12 }}
+                tick={{ fill: "var(--chart-axis)", fontSize: 12 }}
                 width={56}
                 tickFormatter={(value: number) => formatCurrency(value)}
               />
               <Tooltip
                 formatter={(value) => `${formatCurrency(Number(value))} / mi`}
-                contentStyle={{ borderRadius: 8, borderColor: "#e2e8f0", fontSize: 13 }}
+                contentStyle={{
+                  borderRadius: 8,
+                  border: "1px solid var(--chart-grid)",
+                  backgroundColor: "var(--chart-tooltip-bg)",
+                  fontSize: 13,
+                }}
+                labelStyle={{ color: "var(--text-primary)" }}
+                itemStyle={{ color: "var(--text-secondary)" }}
               />
               <Line type="monotone" dataKey="costPerMile" stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} />
             </LineChart>

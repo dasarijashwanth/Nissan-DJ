@@ -78,8 +78,8 @@ export default async function VehiclePage({
       <EveningOdometerReminder vehicleId={vehicle.id} />
 
       {welcome && (
-        <Card className="border-amber-200 bg-amber-50 p-4">
-          <p className="text-sm text-amber-800">
+        <Card className="border-amber-500/30 bg-amber-500/10 p-4">
+          <p className="text-sm text-amber-800 dark:text-amber-300">
             🎉 <span className="font-medium">{vehicle.nickname}</span> added! Start by logging today&apos;s odometer.
           </p>
         </Card>
@@ -111,9 +111,9 @@ export default async function VehiclePage({
         <div className="space-y-2">
           <p className="text-sm font-medium text-text-secondary">Upcoming Reminders</p>
           {dueMaintenance.map((l) => (
-            <Card key={l.id} className="flex items-center gap-3 border-amber-200 bg-amber-50 p-4">
+            <Card key={l.id} className="flex items-center gap-3 border-amber-500/30 bg-amber-500/10 p-4">
               <AlertTriangle className="size-5 shrink-0 text-amber-600" />
-              <p className="text-sm text-amber-800">
+              <p className="text-sm text-amber-800 dark:text-amber-300">
                 <span className="font-medium">{l.type}</span> due{" "}
                 {l.nextDueDate ? `by ${formatDate(l.nextDueDate)}` : ""}
                 {l.nextDueMiles ? ` at ${formatMiles(l.nextDueMiles)}` : ""}
@@ -121,9 +121,9 @@ export default async function VehiclePage({
             </Card>
           ))}
           {dueInsurance.map((p) => (
-            <Card key={p.id} className="flex items-center gap-3 border-amber-200 bg-amber-50 p-4">
+            <Card key={p.id} className="flex items-center gap-3 border-amber-500/30 bg-amber-500/10 p-4">
               <AlertTriangle className="size-5 shrink-0 text-amber-600" />
-              <p className="text-sm text-amber-800">
+              <p className="text-sm text-amber-800 dark:text-amber-300">
                 <span className="font-medium">{p.provider}</span> insurance renews in{" "}
                 {daysUntil(p.renewalDate)} days ({formatDate(p.renewalDate)})
               </p>
@@ -140,12 +140,12 @@ export default async function VehiclePage({
             <p className="text-sm text-text-muted">No activity logged yet.</p>
           </div>
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-black/[0.08]">
             {activity.map((a) => {
               const Icon = ACTIVITY_ICON[a.kind];
               return (
                 <li key={`${a.kind}-${a.id}`} className="flex items-center gap-3 py-2.5">
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                  <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/12 text-amber-600 dark:text-amber-400">
                     <Icon className="size-4" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -155,7 +155,7 @@ export default async function VehiclePage({
                   <span
                     className={cn(
                       "shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium",
-                      "bg-red-50 text-red-700"
+                      "bg-red-500/12 text-red-700 dark:text-red-400"
                     )}
                   >
                     -{formatCurrency(a.cost)}

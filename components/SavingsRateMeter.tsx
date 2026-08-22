@@ -13,7 +13,7 @@ export function SavingsRateMeter({ rate }: { rate: number }) {
   return (
     <Card className="flex items-center gap-4 p-5">
       <svg width={SIZE} height={SIZE} className="shrink-0 -rotate-90">
-        <circle cx={SIZE / 2} cy={SIZE / 2} r={RADIUS} fill="none" stroke="#e2e8f0" strokeWidth={STROKE} />
+        <circle cx={SIZE / 2} cy={SIZE / 2} r={RADIUS} fill="none" stroke="var(--chart-grid)" strokeWidth={STROKE} />
         <circle
           cx={SIZE / 2}
           cy={SIZE / 2}

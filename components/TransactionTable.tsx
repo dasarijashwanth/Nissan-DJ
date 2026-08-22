@@ -82,7 +82,7 @@ export function TransactionTable({ transactions }: { transactions: Transaction[]
     return (
       <>
         <Card className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-          <div className="flex size-12 items-center justify-center rounded-full bg-slate-100">
+          <div className="flex size-12 items-center justify-center rounded-full bg-black/[0.06]">
             <Receipt className="size-6 text-text-muted" />
           </div>
           <p className="text-sm font-medium text-text-secondary">No transactions yet</p>
@@ -171,7 +171,7 @@ export function TransactionTable({ transactions }: { transactions: Transaction[]
               </thead>
               <tbody>
                 {pageItems.map((t) => (
-                  <tr key={t.id} className="border-b border-black/[0.08] last:border-0 hover:bg-slate-50">
+                  <tr key={t.id} className="border-b border-black/[0.08] last:border-0 hover:bg-black/[0.04]">
                     <td className="px-4 py-3 font-medium text-text-primary">{t.title}</td>
                     <td className="px-4 py-3">
                       <Badge color="slate">{t.category}</Badge>
@@ -191,7 +191,7 @@ export function TransactionTable({ transactions }: { transactions: Transaction[]
                         <button
                           onClick={() => openEdit(t)}
                           aria-label={`Edit ${t.title}`}
-                          className="rounded-md p-1.5 text-text-muted hover:bg-slate-100 hover:text-text-secondary"
+                          className="rounded-md p-1.5 text-text-muted hover:bg-black/[0.06] hover:text-text-secondary"
                         >
                           <Pencil className="size-4" />
                         </button>
@@ -199,7 +199,7 @@ export function TransactionTable({ transactions }: { transactions: Transaction[]
                           onClick={() => handleDelete(t.id)}
                           disabled={deletingId === t.id}
                           aria-label={`Delete ${t.title}`}
-                          className="rounded-md p-1.5 text-text-muted hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                          className="rounded-md p-1.5 text-text-muted hover:bg-red-500/10 hover:text-red-600 disabled:opacity-50"
                         >
                           <Trash2 className="size-4" />
                         </button>

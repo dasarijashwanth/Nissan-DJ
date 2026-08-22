@@ -40,7 +40,7 @@ export default async function MonthlyPage({ searchParams }: PageProps<"/monthly"
         <div className="flex items-center gap-1">
           <Link
             href={`/monthly?year=${prev.year}&month=${prev.month + 1}`}
-            className="rounded-md p-1.5 text-text-muted hover:bg-slate-100"
+            className="rounded-md p-1.5 text-text-muted hover:bg-black/[0.06]"
             aria-label="Previous month"
           >
             <ChevronLeft className="size-5" />
@@ -50,7 +50,7 @@ export default async function MonthlyPage({ searchParams }: PageProps<"/monthly"
           </span>
           <Link
             href={`/monthly?year=${next.year}&month=${next.month + 1}`}
-            className="rounded-md p-1.5 text-text-muted hover:bg-slate-100"
+            className="rounded-md p-1.5 text-text-muted hover:bg-black/[0.06]"
             aria-label="Next month"
           >
             <ChevronRight className="size-5" />

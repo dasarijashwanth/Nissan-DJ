@@ -325,7 +325,7 @@ export function FuelLogForm({ open, onClose, vehicleId, previousOdometer, log }:
             error={errors.odometer}
           />
           {mpgPreview > 0 && (
-            <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm font-medium text-amber-700">
+            <p className="rounded-lg bg-amber-500/10 px-3 py-2 text-sm font-medium text-amber-700 dark:text-amber-400">
               {mpgPreview.toFixed(1)} MPG since your last fill
             </p>
           )}
@@ -389,7 +389,7 @@ export function FuelLogForm({ open, onClose, vehicleId, previousOdometer, log }:
             error={weeklyErrors.milesDriven}
           />
           {weeklyMpgPreview > 0 && (
-            <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm font-medium text-amber-700">
+            <p className="rounded-lg bg-amber-500/10 px-3 py-2 text-sm font-medium text-amber-700 dark:text-amber-400">
               ~{weeklyMpgPreview.toFixed(1)} MPG estimated
             </p>
           )}

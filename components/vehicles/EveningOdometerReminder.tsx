@@ -32,8 +32,8 @@ export function EveningOdometerReminder({ vehicleId }: { vehicleId: string }) {
   }
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-indigo-50 px-4 py-3 text-sm">
-      <p className="font-medium text-indigo-800">Don&apos;t forget to log today&apos;s odometer! 📍</p>
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-indigo-500/10 px-4 py-3 text-sm">
+      <p className="font-medium text-indigo-800 dark:text-indigo-300">Don&apos;t forget to log today&apos;s odometer! 📍</p>
       <div className="flex items-center gap-2">
         <input
           type="number"
@@ -41,7 +41,7 @@ export function EveningOdometerReminder({ vehicleId }: { vehicleId: string }) {
           placeholder={stats.currentOdometer ? String(stats.currentOdometer) : "Odometer"}
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          className="w-28 rounded-md border border-indigo-200 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-28 rounded-md border border-indigo-500/30 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
         <Button size="sm" onClick={handleLog} loading={submitting}>
           <MapPin className="size-3.5" />

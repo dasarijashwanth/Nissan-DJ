@@ -33,8 +33,8 @@ export function AlertDropdown({ alerts, onMarkAllRead, onAlertClick }: AlertDrop
               const content = (
                 <div
                   className={cn(
-                    "block px-4 py-3 hover:bg-slate-50",
-                    !a.isRead && "border-l-2 border-indigo-600 bg-indigo-50/40"
+                    "block px-4 py-3 hover:bg-black/[0.04]",
+                    !a.isRead && "border-l-2 border-indigo-600 bg-indigo-500/10"
                   )}
                 >
                   <p className="text-sm font-medium text-text-primary">{a.title}</p>
@@ -63,7 +63,7 @@ export function AlertDropdown({ alerts, onMarkAllRead, onAlertClick }: AlertDrop
 
       <Link
         href="/alerts"
-        className="flex items-center justify-center gap-1.5 border-t border-black/[0.08] py-2.5 text-xs font-medium text-text-muted hover:bg-slate-50"
+        className="flex items-center justify-center gap-1.5 border-t border-black/[0.08] py-2.5 text-xs font-medium text-text-muted hover:bg-black/[0.04]"
       >
         <Bell className="size-3.5" />
         View all alerts

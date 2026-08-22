@@ -17,7 +17,7 @@ export function CarStatsRow({ totalSpend, costPerMile, totalMiles, avgMPG, month
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <Card className="p-5" style={{ animationDelay: "0ms" } as CSSProperties}>
         <div className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+          <div className="flex size-10 items-center justify-center rounded-lg bg-amber-500/12 text-amber-600 dark:text-amber-400">
             <Wallet className="size-5" />
           </div>
           <p className="text-sm font-medium text-text-muted">Total Car Spend</p>
@@ -35,7 +35,7 @@ export function CarStatsRow({ totalSpend, costPerMile, totalMiles, avgMPG, month
 
       <Card className="p-5" style={{ animationDelay: "120ms" } as CSSProperties}>
         <div className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+          <div className="flex size-10 items-center justify-center rounded-lg bg-amber-500/12 text-amber-600 dark:text-amber-400">
             <Fuel className="size-5" />
           </div>
           <p className="text-sm font-medium text-text-muted">Avg MPG</p>
@@ -47,7 +47,7 @@ export function CarStatsRow({ totalSpend, costPerMile, totalMiles, avgMPG, month
 
       <Card className="p-5" style={{ animationDelay: "180ms" } as CSSProperties}>
         <div className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+          <div className="flex size-10 items-center justify-center rounded-lg bg-amber-500/12 text-amber-600 dark:text-amber-400">
             <CalendarClock className="size-5" />
           </div>
           <p className="text-sm font-medium text-text-muted">This Month</p>

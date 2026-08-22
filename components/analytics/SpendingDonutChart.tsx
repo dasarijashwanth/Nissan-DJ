@@ -35,7 +35,14 @@ export function SpendingDonutChart({ data }: { data: { category: string; amount:
             </Pie>
             <Tooltip
               formatter={(value, name) => [formatCurrency(Number(value)), name]}
-              contentStyle={{ borderRadius: 8, borderColor: "#e2e8f0", fontSize: 13 }}
+              contentStyle={{
+                borderRadius: 8,
+                border: "1px solid var(--chart-grid)",
+                backgroundColor: "var(--chart-tooltip-bg)",
+                fontSize: 13,
+              }}
+              labelStyle={{ color: "var(--text-primary)" }}
+              itemStyle={{ color: "var(--text-secondary)" }}
             />
           </PieChart>
         </ResponsiveContainer>

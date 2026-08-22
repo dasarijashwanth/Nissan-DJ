@@ -32,7 +32,7 @@ export function QuickLogButtons({
           <button
             key={btn.kind}
             onClick={() => setOpen(btn.kind)}
-            className="flex flex-col items-center gap-2 rounded-xl border border-black/[0.08] bg-surface-card p-4 text-sm font-medium text-text-secondary shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700"
+            className="flex flex-col items-center gap-2 rounded-xl border border-black/[0.08] bg-surface-card p-4 text-sm font-medium text-text-secondary shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-500/10 hover:text-amber-700 dark:hover:text-amber-400"
           >
             <btn.icon className="size-6 text-amber-500" />
             {btn.label}

@@ -52,7 +52,7 @@ export function AlertList({ alerts: initialAlerts }: { alerts: Alert[] }) {
   if (alerts.length === 0) {
     return (
       <Card className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-        <div className="flex size-12 items-center justify-center rounded-full bg-slate-100">
+        <div className="flex size-12 items-center justify-center rounded-full bg-black/[0.06]">
           <Bell className="size-6 text-text-muted" />
         </div>
         <p className="text-sm font-medium text-text-secondary">No alerts yet</p>
@@ -97,7 +97,7 @@ export function AlertList({ alerts: initialAlerts }: { alerts: Alert[] }) {
                 key={a.id}
                 className={cn(
                   "flex items-start gap-3 px-4 py-3",
-                  !a.isRead && "border-l-2 border-indigo-600 bg-indigo-50/40"
+                  !a.isRead && "border-l-2 border-indigo-600 bg-indigo-500/10"
                 )}
               >
                 <div className="min-w-0 flex-1">
@@ -119,7 +119,7 @@ export function AlertList({ alerts: initialAlerts }: { alerts: Alert[] }) {
                   {!a.isRead && (
                     <button
                       onClick={() => markRead(a.id)}
-                      className="rounded-md px-2 py-1 text-xs font-medium text-indigo-600 hover:bg-indigo-50"
+                      className="rounded-md px-2 py-1 text-xs font-medium text-indigo-600 hover:bg-indigo-500/12"
                     >
                       Mark read
                     </button>
@@ -127,7 +127,7 @@ export function AlertList({ alerts: initialAlerts }: { alerts: Alert[] }) {
                   <button
                     onClick={() => deleteAlert(a.id)}
                     aria-label="Delete alert"
-                    className="rounded-md p-1.5 text-text-muted hover:bg-red-50 hover:text-red-600"
+                    className="rounded-md p-1.5 text-text-muted hover:bg-red-500/10 hover:text-red-600"
                   >
                     <Trash2 className="size-4" />
                   </button>

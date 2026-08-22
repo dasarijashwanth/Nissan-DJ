@@ -26,22 +26,29 @@ export function MonthOverMonthCard({ data }: { data: MonthOverMonthDatum[] }) {
       <div className="h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData} barGap={4}>
-            <CartesianGrid vertical={false} stroke="#e2e8f0" />
-            <XAxis dataKey="category" tickLine={false} axisLine={false} tick={{ fill: "#64748b", fontSize: 11 }} />
+            <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
+            <XAxis dataKey="category" tickLine={false} axisLine={false} tick={{ fill: "var(--chart-axis)", fontSize: 11 }} />
             <YAxis
               tickLine={false}
               axisLine={false}
-              tick={{ fill: "#64748b", fontSize: 12 }}
+              tick={{ fill: "var(--chart-axis)", fontSize: 12 }}
               width={64}
               tickFormatter={(value: number) => formatCurrency(value)}
             />
             <Tooltip
               formatter={(value) => formatCurrency(Number(value))}
-              contentStyle={{ borderRadius: 8, borderColor: "#e2e8f0", fontSize: 13 }}
+              contentStyle={{
+                borderRadius: 8,
+                border: "1px solid var(--chart-grid)",
+                backgroundColor: "var(--chart-tooltip-bg)",
+                fontSize: 13,
+              }}
+              labelStyle={{ color: "var(--text-primary)" }}
+              itemStyle={{ color: "var(--text-secondary)" }}
             />
-            <Bar dataKey="previous" fill="#cbd5e1" radius={[4, 4, 0, 0]} maxBarSize={24} name="Previous month" />
+            <Bar dataKey="previous" fill="#94a3b8" radius={[4, 4, 0, 0]} maxBarSize={24} name="Previous month" />
             <Bar dataKey="current" fill="#4f46e5" radius={[4, 4, 0, 0]} maxBarSize={24} name="Current month">
-              <LabelList dataKey="changeLabel" position="top" style={{ fontSize: 11, fill: "#475569" }} />
+              <LabelList dataKey="changeLabel" position="top" style={{ fontSize: 11, fill: "var(--chart-axis)" }} />
             </Bar>
           </BarChart>
         </ResponsiveContainer>

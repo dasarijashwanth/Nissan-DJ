@@ -82,7 +82,7 @@ export default async function AdminUserPage({ params }: { params: Promise<{ user
             {vehicleDetails.map(({ vehicle, currentOdometer, totalSpend, costPerMile, avgMPG }) => (
               <Card key={vehicle.id} className="p-5">
                 <div className="flex items-center gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                  <div className="flex size-10 items-center justify-center rounded-lg bg-amber-500/12 text-amber-600 dark:text-amber-400">
                     <CarIcon className="size-5" />
                   </div>
                   <div>

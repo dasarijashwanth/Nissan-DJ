@@ -49,7 +49,7 @@ export function InstallPrompt() {
       <Button size="sm" onClick={install}>
         Install
       </Button>
-      <button onClick={dismiss} aria-label="Dismiss" className="rounded-md p-1 text-text-muted hover:bg-slate-100">
+      <button onClick={dismiss} aria-label="Dismiss" className="rounded-md p-1 text-text-muted hover:bg-black/[0.06]">
         <X className="size-4" />
       </button>
     </div>
