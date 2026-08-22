@@ -226,21 +226,6 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   },
 };
 
-export type Vehicle3DStats = {
-  currentOdometer: number;
-  todayMiles: number;
-  monthMiles: number;
-  avgMilesPerDay: number;
-  streak: number;
-  avgMPG: number;
-  lastFillMPG: number | null;
-  monthCost: number;
-  monthCostDeltaPercent: number | null;
-  costPerMile: number;
-  oilChangeDueSoon: boolean;
-  nextService: { type: string; milesAway: number | null; daysAway: number | null } | null;
-};
-
 export type MonthlyReport = {
   month: string;
   income: {

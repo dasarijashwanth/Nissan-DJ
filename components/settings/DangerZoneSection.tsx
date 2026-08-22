@@ -30,7 +30,14 @@ export function DangerZoneSection() {
     setDeletingAccount(true);
     try {
       const res = await fetch("/api/settings/account", { method: "DELETE" });
-      if (res.ok) router.push("/login");
+      if (res.ok) {
+        // A hard redirect, not router.push — the account (and its session) no longer exist, so
+        // every bit of client-side state (VehicleContext, cached fetches, etc.) needs to be wiped,
+        // not carried across a soft client-side transition to /login.
+        // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+        window.location.href = "/login";
+        return;
+      }
     } finally {
       setDeletingAccount(false);
     }
