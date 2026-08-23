@@ -2,7 +2,8 @@ import type { CSSProperties } from "react";
 import { redirect } from "next/navigation";
 import { getAuthUser } from "@/lib/supabase";
 import { getIndiaTransfers } from "@/lib/indiaTransferQueries";
-import { formatCurrency } from "@/lib/utils";
+import { getUsdToInrRate } from "@/lib/exchangeRate";
+import { formatINR, formatCurrency } from "@/lib/utils";
 import { Card } from "@/components/ui/Card";
 import { IndiaTransferTable } from "@/components/IndiaTransferTable";
 
@@ -10,7 +11,7 @@ export default async function IndiaTransfersPage() {
   const user = await getAuthUser();
   if (!user) redirect("/login");
 
-  const transfers = await getIndiaTransfers(user.id);
+  const [transfers, usdRate] = await Promise.all([getIndiaTransfers(user.id), getUsdToInrRate()]);
 
   const now = new Date();
   const thisYear = now.getUTCFullYear();
@@ -37,21 +38,34 @@ export default async function IndiaTransfersPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <SummaryStat label="This Month" value={formatCurrency(totalThisMonth)} delayMs={0} />
-        <SummaryStat label="This Year" value={formatCurrency(totalThisYear)} delayMs={60} />
-        <SummaryStat label="All Time" value={formatCurrency(totalAllTime)} delayMs={120} />
+        <SummaryStat label="This Month" amount={totalThisMonth} usdRate={usdRate} delayMs={0} />
+        <SummaryStat label="This Year" amount={totalThisYear} usdRate={usdRate} delayMs={60} />
+        <SummaryStat label="All Time" amount={totalAllTime} usdRate={usdRate} delayMs={120} />
       </div>
 
-      <IndiaTransferTable transfers={transfers} />
+      <IndiaTransferTable transfers={transfers} usdRate={usdRate} />
     </div>
   );
 }
 
-function SummaryStat({ label, value, delayMs }: { label: string; value: string; delayMs: number }) {
+function SummaryStat({
+  label,
+  amount,
+  usdRate,
+  delayMs,
+}: {
+  label: string;
+  amount: number;
+  usdRate: number;
+  delayMs: number;
+}) {
   return (
     <Card className="p-4" style={{ animationDelay: `${delayMs}ms` } as CSSProperties}>
       <p className="text-xs font-medium text-text-muted">{label}</p>
-      <p className="mt-1 text-lg font-semibold text-text-primary tabular-nums">{value}</p>
+      <p className="mt-1 text-lg font-semibold text-text-primary tabular-nums">{formatINR(amount)}</p>
+      {amount > 0 && (
+        <p className="text-xs text-text-muted tabular-nums">≈ {formatCurrency(amount / usdRate)}</p>
+      )}
     </Card>
   );
 }

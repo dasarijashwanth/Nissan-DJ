@@ -8,12 +8,12 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { IndiaTransferForm } from "@/components/IndiaTransferForm";
 import type { IndiaTransfer } from "@/lib/types";
-import { cn, formatCurrency, formatDate } from "@/lib/utils";
+import { cn, formatINR, formatCurrency, formatDate } from "@/lib/utils";
 
 const PAGE_SIZE = 10;
 type SortKey = "date" | "amount";
 
-export function IndiaTransferTable({ transfers }: { transfers: IndiaTransfer[] }) {
+export function IndiaTransferTable({ transfers, usdRate }: { transfers: IndiaTransfer[]; usdRate: number }) {
   const router = useRouter();
 
   const [search, setSearch] = useState("");
@@ -97,6 +97,7 @@ export function IndiaTransferTable({ transfers }: { transfers: IndiaTransfer[] }
           open={formOpen}
           onClose={() => setFormOpen(false)}
           transfer={editing}
+          usdRate={usdRate}
         />
       </>
     );
@@ -148,8 +149,9 @@ export function IndiaTransferTable({ transfers }: { transfers: IndiaTransfer[] }
                   <tr key={t.id} className="border-b border-black/[0.08] last:border-0 hover:bg-black/[0.04]">
                     <td className="px-4 py-3 font-medium text-text-primary">{t.recipient}</td>
                     <td className="px-4 py-3 text-text-muted">{formatDate(t.date)}</td>
-                    <td className="px-4 py-3 text-right font-medium tabular-nums text-text-primary">
-                      {formatCurrency(t.amount)}
+                    <td className="px-4 py-3 text-right tabular-nums">
+                      <p className="font-medium text-text-primary">{formatINR(t.amount)}</p>
+                      <p className="text-xs text-text-muted">≈ {formatCurrency(t.amount / usdRate)}</p>
                     </td>
                     <td className="max-w-[200px] truncate px-4 py-3 text-text-muted">{t.notes || "—"}</td>
                     <td className="px-4 py-3">
@@ -205,6 +207,7 @@ export function IndiaTransferTable({ transfers }: { transfers: IndiaTransfer[] }
         open={formOpen}
         onClose={() => setFormOpen(false)}
         transfer={editing}
+        usdRate={usdRate}
       />
     </div>
   );

@@ -12,6 +12,15 @@ export function formatCurrency(amount: number) {
   }).format(amount);
 }
 
+/** India transfers are the one amount in the app tracked in INR, not USD. */
+export function formatINR(amount: number) {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
 export function formatMiles(miles: number) {
   return `${new Intl.NumberFormat("en-US").format(Math.round(miles))} mi`;
 }

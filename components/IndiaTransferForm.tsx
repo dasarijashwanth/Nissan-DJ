@@ -6,7 +6,7 @@ import { Modal } from "@/components/ui/Modal";
 import { Input, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import type { IndiaTransfer } from "@/lib/types";
-import { toDateInputValue, toStoredDateInputValue } from "@/lib/utils";
+import { toDateInputValue, toStoredDateInputValue, formatCurrency } from "@/lib/utils";
 import {
   validateIndiaTransferInput,
   type IndiaTransferFieldErrors,
@@ -35,9 +35,10 @@ export interface IndiaTransferFormProps {
   open: boolean;
   onClose: () => void;
   transfer?: IndiaTransfer | null;
+  usdRate: number;
 }
 
-export function IndiaTransferForm({ open, onClose, transfer }: IndiaTransferFormProps) {
+export function IndiaTransferForm({ open, onClose, transfer, usdRate }: IndiaTransferFormProps) {
   const router = useRouter();
   const isEdit = !!transfer;
 
@@ -100,7 +101,7 @@ export function IndiaTransferForm({ open, onClose, transfer }: IndiaTransferForm
         />
 
         <Input
-          label="Amount"
+          label="Amount (₹ INR)"
           type="number"
           step="0.01"
           min="0"
@@ -108,6 +109,9 @@ export function IndiaTransferForm({ open, onClose, transfer }: IndiaTransferForm
           onChange={(e) => set("amount", e.target.value)}
           error={errors.amount}
         />
+        {Number(values.amount) > 0 && (
+          <p className="-mt-2 text-xs text-text-muted">≈ {formatCurrency(Number(values.amount) / usdRate)}</p>
+        )}
 
         <Input
           label="Date"
