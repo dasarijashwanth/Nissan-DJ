@@ -17,9 +17,9 @@ export function calcFillMPG(
 
 /** Average MPG across all fills: total miles driven between fills / total gallons used. */
 export function calcAvgMPG(fuelLogs: FuelLog[]): number {
-  const sorted = [...fuelLogs].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
+  // Sorted by odometer, not date: two fills logged on the same calendar day have no time
+  // component to order them by, but odometer only ever increases, so it's the reliable sequence.
+  const sorted = [...fuelLogs].sort((a, b) => a.odometer - b.odometer);
 
   let milesSum = 0;
   let gallonsSum = 0;
@@ -49,7 +49,7 @@ export type FuelEfficiencyInsight = {
  * at least one prior MPG data point to average (i.e. at least 3 total fills).
  */
 export function getFuelEfficiencyInsight(fuelLogs: FuelLog[]): FuelEfficiencyInsight {
-  const sorted = [...fuelLogs].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  const sorted = [...fuelLogs].sort((a, b) => a.odometer - b.odometer);
 
   if (sorted.length < 2) {
     return { latestMPG: null, avgMPG: null, deltaPercent: null };
@@ -150,7 +150,7 @@ export function findLatestMaintenanceByType(logs: MaintenanceLog[], type: string
 
 /** Same miles-per-gallon-per-fill math as calcAvgMPG, but only counting fills that landed in [start, end) — the odometer delta still comes from each fill's actual previous fill, even if that prior fill was outside the range. */
 export function calcAvgMPGInRange(fuelLogs: FuelLog[], start: Date, end: Date): number {
-  const sorted = [...fuelLogs].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  const sorted = [...fuelLogs].sort((a, b) => a.odometer - b.odometer);
 
   let milesSum = 0;
   let gallonsSum = 0;

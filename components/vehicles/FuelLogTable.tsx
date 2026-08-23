@@ -38,7 +38,7 @@ export function FuelLogTable({ fuelLogs, vehicleId }: { fuelLogs: FuelLog[]; veh
   }
 
   const chronological = useMemo(
-    () => [...fuelLogs].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
+    () => [...fuelLogs].sort((a, b) => a.odometer - b.odometer),
     [fuelLogs]
   );
 

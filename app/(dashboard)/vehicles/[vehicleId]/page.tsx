@@ -150,7 +150,9 @@ export default async function VehiclePage({
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-text-primary">{a.title}</p>
-                    <p className="text-xs text-text-muted">{formatDate(a.date)}</p>
+                    <p className="text-xs text-text-muted">
+                      {formatDate(a.date)} · {formatMiles(a.odometer)}
+                    </p>
                   </div>
                   <span
                     className={cn(

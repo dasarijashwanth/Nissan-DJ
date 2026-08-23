@@ -76,7 +76,10 @@ export async function isVehicleOwnedBy(vehicleId: string, userId: string): Promi
 }
 
 export async function getFuelLogs(vehicleId: string): Promise<FuelLog[]> {
-  const logs = await prisma.fuelLog.findMany({ where: { vehicleId }, orderBy: { date: "desc" } });
+  const logs = await prisma.fuelLog.findMany({
+    where: { vehicleId },
+    orderBy: [{ date: "desc" }, { odometer: "desc" }],
+  });
   return logs.map((l) => ({ ...l, date: l.date.toISOString(), createdAt: l.createdAt.toISOString() }));
 }
 
@@ -152,6 +155,7 @@ export type VehicleActivity = {
   title: string;
   date: string;
   cost: number;
+  odometer: number;
 };
 
 export async function getRecentActivity(vehicleId: string, limit = 8): Promise<VehicleActivity[]> {
@@ -168,6 +172,7 @@ export async function getRecentActivity(vehicleId: string, limit = 8): Promise<V
       title: l.station ? `Fuel at ${l.station}` : "Fuel fill-up",
       date: l.date.toISOString(),
       cost: l.totalCost,
+      odometer: l.odometer,
     })),
     ...maintenance.map((l) => ({
       id: l.id,
@@ -175,6 +180,7 @@ export async function getRecentActivity(vehicleId: string, limit = 8): Promise<V
       title: l.type,
       date: l.date.toISOString(),
       cost: l.cost,
+      odometer: l.odometer,
     })),
     ...repair.map((l) => ({
       id: l.id,
@@ -182,6 +188,7 @@ export async function getRecentActivity(vehicleId: string, limit = 8): Promise<V
       title: l.description,
       date: l.date.toISOString(),
       cost: l.cost,
+      odometer: l.odometer,
     })),
   ];
 
