@@ -8,7 +8,7 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const [dbUser, transactions, vehicles, budgets, recurring, alerts] = await Promise.all([
+  const [dbUser, transactions, vehicles, budgets, recurring, alerts, indiaTransfers] = await Promise.all([
     prisma.user.findUnique({ where: { id: user.id } }),
     prisma.transaction.findMany({ where: { userId: user.id } }),
     prisma.vehicle.findMany({
@@ -18,9 +18,19 @@ export async function GET() {
     prisma.budget.findMany({ where: { userId: user.id } }),
     prisma.recurringTransaction.findMany({ where: { userId: user.id } }),
     prisma.alert.findMany({ where: { userId: user.id } }),
+    prisma.indiaTransfer.findMany({ where: { userId: user.id } }),
   ]);
 
-  const data = { exportedAt: new Date().toISOString(), user: dbUser, transactions, vehicles, budgets, recurring, alerts };
+  const data = {
+    exportedAt: new Date().toISOString(),
+    user: dbUser,
+    transactions,
+    vehicles,
+    budgets,
+    recurring,
+    alerts,
+    indiaTransfers,
+  };
 
   return new NextResponse(JSON.stringify(data, null, 2), {
     headers: {

@@ -11,6 +11,7 @@ import {
   Repeat,
   Bell,
   Car,
+  Send,
   Settings,
   LogOut,
   ShieldCheck,
@@ -41,15 +42,21 @@ const NAV_SECTIONS = [
     label: "My Vehicles",
     items: [{ href: "/vehicles", label: "Vehicles", icon: Car }],
   },
+  {
+    label: "India Transfers",
+    items: [{ href: "/india", label: "Sent to India", icon: Send }],
+  },
 ] as const;
 
 // Mobile bottom nav only has room for a handful of items; the rest stay reachable from
-// the desktop sidebar or in-app links (dashboard budget strip, sentra hub, etc).
+// the desktop sidebar or in-app links (dashboard budget strip, sentra hub, etc). Vehicles and
+// Sent to India share a slot, swapped based on tracking mode, so the bar stays the same size.
 const MOBILE_NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: Home },
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/transactions", label: "Transactions", icon: CreditCard },
   { href: "/vehicles", label: "Vehicles", icon: Car },
+  { href: "/india", label: "Sent to India", icon: Send },
   { href: "/budgets", label: "Budgets", icon: Target },
   { href: "/settings", label: "Settings", icon: Settings },
 ] as const;
@@ -96,8 +103,12 @@ export function Sidebar({
   const pathname = usePathname();
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
   const isVehicleMode = trackingMode === "vehicle";
-  const navSections = isVehicleMode ? NAV_SECTIONS : NAV_SECTIONS.filter((s) => s.label !== "My Vehicles");
-  const mobileNavItems = isVehicleMode ? MOBILE_NAV_ITEMS : MOBILE_NAV_ITEMS.filter((i) => i.href !== "/vehicles");
+  const navSections = NAV_SECTIONS.filter((s) =>
+    isVehicleMode ? s.label !== "India Transfers" : s.label !== "My Vehicles"
+  );
+  const mobileNavItems = MOBILE_NAV_ITEMS.filter((i) =>
+    isVehicleMode ? i.href !== "/india" : i.href !== "/vehicles"
+  );
 
   return (
     <>

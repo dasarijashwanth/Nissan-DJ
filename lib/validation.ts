@@ -43,3 +43,37 @@ export function validateTransactionInput(values: TransactionFormValues) {
 
   return { valid: Object.keys(errors).length === 0, errors, amount };
 }
+
+// ---- India transfer (purely informational, never counted in income/expense totals) ----
+
+export type IndiaTransferFieldErrors = {
+  amount?: string;
+  recipient?: string;
+  date?: string;
+};
+
+export type IndiaTransferFormValues = {
+  amount: string;
+  recipient: string;
+  date: string;
+  notes: string;
+};
+
+export function validateIndiaTransferInput(values: IndiaTransferFormValues) {
+  const errors: IndiaTransferFieldErrors = {};
+
+  const amount = Number(values.amount);
+  if (!values.amount || Number.isNaN(amount) || amount <= 0) {
+    errors.amount = "Enter an amount greater than 0.";
+  }
+
+  if (!values.recipient.trim()) {
+    errors.recipient = "Recipient is required.";
+  }
+
+  if (!values.date || Number.isNaN(new Date(values.date).getTime())) {
+    errors.date = "Select a valid date.";
+  }
+
+  return { valid: Object.keys(errors).length === 0, errors, amount };
+}

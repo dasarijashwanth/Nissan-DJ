@@ -42,6 +42,17 @@ export type TransactionInput = {
   notes?: string | null;
 };
 
+/** A purely informational log of money sent to family in India — never counted in any income/expense total. */
+export type IndiaTransfer = {
+  id: string;
+  userId: string;
+  amount: number;
+  recipient: string;
+  notes: string | null;
+  date: string;
+  createdAt: string;
+};
+
 export const MAINTENANCE_TYPES = [
   "Oil Change",
   "Tire Rotation",

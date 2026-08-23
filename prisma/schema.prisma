@@ -8,16 +8,32 @@ datasource db {
 }
 
 model User {
-  id           String                 @id @default(uuid())
-  email        String                 @unique
-  createdAt    DateTime               @default(now())
-  isAdmin      Boolean                @default(false)
-  transactions Transaction[]
-  vehicles     Vehicle[]
-  budgets      Budget[]
-  recurring    RecurringTransaction[]
-  alerts       Alert[]
-  preferences  Json?
+  id             String                 @id @default(uuid())
+  email          String                 @unique
+  createdAt      DateTime               @default(now())
+  isAdmin        Boolean                @default(false)
+  transactions   Transaction[]
+  vehicles       Vehicle[]
+  budgets        Budget[]
+  recurring      RecurringTransaction[]
+  alerts         Alert[]
+  indiaTransfers IndiaTransfer[]
+  preferences    Json?
+}
+
+/** A purely informational log of money sent to family in India — never counted in income/expense totals, budgets, or any chart; just notes the user wants to keep track of separately. */
+model IndiaTransfer {
+  id        String   @id @default(uuid())
+  userId    String
+  amount    Float
+  recipient String
+  notes     String?
+  date      DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([date])
 }
 
 model Budget {
