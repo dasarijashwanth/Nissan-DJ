@@ -19,6 +19,7 @@ export type FuelLogFormValues = {
   totalCost: string;
   odometer: string;
   notes: string;
+  isFullTank: boolean;
 };
 
 export type FuelLogFieldErrors = Partial<Record<keyof FuelLogFormValues, string>>;

@@ -123,6 +123,7 @@ model FuelLog {
   station        String?
   notes          String?
   type           String   @default("per_fill") // "per_fill" | "weekly_summary"
+  isFullTank     Boolean  @default(true) // false = partial top-off; its gallons roll into the next full-tank MPG segment instead of standing alone
   createdAt      DateTime @default(now())
   vehicle        Vehicle  @relation(fields: [vehicleId], references: [id])
 

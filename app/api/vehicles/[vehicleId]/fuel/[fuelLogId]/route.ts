@@ -27,6 +27,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ vehi
     totalCost: body.totalCost ?? "",
     odometer: body.odometer ?? "",
     notes: body.notes ?? "",
+    isFullTank: body.isFullTank ?? true,
   };
 
   const { valid, errors } = validateFuelLog(values);
@@ -47,6 +48,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ vehi
       odometer: Number(values.odometer),
       station: values.station.trim() || null,
       notes: values.notes.trim() || null,
+      isFullTank: values.isFullTank,
     },
   });
 

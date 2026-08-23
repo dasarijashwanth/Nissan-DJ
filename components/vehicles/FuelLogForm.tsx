@@ -31,6 +31,7 @@ function emptyValues(): FuelLogFormValues {
     totalCost: "",
     odometer: "",
     notes: "",
+    isFullTank: true,
   };
 }
 
@@ -43,6 +44,7 @@ function valuesFromLog(log: FuelLog): FuelLogFormValues {
     totalCost: String(log.totalCost),
     odometer: String(log.odometer),
     notes: log.notes ?? "",
+    isFullTank: log.isFullTank,
   };
 }
 
@@ -176,7 +178,7 @@ export function FuelLogForm({ open, onClose, vehicleId, previousOdometer, log }:
   }
 
   const mpgPreview =
-    values.odometer && previousOdometer > 0 && Number(values.gallons) > 0
+    values.isFullTank && values.odometer && previousOdometer > 0 && Number(values.gallons) > 0
       ? calcFillMPG(Number(values.odometer), previousOdometer, Number(values.gallons))
       : 0;
 
@@ -324,6 +326,21 @@ export function FuelLogForm({ open, onClose, vehicleId, previousOdometer, log }:
             onChange={(e) => set("odometer", e.target.value)}
             error={errors.odometer}
           />
+          <label className="flex items-center gap-2 text-sm text-text-secondary">
+            <input
+              type="checkbox"
+              checked={values.isFullTank}
+              onChange={(e) => set("isFullTank", e.target.checked)}
+              className="size-4 rounded border-black/[0.2] accent-amber-500"
+            />
+            Filled the tank completely
+          </label>
+          {!values.isFullTank && (
+            <p className="rounded-lg bg-black/[0.04] px-3 py-2 text-xs text-text-muted">
+              Partial fill — these gallons will be added to your next full-tank fill-up&apos;s MPG instead of
+              being calculated on their own.
+            </p>
+          )}
           {mpgPreview > 0 && (
             <p className="rounded-lg bg-amber-500/10 px-3 py-2 text-sm font-medium text-amber-700 dark:text-amber-400">
               {mpgPreview.toFixed(1)} MPG since your last fill

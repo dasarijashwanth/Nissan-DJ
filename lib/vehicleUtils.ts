@@ -15,21 +15,63 @@ export function calcFillMPG(
   return miles / gallons;
 }
 
-/** Average MPG across all fills: total miles driven between fills / total gallons used. */
-export function calcAvgMPG(fuelLogs: FuelLog[]): number {
-  // Sorted by odometer, not date: two fills logged on the same calendar day have no time
-  // component to order them by, but odometer only ever increases, so it's the reliable sequence.
-  const sorted = [...fuelLogs].sort((a, b) => a.odometer - b.odometer);
+export type FuelSegment = {
+  log: FuelLog;
+  /** null for the very first fill (no prior baseline) and for any partial fill that hasn't closed a segment yet. */
+  mpg: number | null;
+  miles: number;
+  gallons: number;
+};
 
+/**
+ * Walks per-fill fuel logs in odometer order (odometer only ever increases, so it's a reliable
+ * sequence even when two fills share a calendar date) and closes an MPG segment only at a
+ * full-tank fill. A partial top-off's gallons roll forward and get added to whichever full-tank
+ * fill comes next, instead of forming their own artificially short, low-MPG segment. Weekly
+ * summaries are excluded — they track mileage/cost directly, not via odometer deltas between fills.
+ */
+export function buildFuelSegments(fuelLogs: FuelLog[]): FuelSegment[] {
+  const sorted = [...fuelLogs]
+    .filter((l) => l.type === "per_fill")
+    .sort((a, b) => a.odometer - b.odometer);
+
+  const segments: FuelSegment[] = [];
+  let baselineOdometer: number | null = null;
+  let pendingGallons = 0;
+
+  for (const log of sorted) {
+    if (baselineOdometer === null) {
+      baselineOdometer = log.odometer;
+      segments.push({ log, mpg: null, miles: 0, gallons: 0 });
+      continue;
+    }
+
+    pendingGallons += log.gallons;
+
+    if (log.isFullTank) {
+      const miles = log.odometer - baselineOdometer;
+      const mpg = miles > 0 && pendingGallons > 0 ? miles / pendingGallons : null;
+      segments.push({ log, mpg, miles: Math.max(miles, 0), gallons: pendingGallons });
+      baselineOdometer = log.odometer;
+      pendingGallons = 0;
+    } else {
+      segments.push({ log, mpg: null, miles: 0, gallons: 0 });
+    }
+  }
+
+  return segments;
+}
+
+/** Average MPG across all completed full-tank segments: total miles / total gallons. */
+export function calcAvgMPG(fuelLogs: FuelLog[]): number {
+  const segments = buildFuelSegments(fuelLogs);
   let milesSum = 0;
   let gallonsSum = 0;
 
-  for (let i = 1; i < sorted.length; i++) {
-    const miles = sorted[i].odometer - sorted[i - 1].odometer;
-    if (miles > 0) {
-      milesSum += miles;
-      gallonsSum += sorted[i].gallons;
-    }
+  for (const s of segments) {
+    if (s.mpg == null) continue;
+    milesSum += s.miles;
+    gallonsSum += s.gallons;
   }
 
   return gallonsSum > 0 ? milesSum / gallonsSum : 0;
@@ -49,19 +91,20 @@ export type FuelEfficiencyInsight = {
  * at least one prior MPG data point to average (i.e. at least 3 total fills).
  */
 export function getFuelEfficiencyInsight(fuelLogs: FuelLog[]): FuelEfficiencyInsight {
-  const sorted = [...fuelLogs].sort((a, b) => a.odometer - b.odometer);
+  const completed = buildFuelSegments(fuelLogs).filter((s) => s.mpg != null);
 
-  if (sorted.length < 2) {
+  if (completed.length === 0) {
     return { latestMPG: null, avgMPG: null, deltaPercent: null };
   }
 
-  const last = sorted[sorted.length - 1];
-  const previous = sorted[sorted.length - 2];
-  const fillMPG = calcFillMPG(last.odometer, previous.odometer, last.gallons);
-  const latestMPG = fillMPG > 0 ? fillMPG : null;
+  const latest = completed[completed.length - 1];
+  const latestMPG = latest.mpg;
 
-  const priorMPG = calcAvgMPG(sorted.slice(0, -1));
-  const avgMPG = priorMPG > 0 ? priorMPG : null;
+  const prior = completed.slice(0, -1);
+  const priorGallons = prior.reduce((sum, s) => sum + s.gallons, 0);
+  const priorMiles = prior.reduce((sum, s) => sum + s.miles, 0);
+  const avgMPG = priorGallons > 0 ? priorMiles / priorGallons : null;
+
   const deltaPercent = latestMPG != null && avgMPG != null ? ((latestMPG - avgMPG) / avgMPG) * 100 : null;
 
   return { latestMPG, avgMPG, deltaPercent };
@@ -148,22 +191,17 @@ export function findLatestMaintenanceByType(logs: MaintenanceLog[], type: string
   return matches[0] ?? null;
 }
 
-/** Same miles-per-gallon-per-fill math as calcAvgMPG, but only counting fills that landed in [start, end) — the odometer delta still comes from each fill's actual previous fill, even if that prior fill was outside the range. */
+/** Same full-tank-segment math as calcAvgMPG, but only counting segments whose closing (full-tank) fill landed in [start, end) — the odometer baseline still comes from each segment's actual previous full tank, even if that prior fill was outside the range. */
 export function calcAvgMPGInRange(fuelLogs: FuelLog[], start: Date, end: Date): number {
-  const sorted = [...fuelLogs].sort((a, b) => a.odometer - b.odometer);
-
   let milesSum = 0;
   let gallonsSum = 0;
 
-  for (let i = 1; i < sorted.length; i++) {
-    const fillDate = new Date(sorted[i].date);
+  for (const s of buildFuelSegments(fuelLogs)) {
+    if (s.mpg == null) continue;
+    const fillDate = new Date(s.log.date);
     if (fillDate < start || fillDate >= end) continue;
-
-    const miles = sorted[i].odometer - sorted[i - 1].odometer;
-    if (miles > 0) {
-      milesSum += miles;
-      gallonsSum += sorted[i].gallons;
-    }
+    milesSum += s.miles;
+    gallonsSum += s.gallons;
   }
 
   return gallonsSum > 0 ? milesSum / gallonsSum : 0;

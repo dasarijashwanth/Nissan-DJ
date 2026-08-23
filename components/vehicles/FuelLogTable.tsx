@@ -15,7 +15,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { FuelLogForm } from "@/components/vehicles/FuelLogForm";
-import { calcAvgMPG, calcFillMPG } from "@/lib/vehicleUtils";
+import { calcAvgMPG, buildFuelSegments } from "@/lib/vehicleUtils";
 import { formatCurrency, formatDate, formatMiles } from "@/lib/utils";
 import type { FuelLog } from "@/lib/types";
 
@@ -37,21 +37,15 @@ export function FuelLogTable({ fuelLogs, vehicleId }: { fuelLogs: FuelLog[]; veh
     setFormOpen(true);
   }
 
-  const chronological = useMemo(
-    () => [...fuelLogs].sort((a, b) => a.odometer - b.odometer),
-    [fuelLogs]
-  );
+  const segments = useMemo(() => buildFuelSegments(fuelLogs), [fuelLogs]);
 
   const mpgById = useMemo(() => {
     const map = new Map<string, number>();
-    for (let i = 1; i < chronological.length; i++) {
-      map.set(
-        chronological[i].id,
-        calcFillMPG(chronological[i].odometer, chronological[i - 1].odometer, chronological[i].gallons)
-      );
+    for (const s of segments) {
+      if (s.mpg != null) map.set(s.log.id, s.mpg);
     }
     return map;
-  }, [chronological]);
+  }, [segments]);
 
   const previousOdometer = fuelLogs.length > 0 ? Math.max(...fuelLogs.map((l) => l.odometer)) : 0;
   const avgMPG = calcAvgMPG(fuelLogs);
@@ -60,9 +54,9 @@ export function FuelLogTable({ fuelLogs, vehicleId }: { fuelLogs: FuelLog[]; veh
   const worstMPG = fillMPGs.length > 0 ? Math.min(...fillMPGs) : 0;
   const totalSpent = fuelLogs.reduce((sum, l) => sum + l.totalCost, 0);
 
-  const chartData = chronological
-    .filter((l) => mpgById.has(l.id))
-    .map((l) => ({ date: formatDate(l.date), mpg: Number(mpgById.get(l.id)!.toFixed(1)) }));
+  const chartData = segments
+    .filter((s) => s.mpg != null)
+    .map((s) => ({ date: formatDate(s.log.date), mpg: Number(s.mpg!.toFixed(1)) }));
 
   const filteredLogs = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -186,6 +180,11 @@ export function FuelLogTable({ fuelLogs, vehicleId }: { fuelLogs: FuelLog[]; veh
                         {isWeekly && (
                           <span className="rounded-full bg-indigo-500/12 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-indigo-600 uppercase dark:text-indigo-400">
                             Weekly
+                          </span>
+                        )}
+                        {!isWeekly && !l.isFullTank && (
+                          <span className="rounded-full bg-amber-500/12 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-amber-600 uppercase dark:text-amber-400">
+                            Partial
                           </span>
                         )}
                       </div>

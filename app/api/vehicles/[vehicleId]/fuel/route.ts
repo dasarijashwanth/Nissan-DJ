@@ -100,6 +100,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ veh
     totalCost: body.totalCost ?? "",
     odometer: body.odometer ?? "",
     notes: body.notes ?? "",
+    isFullTank: body.isFullTank ?? true,
   };
 
   const { valid, errors } = validateFuelLog(values);
@@ -121,6 +122,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ veh
       station: values.station.trim() || null,
       notes: values.notes.trim() || null,
       type: "per_fill",
+      isFullTank: values.isFullTank,
     },
   });
 

@@ -87,6 +87,7 @@ export type FuelLog = {
   station: string | null;
   notes: string | null;
   type: string; // "per_fill" | "weekly_summary"
+  isFullTank: boolean;
   createdAt: string;
 };
 
