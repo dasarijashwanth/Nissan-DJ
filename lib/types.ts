@@ -53,12 +53,15 @@ export type IndiaTransfer = {
   createdAt: string;
 };
 
-/** A purely informational log of chit fund ("Cheeti") contributions — never counted in any income/expense total. */
+export type ChitFundEntryType = "paid" | "received";
+
+/** A purely informational log of chit fund ("Cheeti") contributions — never counted in any income/expense total. "paid" (money going out to a chit) rolls into Total Saved; "received" (e.g. interest on a loan given out) is tracked separately as Total Received. */
 export type ChitFund = {
   id: string;
   userId: string;
   groupName: string;
   amount: number;
+  type: ChitFundEntryType;
   notes: string | null;
   date: string;
   createdAt: string;
@@ -70,6 +73,7 @@ export type ChitFundPlan = {
   userId: string;
   groupName: string;
   amount: number;
+  type: ChitFundEntryType;
   startDate: string;
   periodMonths: number;
   nextDueDate: string;

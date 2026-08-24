@@ -1,4 +1,4 @@
-import { CATEGORIES } from "@/lib/types";
+import { CATEGORIES, type ChitFundEntryType } from "@/lib/types";
 
 export type TransactionFieldErrors = {
   title?: string;
@@ -55,6 +55,7 @@ export type ChitFundFieldErrors = {
 export type ChitFundFormValues = {
   amount: string;
   groupName: string;
+  type: ChitFundEntryType;
   date: string;
   notes: string;
 };
@@ -90,6 +91,7 @@ export type ChitFundPlanFieldErrors = {
 export type ChitFundPlanFormValues = {
   amount: string;
   groupName: string;
+  type: ChitFundEntryType;
   startDate: string;
   periodMonths: string;
   notes: string;

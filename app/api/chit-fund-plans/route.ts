@@ -23,6 +23,7 @@ export async function POST(request: Request) {
   const values: ChitFundPlanFormValues = {
     amount: body.amount ?? "",
     groupName: body.groupName ?? "",
+    type: body.type === "received" ? "received" : "paid",
     startDate: body.startDate ?? "",
     periodMonths: body.periodMonths ?? "",
     notes: body.notes ?? "",
@@ -40,6 +41,7 @@ export async function POST(request: Request) {
       userId: user.id,
       groupName: values.groupName.trim(),
       amount,
+      type: values.type,
       startDate,
       periodMonths,
       nextDueDate: startDate,

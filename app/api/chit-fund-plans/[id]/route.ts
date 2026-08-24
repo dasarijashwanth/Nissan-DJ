@@ -24,6 +24,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   const values: ChitFundPlanFormValues = {
     amount: body.amount ?? "",
     groupName: body.groupName ?? "",
+    type: body.type === "received" ? "received" : "paid",
     startDate: body.startDate ?? "",
     periodMonths: body.periodMonths ?? "",
     notes: body.notes ?? "",
@@ -39,6 +40,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     data: {
       groupName: values.groupName.trim(),
       amount,
+      type: values.type,
       startDate: new Date(values.startDate),
       periodMonths,
       notes: values.notes.trim() || null,

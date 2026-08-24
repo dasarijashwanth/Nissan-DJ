@@ -38,12 +38,13 @@ model IndiaTransfer {
   @@index([date])
 }
 
-/** Monthly chit fund ("Cheeti") contributions — purely informational savings tracking, never counted in income/expense totals. A user can belong to multiple chits, distinguished by groupName. */
+/** Monthly chit fund ("Cheeti") contributions — purely informational savings tracking, never counted in income/expense totals. A user can belong to multiple chits, distinguished by groupName. type "paid" (default) is money going out to a chit and rolls into Total Saved; "received" is incoming money (e.g. interest on a loan given out) and is tracked separately as Total Received. */
 model ChitFund {
   id        String   @id @default(uuid())
   userId    String
   groupName String
   amount    Float
+  type      String   @default("paid") // "paid" | "received"
   notes     String?
   date      DateTime
   createdAt DateTime @default(now())
@@ -59,6 +60,7 @@ model ChitFundPlan {
   userId       String
   groupName    String
   amount       Float
+  type         String    @default("paid") // "paid" | "received"
   startDate    DateTime
   periodMonths Int
   nextDueDate  DateTime

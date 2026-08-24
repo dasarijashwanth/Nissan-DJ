@@ -6,7 +6,7 @@ import { Modal } from "@/components/ui/Modal";
 import { Input, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import type { ChitFundPlan } from "@/lib/types";
-import { toDateInputValue, toStoredDateInputValue, formatCurrency } from "@/lib/utils";
+import { toDateInputValue, toStoredDateInputValue, formatCurrency, cn } from "@/lib/utils";
 import {
   validateChitFundPlan,
   type ChitFundPlanFieldErrors,
@@ -17,6 +17,7 @@ function emptyValues(): ChitFundPlanFormValues {
   return {
     amount: "",
     groupName: "",
+    type: "paid",
     startDate: toDateInputValue(new Date()),
     periodMonths: "",
     notes: "",
@@ -27,6 +28,7 @@ function valuesFromPlan(plan: ChitFundPlan): ChitFundPlanFormValues {
   return {
     amount: String(plan.amount),
     groupName: plan.groupName,
+    type: plan.type,
     startDate: toStoredDateInputValue(plan.startDate),
     periodMonths: String(plan.periodMonths),
     notes: plan.notes ?? "",
@@ -99,16 +101,41 @@ export function ChitFundPlanForm({ open, onClose, plan, usdRate }: ChitFundPlanF
   return (
     <Modal open={open} onClose={onClose} title={isEdit ? "Edit Cheeti Plan" : "Set Up Recurring Cheeti Plan"}>
       <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="flex gap-2">
+          {(["paid", "received"] as const).map((type) => (
+            <button
+              key={type}
+              type="button"
+              onClick={() => set("type", type)}
+              className={cn(
+                "flex-1 rounded-lg border px-3 py-2 text-sm font-medium capitalize transition-colors",
+                values.type === type
+                  ? type === "received"
+                    ? "border-emerald-600 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400"
+                    : "border-red-600 bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-400"
+                  : "border-black/[0.08] text-text-muted hover:bg-black/[0.04]"
+              )}
+            >
+              {type}
+            </button>
+          ))}
+        </div>
+        <p className="-mt-2 text-xs text-text-muted">
+          {values.type === "received"
+            ? "Money coming in to you every month — e.g. interest on a loan you gave out."
+            : "Money you're paying out every month — e.g. a chit fund contribution."}
+        </p>
+
         <Input
-          label="Group name"
+          label={values.type === "received" ? "Person / source" : "Group name"}
           value={values.groupName}
           onChange={(e) => set("groupName", e.target.value)}
           error={errors.groupName}
-          placeholder="e.g. Office Chit"
+          placeholder={values.type === "received" ? "e.g. Ramesh (loan interest)" : "e.g. Office Chit"}
         />
 
         <Input
-          label="Monthly amount (₹ INR)"
+          label={values.type === "received" ? "Monthly interest (₹ INR)" : "Monthly amount (₹ INR)"}
           type="number"
           step="0.01"
           min="0"
@@ -136,6 +163,12 @@ export function ChitFundPlanForm({ open, onClose, plan, usdRate }: ChitFundPlanF
           error={errors.periodMonths}
           placeholder="e.g. 20"
         />
+        {values.type === "received" && (
+          <p className="-mt-2 text-xs text-text-muted">
+            No fixed end date? Enter a large number (e.g. 240 for 20 years) — you can pause or delete the
+            plan anytime.
+          </p>
+        )}
 
         {totalPreview > 0 && (
           <p className="rounded-lg bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-700 dark:text-emerald-400">

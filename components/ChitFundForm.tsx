@@ -6,13 +6,14 @@ import { Modal } from "@/components/ui/Modal";
 import { Input, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import type { ChitFund } from "@/lib/types";
-import { toDateInputValue, toStoredDateInputValue, formatCurrency } from "@/lib/utils";
+import { toDateInputValue, toStoredDateInputValue, formatCurrency, cn } from "@/lib/utils";
 import { validateChitFundInput, type ChitFundFieldErrors, type ChitFundFormValues } from "@/lib/validation";
 
 function emptyValues(): ChitFundFormValues {
   return {
     amount: "",
     groupName: "",
+    type: "paid",
     date: toDateInputValue(new Date()),
     notes: "",
   };
@@ -22,6 +23,7 @@ function valuesFromContribution(contribution: ChitFund): ChitFundFormValues {
   return {
     amount: String(contribution.amount),
     groupName: contribution.groupName,
+    type: contribution.type,
     date: toStoredDateInputValue(contribution.date),
     notes: contribution.notes ?? "",
   };
@@ -88,12 +90,37 @@ export function ChitFundForm({ open, onClose, contribution, usdRate }: ChitFundF
   return (
     <Modal open={open} onClose={onClose} title={isEdit ? "Edit Contribution" : "Log Cheeti Contribution"}>
       <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="flex gap-2">
+          {(["paid", "received"] as const).map((type) => (
+            <button
+              key={type}
+              type="button"
+              onClick={() => set("type", type)}
+              className={cn(
+                "flex-1 rounded-lg border px-3 py-2 text-sm font-medium capitalize transition-colors",
+                values.type === type
+                  ? type === "received"
+                    ? "border-emerald-600 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400"
+                    : "border-red-600 bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-400"
+                  : "border-black/[0.08] text-text-muted hover:bg-black/[0.04]"
+              )}
+            >
+              {type}
+            </button>
+          ))}
+        </div>
+        <p className="-mt-2 text-xs text-text-muted">
+          {values.type === "received"
+            ? "Money coming in to you — e.g. interest on a loan you gave out."
+            : "Money you're paying out — e.g. a chit fund contribution."}
+        </p>
+
         <Input
-          label="Group name"
+          label={values.type === "received" ? "Person / source" : "Group name"}
           value={values.groupName}
           onChange={(e) => set("groupName", e.target.value)}
           error={errors.groupName}
-          placeholder="e.g. Office Chit"
+          placeholder={values.type === "received" ? "e.g. Ramesh (loan interest)" : "e.g. Office Chit"}
         />
 
         <Input

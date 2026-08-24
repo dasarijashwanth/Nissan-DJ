@@ -64,7 +64,15 @@ export function ChitFundPlanCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold text-text-primary">{plan.groupName}</p>
-          <p className="text-lg font-semibold tabular-nums text-emerald-600">{formatINR(plan.amount)}/mo</p>
+          <p
+            className={cn(
+              "text-lg font-semibold tabular-nums",
+              plan.type === "received" ? "text-emerald-600" : "text-text-primary"
+            )}
+          >
+            {plan.type === "received" ? "+" : ""}
+            {formatINR(plan.amount)}/mo
+          </p>
           <p className="text-xs text-text-muted">≈ {formatCurrency(plan.amount / usdRate)}/mo</p>
         </div>
         <div className="flex shrink-0 gap-1">
@@ -90,6 +98,7 @@ export function ChitFundPlanCard({
         <Badge color="indigo">
           {plan.monthsPosted}/{plan.periodMonths} months
         </Badge>
+        {plan.type === "received" && <Badge color="green">Received</Badge>}
         {completed ? (
           <Badge color="green">Completed</Badge>
         ) : (

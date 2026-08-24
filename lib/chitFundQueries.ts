@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { ChitFund, ChitFundPlan } from "@/lib/types";
+import type { ChitFund, ChitFundEntryType, ChitFundPlan } from "@/lib/types";
 import { monthRange, shortMonthLabel } from "@/lib/utils";
 
 export async function getChitFunds(userId: string): Promise<ChitFund[]> {
@@ -10,6 +10,7 @@ export async function getChitFunds(userId: string): Promise<ChitFund[]> {
 
   return contributions.map((c) => ({
     ...c,
+    type: c.type as ChitFundEntryType,
     date: c.date.toISOString(),
     createdAt: c.createdAt.toISOString(),
   }));
@@ -20,11 +21,12 @@ export async function isChitFundOwnedBy(id: string, userId: string): Promise<boo
   return c?.userId === userId;
 }
 
-/** Total contributed per month, last N months — for the monthly contribution chart. */
+/** Total contributed per month, last N months — for the monthly contribution chart. Paid entries only; "received" money (e.g. loan interest) is tracked separately. */
 export function getChitFundMonthlyTrend(
   contributions: ChitFund[],
   months: number
 ): { month: string; amount: number }[] {
+  const paid = contributions.filter((c) => c.type === "paid");
   const now = new Date();
   const buckets = Array.from({ length: months }, (_, i) => {
     const offset = months - 1 - i;
@@ -34,7 +36,7 @@ export function getChitFundMonthlyTrend(
 
   return buckets.map(({ year, month }) => {
     const { start, end } = monthRange(year, month);
-    const amount = contributions
+    const amount = paid
       .filter((c) => {
         const d = new Date(c.date);
         return d >= start && d < end;
@@ -44,11 +46,12 @@ export function getChitFundMonthlyTrend(
   });
 }
 
-/** Running total saved as of the end of each of the last N months — shows the savings trajectory. */
+/** Running total saved as of the end of each of the last N months — shows the savings trajectory. Paid entries only. */
 export function getChitFundCumulativeTrend(
   contributions: ChitFund[],
   months: number
 ): { month: string; total: number }[] {
+  const paid = contributions.filter((c) => c.type === "paid");
   const now = new Date();
   const buckets = Array.from({ length: months }, (_, i) => {
     const offset = months - 1 - i;
@@ -58,17 +61,17 @@ export function getChitFundCumulativeTrend(
 
   return buckets.map(({ year, month }) => {
     const { end } = monthRange(year, month);
-    const total = contributions
+    const total = paid
       .filter((c) => new Date(c.date) < end)
       .reduce((sum, c) => sum + c.amount, 0);
     return { month: shortMonthLabel(year, month), total };
   });
 }
 
-/** Total contributed per chit group, largest first — for the by-group breakdown. */
+/** Total contributed per chit group, largest first — for the by-group breakdown. Paid entries only. */
 export function groupChitFundsByGroup(contributions: ChitFund[]): { groupName: string; amount: number }[] {
   const totals: Record<string, number> = {};
-  for (const c of contributions) {
+  for (const c of contributions.filter((c) => c.type === "paid")) {
     totals[c.groupName] = (totals[c.groupName] ?? 0) + c.amount;
   }
   return Object.entries(totals)
@@ -86,6 +89,7 @@ export async function getChitFundPlans(userId: string): Promise<ChitFundPlan[]> 
 
   return plans.map((p) => ({
     ...p,
+    type: p.type as ChitFundEntryType,
     startDate: p.startDate.toISOString(),
     nextDueDate: p.nextDueDate.toISOString(),
     lastCreated: p.lastCreated?.toISOString() ?? null,
@@ -112,6 +116,7 @@ export async function postChitFundPlan(planId: string) {
       userId: plan.userId,
       groupName: plan.groupName,
       amount: plan.amount,
+      type: plan.type,
       date: plan.nextDueDate,
       notes: plan.notes,
     },

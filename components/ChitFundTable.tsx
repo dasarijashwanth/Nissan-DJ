@@ -173,11 +173,17 @@ export function ChitFundTable({ contributions, usdRate }: { contributions: ChitF
                 {pageItems.map((c) => (
                   <tr key={c.id} className="border-b border-black/[0.08] last:border-0 hover:bg-black/[0.04]">
                     <td className="px-4 py-3">
-                      <Badge color="indigo">{c.groupName}</Badge>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <Badge color="indigo">{c.groupName}</Badge>
+                        {c.type === "received" && <Badge color="green">Received</Badge>}
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-text-muted">{formatDate(c.date)}</td>
                     <td className="px-4 py-3 text-right tabular-nums">
-                      <p className="font-medium text-text-primary">{formatINR(c.amount)}</p>
+                      <p className={cn("font-medium", c.type === "received" ? "text-emerald-600" : "text-text-primary")}>
+                        {c.type === "received" ? "+" : ""}
+                        {formatINR(c.amount)}
+                      </p>
                       <p className="text-xs text-text-muted">≈ {formatCurrency(c.amount / usdRate)}</p>
                     </td>
                     <td className="max-w-[200px] truncate px-4 py-3 text-text-muted">{c.notes || "—"}</td>

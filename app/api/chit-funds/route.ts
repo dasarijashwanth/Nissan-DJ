@@ -27,6 +27,7 @@ export async function POST(request: Request) {
   const values: ChitFundFormValues = {
     amount: body.amount ?? "",
     groupName: body.groupName ?? "",
+    type: body.type === "received" ? "received" : "paid",
     date: body.date ?? "",
     notes: body.notes ?? "",
   };
@@ -41,6 +42,7 @@ export async function POST(request: Request) {
       userId: user.id,
       amount,
       groupName: values.groupName.trim(),
+      type: values.type,
       date: new Date(values.date),
       notes: values.notes.trim() || null,
     },
