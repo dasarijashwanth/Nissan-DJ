@@ -72,8 +72,6 @@ export function ChitFundTable({ contributions, usdRate }: { contributions: ChitF
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Delete this contribution? This cannot be undone.")) return;
-
     setDeletingId(id);
     try {
       const res = await fetch(`/api/chit-funds/${id}`, { method: "DELETE" });

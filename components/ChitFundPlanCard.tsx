@@ -50,8 +50,6 @@ export function ChitFundPlanCard({
   }
 
   async function handleDelete() {
-    if (!confirm(`Delete the "${plan.groupName}" plan? This cannot be undone (past contributions stay logged).`))
-      return;
     setBusy(true);
     try {
       const res = await fetch(`/api/chit-fund-plans/${plan.id}`, { method: "DELETE" });
