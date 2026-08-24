@@ -2,7 +2,6 @@ import type { CSSProperties } from "react";
 import { Car } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { AnimatedAmount } from "@/components/ui/AnimatedAmount";
-import { formatCurrency } from "@/lib/utils";
 
 export interface WeeklyMileageCardProps {
   milesThisWeek: number;
@@ -22,14 +21,14 @@ export function WeeklyMileageCard({ milesThisWeek, avgPerDay, fuelCostThisWeek, 
         This week
       </div>
       <p className="mt-3 text-2xl font-semibold tabular-nums text-text-primary">
-        <AnimatedAmount value={milesThisWeek} format={(n) => Math.round(n).toLocaleString()} />{" "}
+        <AnimatedAmount value={milesThisWeek} formatType="integer" />{" "}
         <span className="text-sm font-normal text-text-muted">mi</span>
       </p>
       <p className="mt-1 text-xs text-text-muted">
-        Avg: <AnimatedAmount value={avgPerDay} format={(n) => n.toFixed(1)} /> mi/day
+        Avg: <AnimatedAmount value={avgPerDay} formatType="decimal1" /> mi/day
       </p>
       <p className="text-xs text-text-muted">
-        Fuel cost: <AnimatedAmount value={fuelCostThisWeek} format={formatCurrency} />
+        Fuel cost: <AnimatedAmount value={fuelCostThisWeek} formatType="usd" />
       </p>
     </Card>
   );

@@ -22,7 +22,7 @@ export function SavingsRateCard({ rate, style }: { rate: number; style?: CSSProp
         <p className="text-sm font-medium text-text-muted">Savings Rate</p>
       </div>
       <p className={cn("mt-4 text-2xl font-semibold tabular-nums", color)}>
-        <AnimatedAmount value={rate} format={(n) => `${n.toFixed(1)}%`} />
+        <AnimatedAmount value={rate} formatType="percent1" />
       </p>
     </Card>
   );

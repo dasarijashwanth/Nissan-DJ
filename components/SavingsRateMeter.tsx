@@ -35,7 +35,7 @@ export function SavingsRateMeter({ rate }: { rate: number }) {
           className="rotate-90"
           style={{ transformOrigin: "center", fontSize: 18, fontWeight: 600, fill: "#0f172a" }}
         >
-          <AnimatedAmount value={rate} format={(n) => `${n.toFixed(0)}%`} />
+          <AnimatedAmount value={rate} formatType="percent0" />
         </text>
       </svg>
       <div>

@@ -3,7 +3,6 @@ import { Wallet, Fuel, CalendarClock } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { AnimatedAmount } from "@/components/ui/AnimatedAmount";
 import { CostPerMileCard } from "@/components/vehicles/CostPerMileCard";
-import { formatCurrency } from "@/lib/utils";
 
 export interface CarStatsRowProps {
   totalSpend: number;
@@ -24,7 +23,7 @@ export function CarStatsRow({ totalSpend, costPerMile, totalMiles, avgMPG, month
           <p className="text-sm font-medium text-text-muted">Total Car Spend</p>
         </div>
         <p className="mt-4 text-2xl font-semibold tabular-nums text-amber-600">
-          <AnimatedAmount value={totalSpend} format={formatCurrency} />
+          <AnimatedAmount value={totalSpend} formatType="usd" />
         </p>
       </Card>
 
@@ -42,7 +41,7 @@ export function CarStatsRow({ totalSpend, costPerMile, totalMiles, avgMPG, month
           <p className="text-sm font-medium text-text-muted">Avg MPG</p>
         </div>
         <p className="mt-4 text-2xl font-semibold tabular-nums text-amber-600">
-          {avgMPG > 0 ? <AnimatedAmount value={avgMPG} format={(n) => n.toFixed(1)} /> : "—"}
+          {avgMPG > 0 ? <AnimatedAmount value={avgMPG} formatType="decimal1" /> : "—"}
         </p>
       </Card>
 
@@ -54,7 +53,7 @@ export function CarStatsRow({ totalSpend, costPerMile, totalMiles, avgMPG, month
           <p className="text-sm font-medium text-text-muted">This Month</p>
         </div>
         <p className="mt-4 text-2xl font-semibold tabular-nums text-amber-600">
-          <AnimatedAmount value={monthCost} format={formatCurrency} />
+          <AnimatedAmount value={monthCost} formatType="usd" />
         </p>
       </Card>
     </div>

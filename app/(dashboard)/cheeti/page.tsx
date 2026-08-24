@@ -10,7 +10,6 @@ import {
 } from "@/lib/chitFundQueries";
 import { getLoansGiven } from "@/lib/loanQueries";
 import { getUsdToInrRate } from "@/lib/exchangeRate";
-import { formatINR, formatCurrency } from "@/lib/utils";
 import { Card } from "@/components/ui/Card";
 import { AnimatedAmount } from "@/components/ui/AnimatedAmount";
 import { ChitFundTable } from "@/components/ChitFundTable";
@@ -132,11 +131,11 @@ function SummaryStat({
         }
       >
         {received && amount > 0 ? "+" : ""}
-        <AnimatedAmount value={amount} format={formatINR} />
+        <AnimatedAmount value={amount} formatType="inr" />
       </p>
       {amount > 0 && (
         <p className="text-xs text-text-muted tabular-nums">
-          ≈ <AnimatedAmount value={amount / usdRate} format={formatCurrency} />
+          ≈ <AnimatedAmount value={amount / usdRate} formatType="usd" />
         </p>
       )}
     </Card>

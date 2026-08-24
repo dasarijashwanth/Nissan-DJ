@@ -118,7 +118,7 @@ export default async function DashboardPage() {
               >
                 <p className="text-sm font-medium text-text-muted">Car Cost</p>
                 <p className="mt-4 text-2xl font-semibold tabular-nums text-amber-600">
-                  <AnimatedAmount value={carCostThisMonth} format={formatCurrency} />
+                  <AnimatedAmount value={carCostThisMonth} formatType="usd" />
                 </p>
               </Card>
               <WeeklyMileageCard {...weeklyStats} style={{ animationDelay: "240ms" }} />

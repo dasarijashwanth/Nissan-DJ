@@ -2,7 +2,6 @@ import { Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { AnimatedAmount } from "@/components/ui/AnimatedAmount";
 import { BudgetProgressBar } from "@/components/budgets/BudgetProgressBar";
-import { formatCurrency } from "@/lib/utils";
 import type { BudgetWithSpending } from "@/lib/budgetQueries";
 
 export function BudgetCard({
@@ -36,11 +35,11 @@ export function BudgetCard({
       </div>
 
       <p className="mt-2 text-sm text-text-muted">
-        You&apos;ve spent <AnimatedAmount value={budget.spent} format={formatCurrency} /> of{" "}
-        <AnimatedAmount value={budget.amount} format={formatCurrency} /> this month
+        You&apos;ve spent <AnimatedAmount value={budget.spent} formatType="usd" /> of{" "}
+        <AnimatedAmount value={budget.amount} formatType="usd" /> this month
       </p>
       <p className={isOver ? "text-sm font-medium text-red-600" : "text-sm font-medium text-emerald-600"}>
-        <AnimatedAmount value={isOver ? -remaining : remaining} format={formatCurrency} />{" "}
+        <AnimatedAmount value={isOver ? -remaining : remaining} formatType="usd" />{" "}
         {isOver ? "over budget" : "remaining"}
       </p>
     </Card>
