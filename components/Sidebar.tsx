@@ -20,6 +20,7 @@ import {
 import { logout } from "@/app/(auth)/actions";
 import { cn } from "@/lib/utils";
 import { VehicleSwitcher } from "@/components/layout/VehicleSwitcher";
+import { MobileMoreMenu } from "@/components/layout/MobileMoreMenu";
 import type { TrackingMode } from "@/lib/trackingMode";
 
 const NAV_SECTIONS = [
@@ -200,6 +201,7 @@ export function Sidebar({
             </Link>
           );
         })}
+        <MobileMoreMenu trackingMode={trackingMode} isAdmin={isAdmin} unreadAlertCount={unreadAlertCount} />
       </nav>
     </>
   );
