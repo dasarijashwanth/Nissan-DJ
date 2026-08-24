@@ -12,6 +12,7 @@ import {
   Bell,
   Car,
   Send,
+  PiggyBank,
   Settings,
   LogOut,
   ShieldCheck,
@@ -43,14 +44,19 @@ const NAV_SECTIONS = [
     items: [{ href: "/vehicles", label: "Vehicles", icon: Car }],
   },
   {
-    label: "India Transfers",
-    items: [{ href: "/india", label: "Sent to India", icon: Send }],
+    label: "Savings & Transfers",
+    items: [
+      { href: "/india", label: "Sent to India", icon: Send },
+      { href: "/cheeti", label: "Cheeti", icon: PiggyBank },
+    ],
   },
 ] as const;
 
 // Mobile bottom nav only has room for a handful of items; the rest stay reachable from
 // the desktop sidebar or in-app links (dashboard budget strip, sentra hub, etc). Vehicles and
 // Sent to India share a slot, swapped based on tracking mode, so the bar stays the same size.
+// Cheeti isn't in the bottom bar for the same reason Monthly/Recurring/Alerts aren't — reachable
+// from the desktop sidebar instead.
 const MOBILE_NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: Home },
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
@@ -104,7 +110,7 @@ export function Sidebar({
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
   const isVehicleMode = trackingMode === "vehicle";
   const navSections = NAV_SECTIONS.filter((s) =>
-    isVehicleMode ? s.label !== "India Transfers" : s.label !== "My Vehicles"
+    isVehicleMode ? s.label !== "Savings & Transfers" : s.label !== "My Vehicles"
   );
   const mobileNavItems = MOBILE_NAV_ITEMS.filter((i) =>
     isVehicleMode ? i.href !== "/india" : i.href !== "/vehicles"

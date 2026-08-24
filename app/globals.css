@@ -183,7 +183,11 @@ code,
 }
 
 .animate-slide-up-fade {
-  animation: slideUpFade 0.3s ease forwards;
+  /* No `forwards`: once the fade-in ends, opacity/transform revert to whatever the normal CSS
+     cascade says (1 / none by default) instead of the animation's own end-state permanently
+     overriding a conditional opacity utility like `opacity-60` (used to dim paused/completed
+     cards) — the animation origin outranks static classes for as long as it's still "filling". */
+  animation: slideUpFade 0.3s ease;
 }
 
 .animate-pulse-amber {

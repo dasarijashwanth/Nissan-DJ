@@ -8,18 +8,21 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const [dbUser, transactions, vehicles, budgets, recurring, alerts, indiaTransfers] = await Promise.all([
-    prisma.user.findUnique({ where: { id: user.id } }),
-    prisma.transaction.findMany({ where: { userId: user.id } }),
-    prisma.vehicle.findMany({
-      where: { userId: user.id },
-      include: { fuelLogs: true, maintenanceLogs: true, repairLogs: true, odometerLogs: true, insurance: true },
-    }),
-    prisma.budget.findMany({ where: { userId: user.id } }),
-    prisma.recurringTransaction.findMany({ where: { userId: user.id } }),
-    prisma.alert.findMany({ where: { userId: user.id } }),
-    prisma.indiaTransfer.findMany({ where: { userId: user.id } }),
-  ]);
+  const [dbUser, transactions, vehicles, budgets, recurring, alerts, indiaTransfers, chitFunds, chitFundPlans] =
+    await Promise.all([
+      prisma.user.findUnique({ where: { id: user.id } }),
+      prisma.transaction.findMany({ where: { userId: user.id } }),
+      prisma.vehicle.findMany({
+        where: { userId: user.id },
+        include: { fuelLogs: true, maintenanceLogs: true, repairLogs: true, odometerLogs: true, insurance: true },
+      }),
+      prisma.budget.findMany({ where: { userId: user.id } }),
+      prisma.recurringTransaction.findMany({ where: { userId: user.id } }),
+      prisma.alert.findMany({ where: { userId: user.id } }),
+      prisma.indiaTransfer.findMany({ where: { userId: user.id } }),
+      prisma.chitFund.findMany({ where: { userId: user.id } }),
+      prisma.chitFundPlan.findMany({ where: { userId: user.id } }),
+    ]);
 
   const data = {
     exportedAt: new Date().toISOString(),
@@ -30,6 +33,8 @@ export async function GET() {
     recurring,
     alerts,
     indiaTransfers,
+    chitFunds,
+    chitFundPlans,
   };
 
   return new NextResponse(JSON.stringify(data, null, 2), {

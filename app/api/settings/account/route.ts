@@ -27,6 +27,8 @@ export async function DELETE() {
     await tx.recurringTransaction.deleteMany({ where: { userId: user.id } });
     await tx.alert.deleteMany({ where: { userId: user.id } });
     await tx.indiaTransfer.deleteMany({ where: { userId: user.id } });
+    await tx.chitFund.deleteMany({ where: { userId: user.id } });
+    await tx.chitFundPlan.deleteMany({ where: { userId: user.id } });
     await tx.user.delete({ where: { id: user.id } });
   });
 

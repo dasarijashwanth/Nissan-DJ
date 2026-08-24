@@ -53,6 +53,33 @@ export type IndiaTransfer = {
   createdAt: string;
 };
 
+/** A purely informational log of chit fund ("Cheeti") contributions — never counted in any income/expense total. */
+export type ChitFund = {
+  id: string;
+  userId: string;
+  groupName: string;
+  amount: number;
+  notes: string | null;
+  date: string;
+  createdAt: string;
+};
+
+/** A recurring Cheeti contribution plan — the cron auto-posts a ChitFund row each month it's due. */
+export type ChitFundPlan = {
+  id: string;
+  userId: string;
+  groupName: string;
+  amount: number;
+  startDate: string;
+  periodMonths: number;
+  nextDueDate: string;
+  monthsPosted: number;
+  isActive: boolean;
+  lastCreated: string | null;
+  notes: string | null;
+  createdAt: string;
+};
+
 export const MAINTENANCE_TYPES = [
   "Oil Change",
   "Tire Rotation",

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { Prisma } from "@/lib/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { postRecurringTransaction } from "@/lib/recurringQueries";
+import { postChitFundPlan } from "@/lib/chitFundQueries";
 import { createAlertIfNotDuplicate } from "@/lib/alertQueries";
 import { getCurrentOdometer, getFuelLogs } from "@/lib/vehicleQueries";
 import { daysUntil, calcAvgMPGInRange, calcAvgPricePerGallonInRange } from "@/lib/vehicleUtils";
@@ -26,6 +27,7 @@ export async function GET(request: Request) {
   }
 
   let recurringPosted = 0;
+  let chitFundsPosted = 0;
   let alertsCreated = 0;
   let budgetsCreated = 0;
 
@@ -58,6 +60,14 @@ export async function GET(request: Request) {
   for (const r of dueRecurring) {
     const posted = await postRecurringTransaction(r.id, { alert: true });
     if (posted) recurringPosted++;
+  }
+
+  const dueChitFundPlans = await prisma.chitFundPlan.findMany({
+    where: { isActive: true, nextDueDate: { lte: new Date() } },
+  });
+  for (const plan of dueChitFundPlans) {
+    const posted = await postChitFundPlan(plan.id);
+    if (posted) chitFundsPosted++;
   }
 
   const vehicles = await prisma.vehicle.findMany();
@@ -144,5 +154,5 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.json({ success: true, recurringPosted, alertsCreated, budgetsCreated });
+  return NextResponse.json({ success: true, recurringPosted, chitFundsPosted, alertsCreated, budgetsCreated });
 }

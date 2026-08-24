@@ -18,6 +18,8 @@ model User {
   recurring      RecurringTransaction[]
   alerts         Alert[]
   indiaTransfers IndiaTransfer[]
+  chitFunds      ChitFund[]
+  chitFundPlans  ChitFundPlan[]
   preferences    Json?
 }
 
@@ -34,6 +36,40 @@ model IndiaTransfer {
 
   @@index([userId])
   @@index([date])
+}
+
+/** Monthly chit fund ("Cheeti") contributions — purely informational savings tracking, never counted in income/expense totals. A user can belong to multiple chits, distinguished by groupName. */
+model ChitFund {
+  id        String   @id @default(uuid())
+  userId    String
+  groupName String
+  amount    Float
+  notes     String?
+  date      DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([date])
+}
+
+/** A recurring Cheeti contribution set up once (start date + total period in months) — the daily cron auto-creates a ChitFund row each month it's due, so the user doesn't have to log every payment by hand. Deactivates itself once periodMonths payments have posted. */
+model ChitFundPlan {
+  id           String    @id @default(uuid())
+  userId       String
+  groupName    String
+  amount       Float
+  startDate    DateTime
+  periodMonths Int
+  nextDueDate  DateTime
+  monthsPosted Int       @default(0)
+  isActive     Boolean   @default(true)
+  lastCreated  DateTime?
+  notes        String?
+  createdAt    DateTime  @default(now())
+  user         User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
 
 model Budget {
