@@ -1,11 +1,17 @@
 import type { CSSProperties } from "react";
 import { redirect } from "next/navigation";
 import { getAuthUser } from "@/lib/supabase";
-import { getIndiaTransfers } from "@/lib/indiaTransferQueries";
+import {
+  getIndiaTransfers,
+  getIndiaTransferMonthlyTrend,
+  groupIndiaTransfersByRecipient,
+} from "@/lib/indiaTransferQueries";
 import { getUsdToInrRate } from "@/lib/exchangeRate";
 import { formatINR, formatCurrency } from "@/lib/utils";
 import { Card } from "@/components/ui/Card";
 import { IndiaTransferTable } from "@/components/IndiaTransferTable";
+import { IndiaTransferTrendChart } from "@/components/IndiaTransferTrendChart";
+import { IndiaTransferByRecipientChart } from "@/components/IndiaTransferByRecipientChart";
 
 export default async function IndiaTransfersPage() {
   const user = await getAuthUser();
@@ -41,6 +47,11 @@ export default async function IndiaTransfersPage() {
         <SummaryStat label="This Month" amount={totalThisMonth} usdRate={usdRate} delayMs={0} />
         <SummaryStat label="This Year" amount={totalThisYear} usdRate={usdRate} delayMs={60} />
         <SummaryStat label="All Time" amount={totalAllTime} usdRate={usdRate} delayMs={120} />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <IndiaTransferTrendChart data={getIndiaTransferMonthlyTrend(transfers, 6)} />
+        <IndiaTransferByRecipientChart data={groupIndiaTransfersByRecipient(transfers)} />
       </div>
 
       <IndiaTransferTable transfers={transfers} usdRate={usdRate} />
