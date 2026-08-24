@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { FuelLogForm } from "@/components/vehicles/FuelLogForm";
 import { calcAvgMPG, buildFuelSegments } from "@/lib/vehicleUtils";
+import { useCountUp } from "@/hooks/useCountUp";
 import { formatCurrency, formatDate, formatMiles } from "@/lib/utils";
 import type { FuelLog } from "@/lib/types";
 
@@ -101,10 +102,10 @@ export function FuelLogTable({ fuelLogs, vehicleId }: { fuelLogs: FuelLog[]; veh
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <SummaryStat label="Avg MPG" value={avgMPG > 0 ? avgMPG.toFixed(1) : "—"} delayMs={0} />
-        <SummaryStat label="Best MPG" value={bestMPG > 0 ? bestMPG.toFixed(1) : "—"} delayMs={60} />
-        <SummaryStat label="Worst MPG" value={worstMPG > 0 ? worstMPG.toFixed(1) : "—"} delayMs={120} />
-        <SummaryStat label="Total Spent" value={formatCurrency(totalSpent)} delayMs={180} />
+        <SummaryStat label="Avg MPG" value={avgMPG} format={(n) => (n > 0 ? n.toFixed(1) : "—")} delayMs={0} />
+        <SummaryStat label="Best MPG" value={bestMPG} format={(n) => (n > 0 ? n.toFixed(1) : "—")} delayMs={60} />
+        <SummaryStat label="Worst MPG" value={worstMPG} format={(n) => (n > 0 ? n.toFixed(1) : "—")} delayMs={120} />
+        <SummaryStat label="Total Spent" value={totalSpent} format={formatCurrency} delayMs={180} />
       </div>
 
       {chartData.length > 0 && (
@@ -262,11 +263,22 @@ export function FuelLogTable({ fuelLogs, vehicleId }: { fuelLogs: FuelLog[]; veh
   );
 }
 
-function SummaryStat({ label, value, delayMs }: { label: string; value: string; delayMs: number }) {
+function SummaryStat({
+  label,
+  value,
+  format,
+  delayMs,
+}: {
+  label: string;
+  value: number;
+  format: (n: number) => string;
+  delayMs: number;
+}) {
+  const animated = useCountUp(value);
   return (
     <Card className="p-4" style={{ animationDelay: `${delayMs}ms` } as CSSProperties}>
       <p className="text-xs font-medium text-text-muted">{label}</p>
-      <p className="mt-1 text-lg font-semibold text-amber-600 tabular-nums">{value}</p>
+      <p className="mt-1 text-lg font-semibold text-amber-600 tabular-nums">{format(animated)}</p>
     </Card>
   );
 }

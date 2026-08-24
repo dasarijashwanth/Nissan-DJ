@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { PiggyBank } from "lucide-react";
 import { Card } from "@/components/ui/Card";
+import { AnimatedAmount } from "@/components/ui/AnimatedAmount";
 import { cn } from "@/lib/utils";
 
 export function SavingsRateCard({ rate, style }: { rate: number; style?: CSSProperties }) {
@@ -20,7 +21,9 @@ export function SavingsRateCard({ rate, style }: { rate: number; style?: CSSProp
         </div>
         <p className="text-sm font-medium text-text-muted">Savings Rate</p>
       </div>
-      <p className={cn("mt-4 text-2xl font-semibold tabular-nums", color)}>{rate.toFixed(1)}%</p>
+      <p className={cn("mt-4 text-2xl font-semibold tabular-nums", color)}>
+        <AnimatedAmount value={rate} format={(n) => `${n.toFixed(1)}%`} />
+      </p>
     </Card>
   );
 }

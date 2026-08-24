@@ -26,6 +26,7 @@ import { getMonthlyVehicleCosts, getCostPerMileTrend } from "@/lib/vehicleAnalyt
 import { getTrackingMode, scopeWhereForMode } from "@/lib/trackingMode";
 import { formatCurrency, monthRange, cn } from "@/lib/utils";
 import { Card } from "@/components/ui/Card";
+import { AnimatedAmount } from "@/components/ui/AnimatedAmount";
 import { SavingsRateCard } from "@/components/analytics/SavingsRateCard";
 import { IncomeExpenseTrend } from "@/components/analytics/IncomeExpenseTrend";
 import { SpendingDonutChart } from "@/components/analytics/SpendingDonutChart";
@@ -219,7 +220,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
               netSavings >= 0 ? "text-emerald-600" : "text-red-600"
             )}
           >
-            {formatCurrency(netSavings)}
+            <AnimatedAmount value={netSavings} format={formatCurrency} />
           </p>
         </Card>
 
@@ -233,7 +234,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
             <p className="text-sm font-medium text-text-muted">Avg Monthly Spend</p>
           </div>
           <p className="mt-4 text-2xl font-semibold tabular-nums text-text-primary">
-            {formatCurrency(avgMonthlySpend)}
+            <AnimatedAmount value={avgMonthlySpend} format={formatCurrency} />
           </p>
         </Card>
 
@@ -247,7 +248,9 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
           <p className="mt-4 truncate text-lg font-semibold text-text-primary">
             {biggestCategory ? biggestCategory.category : "—"}
           </p>
-          <p className="text-sm text-text-muted">{biggestCategory ? formatCurrency(biggestCategory.amount) : ""}</p>
+          <p className="text-sm text-text-muted">
+            {biggestCategory ? <AnimatedAmount value={biggestCategory.amount} format={formatCurrency} /> : ""}
+          </p>
         </Card>
 
       </div>

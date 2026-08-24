@@ -9,6 +9,7 @@ import {
 import { getUsdToInrRate } from "@/lib/exchangeRate";
 import { formatINR, formatCurrency } from "@/lib/utils";
 import { Card } from "@/components/ui/Card";
+import { AnimatedAmount } from "@/components/ui/AnimatedAmount";
 import { IndiaTransferTable } from "@/components/IndiaTransferTable";
 import { IndiaTransferTrendChart } from "@/components/IndiaTransferTrendChart";
 import { IndiaTransferByRecipientChart } from "@/components/IndiaTransferByRecipientChart";
@@ -73,9 +74,13 @@ function SummaryStat({
   return (
     <Card className="p-4" style={{ animationDelay: `${delayMs}ms` } as CSSProperties}>
       <p className="text-xs font-medium text-text-muted">{label}</p>
-      <p className="mt-1 text-lg font-semibold text-text-primary tabular-nums">{formatINR(amount)}</p>
+      <p className="mt-1 text-lg font-semibold text-text-primary tabular-nums">
+        <AnimatedAmount value={amount} format={formatINR} />
+      </p>
       {amount > 0 && (
-        <p className="text-xs text-text-muted tabular-nums">≈ {formatCurrency(amount / usdRate)}</p>
+        <p className="text-xs text-text-muted tabular-nums">
+          ≈ <AnimatedAmount value={amount / usdRate} format={formatCurrency} />
+        </p>
       )}
     </Card>
   );

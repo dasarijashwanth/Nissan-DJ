@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { Route } from "lucide-react";
 import { Card } from "@/components/ui/Card";
+import { AnimatedAmount } from "@/components/ui/AnimatedAmount";
 import { formatCurrency, formatMiles } from "@/lib/utils";
 
 export function CostPerMileCard({
@@ -21,9 +22,12 @@ export function CostPerMileCard({
         <p className="text-sm font-medium text-text-muted">Cost / Mile</p>
       </div>
       <p className="mt-4 text-2xl font-semibold tabular-nums text-amber-600">
-        {formatCurrency(costPerMile)} <span className="text-sm font-normal text-text-muted">/ mile</span>
+        <AnimatedAmount value={costPerMile} format={formatCurrency} />{" "}
+        <span className="text-sm font-normal text-text-muted">/ mile</span>
       </p>
-      <p className="mt-1 text-xs text-text-muted">{formatMiles(totalMiles)} driven</p>
+      <p className="mt-1 text-xs text-text-muted">
+        <AnimatedAmount value={totalMiles} format={formatMiles} /> driven
+      </p>
     </Card>
   );
 }

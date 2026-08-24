@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { formatCurrency, formatMiles } from "@/lib/utils";
 import { useVehicle } from "@/hooks/useVehicle";
+import { useCountUp } from "@/hooks/useCountUp";
 import type { Vehicle } from "@/lib/types";
 
 export function VehicleCard({
@@ -25,6 +26,7 @@ export function VehicleCard({
   const router = useRouter();
   const { refetch } = useVehicle();
   const [working, setWorking] = useState(false);
+  const animatedTotalSpend = useCountUp(totalSpend);
 
   async function setPrimary() {
     setWorking(true);
@@ -85,7 +87,7 @@ export function VehicleCard({
         <p className="text-sm text-text-muted">
           {vehicle.color} · {formatMiles(currentOdometer)}
         </p>
-        <p className="text-sm font-medium text-text-secondary">{formatCurrency(totalSpend)} total spent</p>
+        <p className="text-sm font-medium text-text-secondary">{formatCurrency(animatedTotalSpend)} total spent</p>
 
         <div className="flex flex-wrap gap-2 pt-3">
           <Link href={`/vehicles/${vehicle.id}`} className="flex-1">

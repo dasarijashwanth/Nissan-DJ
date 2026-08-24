@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { Wallet, Fuel, CalendarClock } from "lucide-react";
 import { Card } from "@/components/ui/Card";
+import { AnimatedAmount } from "@/components/ui/AnimatedAmount";
 import { CostPerMileCard } from "@/components/vehicles/CostPerMileCard";
 import { formatCurrency } from "@/lib/utils";
 
@@ -23,7 +24,7 @@ export function CarStatsRow({ totalSpend, costPerMile, totalMiles, avgMPG, month
           <p className="text-sm font-medium text-text-muted">Total Car Spend</p>
         </div>
         <p className="mt-4 text-2xl font-semibold tabular-nums text-amber-600">
-          {formatCurrency(totalSpend)}
+          <AnimatedAmount value={totalSpend} format={formatCurrency} />
         </p>
       </Card>
 
@@ -41,7 +42,7 @@ export function CarStatsRow({ totalSpend, costPerMile, totalMiles, avgMPG, month
           <p className="text-sm font-medium text-text-muted">Avg MPG</p>
         </div>
         <p className="mt-4 text-2xl font-semibold tabular-nums text-amber-600">
-          {avgMPG > 0 ? avgMPG.toFixed(1) : "—"}
+          {avgMPG > 0 ? <AnimatedAmount value={avgMPG} format={(n) => n.toFixed(1)} /> : "—"}
         </p>
       </Card>
 
@@ -53,7 +54,7 @@ export function CarStatsRow({ totalSpend, costPerMile, totalMiles, avgMPG, month
           <p className="text-sm font-medium text-text-muted">This Month</p>
         </div>
         <p className="mt-4 text-2xl font-semibold tabular-nums text-amber-600">
-          {formatCurrency(monthCost)}
+          <AnimatedAmount value={monthCost} format={formatCurrency} />
         </p>
       </Card>
     </div>

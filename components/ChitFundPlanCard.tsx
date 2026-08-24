@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { daysUntilDue, dueBadgeColor } from "@/lib/recurringUtils";
+import { useCountUp } from "@/hooks/useCountUp";
 import { cn, formatINR, formatCurrency, formatDate } from "@/lib/utils";
 import type { ChitFundPlan } from "@/lib/types";
 
@@ -24,6 +25,7 @@ export function ChitFundPlanCard({
 
   const days = daysUntilDue(plan.nextDueDate);
   const completed = plan.monthsPosted >= plan.periodMonths;
+  const animatedAmount = useCountUp(plan.amount);
 
   async function toggleActive() {
     setBusy(true);
@@ -71,9 +73,9 @@ export function ChitFundPlanCard({
             )}
           >
             {plan.type === "received" ? "+" : ""}
-            {formatINR(plan.amount)}/mo
+            {formatINR(animatedAmount)}/mo
           </p>
-          <p className="text-xs text-text-muted">≈ {formatCurrency(plan.amount / usdRate)}/mo</p>
+          <p className="text-xs text-text-muted">≈ {formatCurrency(animatedAmount / usdRate)}/mo</p>
         </div>
         <div className="flex shrink-0 gap-1">
           <button

@@ -21,6 +21,7 @@ import { calcMonthVehicleCost } from "@/lib/vehicleUtils";
 import { getWeeklyStats } from "@/lib/vehicleAnalytics";
 import { monthRange, formatCurrency, formatDate, cn } from "@/lib/utils";
 import { Card } from "@/components/ui/Card";
+import { AnimatedAmount } from "@/components/ui/AnimatedAmount";
 import { SummaryCards } from "@/components/SummaryCards";
 import { MonthlyChart } from "@/components/MonthlyChart";
 import { SavingsRateMeter } from "@/components/SavingsRateMeter";
@@ -117,7 +118,7 @@ export default async function DashboardPage() {
               >
                 <p className="text-sm font-medium text-text-muted">Car Cost</p>
                 <p className="mt-4 text-2xl font-semibold tabular-nums text-amber-600">
-                  {formatCurrency(carCostThisMonth)}
+                  <AnimatedAmount value={carCostThisMonth} format={formatCurrency} />
                 </p>
               </Card>
               <WeeklyMileageCard {...weeklyStats} style={{ animationDelay: "240ms" }} />

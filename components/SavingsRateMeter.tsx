@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/Card";
+import { AnimatedAmount } from "@/components/ui/AnimatedAmount";
 
 const SIZE = 96;
 const STROKE = 8;
@@ -34,7 +35,7 @@ export function SavingsRateMeter({ rate }: { rate: number }) {
           className="rotate-90"
           style={{ transformOrigin: "center", fontSize: 18, fontWeight: 600, fill: "#0f172a" }}
         >
-          {rate.toFixed(0)}%
+          <AnimatedAmount value={rate} format={(n) => `${n.toFixed(0)}%`} />
         </text>
       </svg>
       <div>

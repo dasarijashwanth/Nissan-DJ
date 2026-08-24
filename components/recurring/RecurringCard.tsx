@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { daysUntilDue, dueBadgeColor } from "@/lib/recurringUtils";
+import { useCountUp } from "@/hooks/useCountUp";
 import { cn, formatCurrency, formatDate } from "@/lib/utils";
 import type { RecurringTransaction } from "@/lib/types";
 
@@ -28,6 +29,7 @@ export function RecurringCard({
   const [busy, setBusy] = useState(false);
 
   const days = daysUntilDue(recurring.nextDueDate);
+  const animatedAmount = useCountUp(recurring.amount);
 
   async function toggleActive() {
     setBusy(true);
@@ -76,7 +78,7 @@ export function RecurringCard({
             )}
           >
             {recurring.type === "income" ? "+" : "-"}
-            {formatCurrency(recurring.amount)}
+            {formatCurrency(animatedAmount)}
           </p>
         </div>
         <div className="flex shrink-0 gap-1">

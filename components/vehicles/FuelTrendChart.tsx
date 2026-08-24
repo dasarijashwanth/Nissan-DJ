@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { Bar, ComposedChart, CartesianGrid, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card } from "@/components/ui/Card";
+import { useCountUp } from "@/hooks/useCountUp";
 import { formatCurrency } from "@/lib/utils";
 
 export type WeeklyFuelTrendDatum = {
@@ -22,6 +23,9 @@ export function FuelTrendChart({ data }: { data: WeeklyFuelTrendDatum[] }) {
     };
   }, [data]);
 
+  const animatedBestMpg = useCountUp(bestWeek?.mpg ?? 0);
+  const animatedWorstMpg = useCountUp(worstWeek?.mpg ?? 0);
+
   const hasData = data.some((d) => d.mpg > 0 || d.cost > 0);
   if (!hasData) return null;
 
@@ -32,14 +36,14 @@ export function FuelTrendChart({ data }: { data: WeeklyFuelTrendDatum[] }) {
           {bestWeek && (
             <Card className="p-4">
               <p className="text-xs font-medium text-text-muted">Best week</p>
-              <p className="mt-1 text-lg font-semibold text-emerald-600 tabular-nums">{bestWeek.mpg.toFixed(1)} MPG</p>
+              <p className="mt-1 text-lg font-semibold text-emerald-600 tabular-nums">{animatedBestMpg.toFixed(1)} MPG</p>
               <p className="text-xs text-text-muted">Week of {bestWeek.week}</p>
             </Card>
           )}
           {worstWeek && (
             <Card className="p-4">
               <p className="text-xs font-medium text-text-muted">Worst week</p>
-              <p className="mt-1 text-lg font-semibold text-red-500 tabular-nums">{worstWeek.mpg.toFixed(1)} MPG</p>
+              <p className="mt-1 text-lg font-semibold text-red-500 tabular-nums">{animatedWorstMpg.toFixed(1)} MPG</p>
               <p className="text-xs text-text-muted">Week of {worstWeek.week}</p>
             </Card>
           )}

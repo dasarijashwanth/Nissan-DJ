@@ -12,6 +12,7 @@ import { getLoansGiven } from "@/lib/loanQueries";
 import { getUsdToInrRate } from "@/lib/exchangeRate";
 import { formatINR, formatCurrency } from "@/lib/utils";
 import { Card } from "@/components/ui/Card";
+import { AnimatedAmount } from "@/components/ui/AnimatedAmount";
 import { ChitFundTable } from "@/components/ChitFundTable";
 import { ChitFundTrendChart } from "@/components/ChitFundTrendChart";
 import { ChitFundGrowthChart } from "@/components/ChitFundGrowthChart";
@@ -131,9 +132,13 @@ function SummaryStat({
         }
       >
         {received && amount > 0 ? "+" : ""}
-        {formatINR(amount)}
+        <AnimatedAmount value={amount} format={formatINR} />
       </p>
-      {amount > 0 && <p className="text-xs text-text-muted tabular-nums">≈ {formatCurrency(amount / usdRate)}</p>}
+      {amount > 0 && (
+        <p className="text-xs text-text-muted tabular-nums">
+          ≈ <AnimatedAmount value={amount / usdRate} format={formatCurrency} />
+        </p>
+      )}
     </Card>
   );
 }

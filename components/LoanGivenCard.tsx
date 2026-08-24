@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { ChitFundForm } from "@/components/ChitFundForm";
 import { calcLoanOutstanding } from "@/lib/loanUtils";
+import { useCountUp } from "@/hooks/useCountUp";
 import { cn, formatINR, formatCurrency, formatDate } from "@/lib/utils";
 import type { ChitFund, LoanGiven } from "@/lib/types";
 
@@ -30,6 +31,10 @@ export function LoanGivenCard({
     loan,
     contributions
   );
+  const animatedOutstanding = useCountUp(outstanding);
+  const animatedAccrued = useCountUp(accruedInterest);
+  const animatedReceived = useCountUp(receivedInterest);
+  const animatedUnpaid = useCountUp(unpaidInterest);
 
   async function toggleActive() {
     setBusy(true);
@@ -85,22 +90,22 @@ export function LoanGivenCard({
 
       <div className="mt-3">
         <p className="text-xs font-medium text-text-muted">Outstanding Amount</p>
-        <p className="text-2xl font-semibold tabular-nums text-amber-600">{formatINR(outstanding)}</p>
-        <p className="text-xs text-text-muted">≈ {formatCurrency(outstanding / usdRate)}</p>
+        <p className="text-2xl font-semibold tabular-nums text-amber-600">{formatINR(animatedOutstanding)}</p>
+        <p className="text-xs text-text-muted">≈ {formatCurrency(animatedOutstanding / usdRate)}</p>
       </div>
 
       <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
         <div>
           <p className="text-text-muted">Accrued</p>
-          <p className="font-medium tabular-nums text-text-primary">{formatINR(accruedInterest)}</p>
+          <p className="font-medium tabular-nums text-text-primary">{formatINR(animatedAccrued)}</p>
         </div>
         <div>
           <p className="text-text-muted">Received</p>
-          <p className="font-medium tabular-nums text-emerald-600">{formatINR(receivedInterest)}</p>
+          <p className="font-medium tabular-nums text-emerald-600">{formatINR(animatedReceived)}</p>
         </div>
         <div>
           <p className="text-text-muted">Unpaid</p>
-          <p className="font-medium tabular-nums text-red-600">{formatINR(unpaidInterest)}</p>
+          <p className="font-medium tabular-nums text-red-600">{formatINR(animatedUnpaid)}</p>
         </div>
       </div>
 
