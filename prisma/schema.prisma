@@ -20,6 +20,7 @@ model User {
   indiaTransfers IndiaTransfer[]
   chitFunds      ChitFund[]
   chitFundPlans  ChitFundPlan[]
+  loansGiven     LoanGiven[]
   preferences    Json?
 }
 
@@ -52,6 +53,22 @@ model ChitFund {
 
   @@index([userId])
   @@index([date])
+}
+
+/** A private loan given to someone, at a monthly interest rate — tracks Outstanding Amount (principal plus any interest accrued since startDate that hasn't yet shown up as a "received" ChitFund entry for the same borrowerName). Purely informational, like the rest of Cheeti. */
+model LoanGiven {
+  id                  String   @id @default(uuid())
+  userId              String
+  borrowerName        String
+  principal           Float
+  interestRatePercent Float // percent per month, e.g. 1 = 1%/month
+  startDate           DateTime
+  notes               String?
+  isActive            Boolean  @default(true) // false = closed/fully repaid
+  createdAt           DateTime @default(now())
+  user                User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
 
 /** A recurring Cheeti contribution set up once (start date + total period in months) — the daily cron auto-creates a ChitFund row each month it's due, so the user doesn't have to log every payment by hand. Deactivates itself once periodMonths payments have posted. */

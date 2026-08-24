@@ -8,6 +8,7 @@ import {
   getChitFundCumulativeTrend,
   groupChitFundsByGroup,
 } from "@/lib/chitFundQueries";
+import { getLoansGiven } from "@/lib/loanQueries";
 import { getUsdToInrRate } from "@/lib/exchangeRate";
 import { formatINR, formatCurrency } from "@/lib/utils";
 import { Card } from "@/components/ui/Card";
@@ -16,14 +17,16 @@ import { ChitFundTrendChart } from "@/components/ChitFundTrendChart";
 import { ChitFundGrowthChart } from "@/components/ChitFundGrowthChart";
 import { ChitFundByGroupChart } from "@/components/ChitFundByGroupChart";
 import { ChitFundPlanList } from "@/components/ChitFundPlanList";
+import { LoanGivenList } from "@/components/LoanGivenList";
 
 export default async function CheetiPage() {
   const user = await getAuthUser();
   if (!user) redirect("/login");
 
-  const [contributions, plans, usdRate] = await Promise.all([
+  const [contributions, plans, loans, usdRate] = await Promise.all([
     getChitFunds(user.id),
     getChitFundPlans(user.id),
+    getLoansGiven(user.id),
     getUsdToInrRate(),
   ]);
 
@@ -76,6 +79,11 @@ export default async function CheetiPage() {
           </div>
         </div>
       )}
+
+      <div>
+        <p className="mb-3 text-sm font-medium text-text-secondary">Loans Given</p>
+        <LoanGivenList loans={loans} contributions={contributions} usdRate={usdRate} />
+      </div>
 
       <div>
         <p className="mb-3 text-sm font-medium text-text-secondary">Recurring Plans</p>

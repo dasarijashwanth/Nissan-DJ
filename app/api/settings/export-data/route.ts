@@ -8,7 +8,7 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const [dbUser, transactions, vehicles, budgets, recurring, alerts, indiaTransfers, chitFunds, chitFundPlans] =
+  const [dbUser, transactions, vehicles, budgets, recurring, alerts, indiaTransfers, chitFunds, chitFundPlans, loansGiven] =
     await Promise.all([
       prisma.user.findUnique({ where: { id: user.id } }),
       prisma.transaction.findMany({ where: { userId: user.id } }),
@@ -22,6 +22,7 @@ export async function GET() {
       prisma.indiaTransfer.findMany({ where: { userId: user.id } }),
       prisma.chitFund.findMany({ where: { userId: user.id } }),
       prisma.chitFundPlan.findMany({ where: { userId: user.id } }),
+      prisma.loanGiven.findMany({ where: { userId: user.id } }),
     ]);
 
   const data = {
@@ -35,6 +36,7 @@ export async function GET() {
     indiaTransfers,
     chitFunds,
     chitFundPlans,
+    loansGiven,
   };
 
   return new NextResponse(JSON.stringify(data, null, 2), {

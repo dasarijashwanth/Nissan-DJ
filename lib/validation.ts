@@ -121,6 +121,47 @@ export function validateChitFundPlan(values: ChitFundPlanFormValues) {
   return { valid: Object.keys(errors).length === 0, errors, amount, periodMonths };
 }
 
+// ---- Loan given (principal + monthly interest rate, tracks Outstanding Amount) ----
+
+export type LoanGivenFieldErrors = {
+  borrowerName?: string;
+  principal?: string;
+  interestRatePercent?: string;
+  startDate?: string;
+};
+
+export type LoanGivenFormValues = {
+  borrowerName: string;
+  principal: string;
+  interestRatePercent: string;
+  startDate: string;
+  notes: string;
+};
+
+export function validateLoanGiven(values: LoanGivenFormValues) {
+  const errors: LoanGivenFieldErrors = {};
+
+  if (!values.borrowerName.trim()) {
+    errors.borrowerName = "Borrower name is required.";
+  }
+
+  const principal = Number(values.principal);
+  if (!values.principal || Number.isNaN(principal) || principal <= 0) {
+    errors.principal = "Enter a principal amount greater than 0.";
+  }
+
+  const interestRatePercent = Number(values.interestRatePercent);
+  if (values.interestRatePercent === "" || Number.isNaN(interestRatePercent) || interestRatePercent < 0) {
+    errors.interestRatePercent = "Enter a monthly interest rate (0 or more).";
+  }
+
+  if (!values.startDate || Number.isNaN(new Date(values.startDate).getTime())) {
+    errors.startDate = "Select a valid start date.";
+  }
+
+  return { valid: Object.keys(errors).length === 0, errors, principal, interestRatePercent };
+}
+
 // ---- India transfer (purely informational, never counted in income/expense totals) ----
 
 export type IndiaTransferFieldErrors = {

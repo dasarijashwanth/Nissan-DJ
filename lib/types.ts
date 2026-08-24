@@ -67,6 +67,19 @@ export type ChitFund = {
   createdAt: string;
 };
 
+/** A private loan given to someone at a monthly interest rate — Outstanding Amount is computed from principal, interestRatePercent, startDate, and the "received" ChitFund entries logged under the same borrowerName. */
+export type LoanGiven = {
+  id: string;
+  userId: string;
+  borrowerName: string;
+  principal: number;
+  interestRatePercent: number;
+  startDate: string;
+  notes: string | null;
+  isActive: boolean;
+  createdAt: string;
+};
+
 /** A recurring Cheeti contribution plan — the cron auto-posts a ChitFund row each month it's due. */
 export type ChitFundPlan = {
   id: string;

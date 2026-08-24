@@ -9,11 +9,11 @@ import type { ChitFund } from "@/lib/types";
 import { toDateInputValue, toStoredDateInputValue, formatCurrency, cn } from "@/lib/utils";
 import { validateChitFundInput, type ChitFundFieldErrors, type ChitFundFormValues } from "@/lib/validation";
 
-function emptyValues(): ChitFundFormValues {
+function emptyValues(initialGroupName?: string, initialType?: ChitFundFormValues["type"]): ChitFundFormValues {
   return {
     amount: "",
-    groupName: "",
-    type: "paid",
+    groupName: initialGroupName ?? "",
+    type: initialType ?? "paid",
     date: toDateInputValue(new Date()),
     notes: "",
   };
@@ -34,14 +34,24 @@ export interface ChitFundFormProps {
   onClose: () => void;
   contribution?: ChitFund | null;
   usdRate: number;
+  /** Pre-fill a new (non-edit) entry — e.g. opening from a loan card to log that borrower's interest payment. */
+  initialGroupName?: string;
+  initialType?: ChitFundFormValues["type"];
 }
 
-export function ChitFundForm({ open, onClose, contribution, usdRate }: ChitFundFormProps) {
+export function ChitFundForm({
+  open,
+  onClose,
+  contribution,
+  usdRate,
+  initialGroupName,
+  initialType,
+}: ChitFundFormProps) {
   const router = useRouter();
   const isEdit = !!contribution;
 
   const [values, setValues] = useState<ChitFundFormValues>(() =>
-    contribution ? valuesFromContribution(contribution) : emptyValues()
+    contribution ? valuesFromContribution(contribution) : emptyValues(initialGroupName, initialType)
   );
   const [errors, setErrors] = useState<ChitFundFieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
