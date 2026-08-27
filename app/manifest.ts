@@ -2,9 +2,9 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "SentraTrack",
-    short_name: "SentraTrack",
-    description: "Personal finance and car expense tracker",
+    name: "DJ Ledger",
+    short_name: "DJ Ledger",
+    description: "Personal finance, vehicle costs, and family money tracker",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",

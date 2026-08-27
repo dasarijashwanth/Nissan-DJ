@@ -64,5 +64,5 @@ export function generateXlsxReport(report: MonthlyReport) {
   );
   XLSX.utils.book_append_sheet(wb, budgetSheet, "Budget Performance");
 
-  XLSX.writeFile(wb, `SentraTrack-${report.month.replace(" ", "-")}.xlsx`);
+  XLSX.writeFile(wb, `DJ-Ledger-${report.month.replace(" ", "-")}.xlsx`);
 }

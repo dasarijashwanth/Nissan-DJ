@@ -13,7 +13,7 @@ export function generatePdfReport(report: MonthlyReport, userEmail: string) {
   // Page 1 — Cover
   doc.setFontSize(24);
   doc.setFont("helvetica", "bold");
-  doc.text("SentraTrack", pageWidth / 2, 80, { align: "center" });
+  doc.text("DJ Ledger", pageWidth / 2, 80, { align: "center" });
   doc.setFontSize(16);
   doc.setFont("helvetica", "normal");
   doc.text("Monthly Financial Report", pageWidth / 2, 95, { align: "center" });
@@ -128,5 +128,5 @@ export function generatePdfReport(report: MonthlyReport, userEmail: string) {
     headStyles: { fillColor: INDIGO },
   });
 
-  doc.save(`SentraTrack-${report.month.replace(" ", "-")}.pdf`);
+  doc.save(`DJ-Ledger-${report.month.replace(" ", "-")}.pdf`);
 }

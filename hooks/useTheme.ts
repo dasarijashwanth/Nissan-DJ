@@ -26,7 +26,7 @@ export function useTheme() {
     // would clobber the real stored preference before the sync effect above ever restores it.
     if (!hasSynced.current) return;
     document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("sentratrack-theme", theme);
+    localStorage.setItem("dj-ledger-theme", theme);
   }, [theme]);
 
   return { theme, toggle: () => setTheme((t) => (t === "dark" ? "light" : "dark")) };

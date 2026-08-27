@@ -42,7 +42,7 @@ export async function GET() {
   return new NextResponse(JSON.stringify(data, null, 2), {
     headers: {
       "Content-Type": "application/json",
-      "Content-Disposition": `attachment; filename="sentratrack-data-export-${new Date().toISOString().slice(0, 10)}.json"`,
+      "Content-Disposition": `attachment; filename="dj-ledger-data-export-${new Date().toISOString().slice(0, 10)}.json"`,
     },
   });
 }

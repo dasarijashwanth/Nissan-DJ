@@ -3,7 +3,7 @@
 import { createContext, useCallback, useEffect, useState, type ReactNode } from "react";
 import type { Vehicle } from "@/lib/types";
 
-const ACTIVE_VEHICLE_STORAGE_KEY = "sentratrack-active-vehicle";
+const ACTIVE_VEHICLE_STORAGE_KEY = "dj-ledger-active-vehicle";
 
 type VehicleContextType = {
   vehicles: Vehicle[];

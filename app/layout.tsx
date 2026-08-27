@@ -8,7 +8,7 @@ import { RegisterServiceWorker } from "@/components/RegisterServiceWorker";
 const THEME_INIT_SCRIPT = `
 (function () {
   try {
-    var stored = localStorage.getItem("sentratrack-theme");
+    var stored = localStorage.getItem("dj-ledger-theme");
     var theme = stored || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     document.documentElement.setAttribute("data-theme", theme);
   } catch (e) {}
@@ -26,8 +26,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SentraTrack",
-  description: "Personal income, expense, and Nissan Sentra cost tracker",
+  title: "DJ Ledger",
+  description: "Personal income, expense, vehicle, and family money tracker",
 };
 
 export const viewport: Viewport = {

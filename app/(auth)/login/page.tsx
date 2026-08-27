@@ -13,7 +13,7 @@ export default function LoginPage() {
   return (
     <Card className="p-6">
       <h1 className="mb-1 text-lg font-semibold text-text-primary">Welcome back</h1>
-      <p className="mb-6 text-sm text-text-muted">Log in to your SentraTrack account.</p>
+      <p className="mb-6 text-sm text-text-muted">Log in to your DJ Ledger account.</p>
 
       <form action={formAction} className="space-y-4">
         <Input label="Email" id="email" name="email" type="email" autoComplete="email" required />

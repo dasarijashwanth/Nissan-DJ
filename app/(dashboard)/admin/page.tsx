@@ -21,7 +21,7 @@ export default async function AdminPage() {
           <ShieldCheck className="size-5 text-indigo-600" />
           Admin
         </h1>
-        <p className="text-sm text-text-muted">Every account on SentraTrack. Read-only.</p>
+        <p className="text-sm text-text-muted">Every account on DJ Ledger. Read-only.</p>
       </div>
 
       <Card className="overflow-hidden p-0">

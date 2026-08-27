@@ -125,7 +125,7 @@ export function Sidebar({
       >
         <div className="flex h-16 items-center gap-2 px-6">
           <span className="text-lg text-primary-light">◈</span>
-          <span className="font-display text-lg font-semibold text-white">SentraTrack</span>
+          <span className="font-display text-lg font-semibold text-white">DJ Ledger</span>
         </div>
 
         {isVehicleMode && <VehicleSwitcher />}
