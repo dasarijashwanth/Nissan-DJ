@@ -57,10 +57,25 @@ export async function upsertDailyOdometer(
   const baseline = await getBaselineOdometer(vehicleId, date);
   const driven = Math.max(0, miles - baseline);
 
-  const entry = await prisma.dailyOdometer.upsert({
-    where: { vehicleId_date: { vehicleId, date } },
-    update: { miles, driven, notes },
-    create: { vehicleId, date, miles, driven, notes },
+  const entry = await prisma.$transaction(async (tx) => {
+    const daily = await tx.dailyOdometer.upsert({
+      where: { vehicleId_date: { vehicleId, date } },
+      update: { miles, driven, notes },
+      create: { vehicleId, date, miles, driven, notes },
+    });
+
+    // Keep OdometerLog in sync — it's a separate table backing the vehicle hub's "Odometer
+    // History" chart and the app-wide current-odometer figure, so without this a reading logged
+    // only through the daily tracker would never show up there. No unique constraint on
+    // (vehicleId, date) here, unlike DailyOdometer, so upsert manually.
+    const existingLog = await tx.odometerLog.findFirst({ where: { vehicleId, date } });
+    if (existingLog) {
+      await tx.odometerLog.update({ where: { id: existingLog.id }, data: { miles, notes } });
+    } else {
+      await tx.odometerLog.create({ data: { vehicleId, date, miles, notes } });
+    }
+
+    return daily;
   });
 
   return serializeEntry(entry);
