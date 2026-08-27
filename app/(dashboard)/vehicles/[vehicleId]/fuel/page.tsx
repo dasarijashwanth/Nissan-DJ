@@ -30,7 +30,15 @@ export default async function FuelPage({ params }: { params: Promise<{ vehicleId
     getOdometerLogs(vehicle.id),
   ]);
 
-  const weeklyTrend = getWeeklyFuelTrend(fuelLogs, maintenanceLogs, repairLogs, odometerLogs, 12, new Date());
+  const weeklyTrend = getWeeklyFuelTrend(
+    fuelLogs,
+    maintenanceLogs,
+    repairLogs,
+    odometerLogs,
+    12,
+    new Date(),
+    vehicle.startOdometer
+  );
   const efficiencyInsight = getFuelEfficiencyInsight(fuelLogs);
 
   return (

@@ -1,11 +1,18 @@
 import type { FuelLog, MaintenanceLog, RepairLog, Insurance, OdometerLog } from "@/lib/types";
 import { monthRange, shortMonthLabel } from "@/lib/utils";
 
+/**
+ * Falls back to the vehicle's own starting mileage (not 0) when nothing was logged before `date`
+ * — otherwise a bucket boundary at or before the vehicle's first-ever reading treats the whole
+ * odometer value as "driven in this bucket" (e.g. a brand-new vehicle's first week showing its
+ * entire mileage as "driven this week").
+ */
 function maxOdometerBeforeFn(
   fuelLogs: FuelLog[],
   maintenanceLogs: MaintenanceLog[],
   repairLogs: RepairLog[],
-  odometerLogs: OdometerLog[]
+  odometerLogs: OdometerLog[],
+  startOdometer: number | null = null
 ) {
   const allReadings = [
     ...fuelLogs.map((l) => ({ date: l.date, odometer: l.odometer })),
@@ -13,10 +20,11 @@ function maxOdometerBeforeFn(
     ...repairLogs.map((l) => ({ date: l.date, odometer: l.odometer })),
     ...odometerLogs.map((l) => ({ date: l.date, odometer: l.miles })),
   ];
+  const fallback = startOdometer ?? 0;
 
   return (date: Date) => {
     const readings = allReadings.filter((r) => new Date(r.date) < date).map((r) => r.odometer);
-    return readings.length > 0 ? Math.max(...readings) : 0;
+    return readings.length > 0 ? Math.max(...readings) : fallback;
   };
 }
 
@@ -61,9 +69,10 @@ export function getCostPerMileTrend(
   repairLogs: RepairLog[],
   odometerLogs: OdometerLog[],
   monthlyCosts: { month: string; fuel: number; maintenance: number; repair: number; insurance: number }[],
-  months: number
+  months: number,
+  startOdometer: number | null = null
 ) {
-  const maxOdometerBefore = maxOdometerBeforeFn(fuelLogs, maintenanceLogs, repairLogs, odometerLogs);
+  const maxOdometerBefore = maxOdometerBeforeFn(fuelLogs, maintenanceLogs, repairLogs, odometerLogs, startOdometer);
 
   return monthBuckets(months).map(({ year, month }, i) => {
     const { start, end } = monthRange(year, month);
@@ -79,13 +88,14 @@ export function getWeeklyStats(
   maintenanceLogs: MaintenanceLog[],
   repairLogs: RepairLog[],
   odometerLogs: OdometerLog[],
-  now: Date
+  now: Date,
+  startOdometer: number | null = null
 ) {
   const dayOfWeek = now.getUTCDay(); // 0 = Sunday
   const weekStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - dayOfWeek));
   const weekEnd = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-  const maxOdometerBefore = maxOdometerBeforeFn(fuelLogs, maintenanceLogs, repairLogs, odometerLogs);
+  const maxOdometerBefore = maxOdometerBeforeFn(fuelLogs, maintenanceLogs, repairLogs, odometerLogs, startOdometer);
   const milesThisWeek = Math.max(0, maxOdometerBefore(weekEnd) - maxOdometerBefore(weekStart));
   const daysElapsed = dayOfWeek + 1; // days so far this week, including today
   const avgPerDay = milesThisWeek / daysElapsed;
@@ -124,9 +134,10 @@ export function getWeeklyFuelTrend(
   repairLogs: RepairLog[],
   odometerLogs: OdometerLog[],
   weeks: number,
-  now: Date
+  now: Date,
+  startOdometer: number | null = null
 ) {
-  const maxOdometerBefore = maxOdometerBeforeFn(fuelLogs, maintenanceLogs, repairLogs, odometerLogs);
+  const maxOdometerBefore = maxOdometerBeforeFn(fuelLogs, maintenanceLogs, repairLogs, odometerLogs, startOdometer);
 
   const raw = weekBuckets(weeks, now).map(({ start, end }) => {
     const weekFuelLogs = fuelLogs.filter((l) => {

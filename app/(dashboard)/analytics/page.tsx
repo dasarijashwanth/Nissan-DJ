@@ -151,7 +151,8 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
     repairLogs,
     odometerLogs,
     monthlyCarCosts,
-    months
+    months,
+    vehicle?.startOdometer
   );
 
   return (

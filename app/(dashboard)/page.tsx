@@ -67,7 +67,7 @@ export default async function DashboardPage() {
   const carCostThisMonth = calcMonthVehicleCost(fuelLogs, maintenanceLogs, repairLogs, insurancePolicies, now);
   const savingsRate = calcSavingsRate(summary.totalIncome, summary.totalExpenses);
   const budgetPills = budgets.map((b) => ({ category: b.category, status: getBudgetStatus(b.spent, b.amount) }));
-  const weeklyStats = getWeeklyStats(fuelLogs, maintenanceLogs, repairLogs, odometerLogs, now);
+  const weeklyStats = getWeeklyStats(fuelLogs, maintenanceLogs, repairLogs, odometerLogs, now, vehicle?.startOdometer);
 
   // Daily Life gets its own richer dashboard content (recent activity + spending mix) — Vehicle
   // mode's dashboard is untouched, so this only ever fetches/renders on the life-mode path.
