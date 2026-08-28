@@ -31,7 +31,7 @@ export default async function MileagePage({ params }: { params: Promise<{ vehicl
         <p className="text-sm text-slate-400">Log today&apos;s drive and see your last 90 days of odometer readings.</p>
       </div>
 
-      <DailyOdometerWidget vehicleId={vehicle.id} />
+      <DailyOdometerWidget vehicleId={vehicle.id} showHistory />
 
       <OdometerHistoryChart entries={entries} />
     </div>

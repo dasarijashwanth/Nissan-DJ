@@ -8,9 +8,18 @@ import { Input, Select } from "@/components/ui/Input";
 import { formatDate, formatMiles } from "@/lib/utils";
 import { useDailyOdometer } from "@/hooks/useDailyOdometer";
 import { MileageStreakBadge } from "@/components/vehicles/MileageStreakBadge";
+import { DailyOdometerTable } from "@/components/vehicles/DailyOdometerTable";
 
-export function DailyOdometerWidget({ vehicleId }: { vehicleId: string }) {
-  const { entries, stats, isLoading, submitting, logToday, logDate, today } = useDailyOdometer(vehicleId);
+export function DailyOdometerWidget({
+  vehicleId,
+  showHistory = false,
+}: {
+  vehicleId: string;
+  /** The compact vehicle hub card omits this — it already links to the full Mileage Dashboard, where the history table belongs. */
+  showHistory?: boolean;
+}) {
+  const { entries, stats, isLoading, submitting, logToday, logDate, deleteEntry, today } =
+    useDailyOdometer(vehicleId);
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState("");
   const [justLogged, setJustLogged] = useState(false);
@@ -62,6 +71,7 @@ export function DailyOdometerWidget({ vehicleId }: { vehicleId: string }) {
   }
 
   return (
+    <>
     <Card className="p-5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm font-medium text-text-secondary">
@@ -168,5 +178,10 @@ export function DailyOdometerWidget({ vehicleId }: { vehicleId: string }) {
         </div>
       )}
     </Card>
+
+    {showHistory && (
+      <DailyOdometerTable entries={entries} onSave={logDate} onDelete={deleteEntry} submitting={submitting} />
+    )}
+    </>
   );
 }

@@ -55,5 +55,19 @@ export function useDailyOdometer(vehicleId: string, rangeDays = 90) {
 
   const logToday = (miles: number, notes?: string) => logDate(today, miles, notes);
 
-  return { entries, stats, isLoading, submitting, logToday, logDate, refetch: load, today };
+  async function deleteEntry(id: string): Promise<boolean> {
+    setSubmitting(true);
+    try {
+      const res = await fetch(`/api/vehicles/${vehicleId}/odometer/daily/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        await load();
+        return true;
+      }
+      return false;
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return { entries, stats, isLoading, submitting, logToday, logDate, deleteEntry, refetch: load, today };
 }

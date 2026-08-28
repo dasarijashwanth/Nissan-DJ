@@ -48,6 +48,25 @@ async function getBaselineOdometer(vehicleId: string, beforeDate: Date): Promise
   return Math.max(current, start);
 }
 
+/**
+ * Whatever daily entry comes right after `changedDate` had its own `driven` computed against
+ * this date's old value as its baseline — after an edit or delete here, that's stale until
+ * recalculated against whatever now precedes it.
+ */
+async function recomputeNextEntryDriven(vehicleId: string, changedDate: Date): Promise<void> {
+  const next = await prisma.dailyOdometer.findFirst({
+    where: { vehicleId, date: { gt: changedDate } },
+    orderBy: { date: "asc" },
+  });
+  if (!next) return;
+
+  const baseline = await getBaselineOdometer(vehicleId, next.date);
+  const driven = Math.max(0, next.miles - baseline);
+  if (driven !== next.driven) {
+    await prisma.dailyOdometer.update({ where: { id: next.id }, data: { driven } });
+  }
+}
+
 export async function upsertDailyOdometer(
   vehicleId: string,
   date: Date,
@@ -78,7 +97,24 @@ export async function upsertDailyOdometer(
     return daily;
   });
 
+  // Only matters when editing an existing (non-latest) day — a brand-new latest entry has no
+  // "next" day yet, so this is a harmless no-op in that case.
+  await recomputeNextEntryDriven(vehicleId, date);
+
   return serializeEntry(entry);
+}
+
+/** Removes a daily entry (and its synced OdometerLog row), then fixes up the following day's driven delta. */
+export async function deleteDailyOdometerEntry(vehicleId: string, id: string): Promise<void> {
+  const entry = await prisma.dailyOdometer.findUnique({ where: { id } });
+  if (!entry || entry.vehicleId !== vehicleId) return;
+
+  await prisma.$transaction([
+    prisma.dailyOdometer.delete({ where: { id } }),
+    prisma.odometerLog.deleteMany({ where: { vehicleId, date: entry.date } }),
+  ]);
+
+  await recomputeNextEntryDriven(vehicleId, entry.date);
 }
 
 export type DailyOdometerStats = {
