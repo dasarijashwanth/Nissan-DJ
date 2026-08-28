@@ -22,7 +22,7 @@ import {
   getPeriodRange,
   type AnalyticsPeriod,
 } from "@/lib/analyticsUtils";
-import { getMonthlyVehicleCosts, getCostPerMileTrend } from "@/lib/vehicleAnalytics";
+import { getMonthlyVehicleCosts, getCostPerMileTrend, getWeeklyFuelTrend } from "@/lib/vehicleAnalytics";
 import { getTrackingMode, scopeWhereForMode } from "@/lib/trackingMode";
 import { monthRange, cn } from "@/lib/utils";
 import { Card } from "@/components/ui/Card";
@@ -32,6 +32,7 @@ import { IncomeExpenseTrend } from "@/components/analytics/IncomeExpenseTrend";
 import { SpendingDonutChart } from "@/components/analytics/SpendingDonutChart";
 import { CategoryBreakdownTable } from "@/components/analytics/CategoryBreakdownTable";
 import { CarCostTrendChart } from "@/components/analytics/CarCostTrendChart";
+import { WeeklyMilesChart } from "@/components/analytics/WeeklyMilesChart";
 import { MonthOverMonthCard } from "@/components/analytics/MonthOverMonthCard";
 import { VehicleComparisonChart } from "@/components/analytics/VehicleComparisonChart";
 import { ExportMenu } from "@/components/ExportMenu";
@@ -154,6 +155,9 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
     months,
     vehicle?.startOdometer
   );
+  const weeklyMilesData = isVehicleMode
+    ? getWeeklyFuelTrend(fuelLogs, maintenanceLogs, repairLogs, odometerLogs, 12, now, vehicle?.startOdometer)
+    : [];
 
   return (
     <div className="space-y-6">
@@ -264,6 +268,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
       </div>
 
       {isVehicleMode && <CarCostTrendChart monthlyCosts={monthlyCarCosts} costPerMileTrend={costPerMileTrend} />}
+      {isVehicleMode && <WeeklyMilesChart data={weeklyMilesData} />}
 
       <MonthOverMonthCard data={momComparisonData} />
         </>

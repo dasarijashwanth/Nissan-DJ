@@ -154,6 +154,7 @@ export function getWeeklyFuelTrend(
       week: new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" }).format(start),
       cost,
       mpg,
+      milesDriven,
     };
   });
 
