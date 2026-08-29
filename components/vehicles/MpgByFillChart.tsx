@@ -10,7 +10,11 @@ export function MpgByFillChart({ fuelLogs }: { fuelLogs: FuelLog[] }) {
   const data = buildFuelSegments(fuelLogs)
     .filter((s) => s.mpg != null)
     .map((s) => ({
-      date: new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(new Date(s.log.date)),
+      // log.date is a UTC-midnight boundary; pin the formatter to UTC too, or a browser in a
+      // timezone behind UTC would display it as the day before.
+      date: new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" }).format(
+        new Date(s.log.date)
+      ),
       odometer: s.log.odometer,
       mpg: Number(s.mpg!.toFixed(1)),
       miles: s.miles,
