@@ -2,12 +2,12 @@
 
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card } from "@/components/ui/Card";
-import { buildFuelSegments } from "@/lib/vehicleUtils";
+import { buildSimpleFuelSegments } from "@/lib/vehicleUtils";
 import { formatMiles } from "@/lib/utils";
 import type { FuelLog } from "@/lib/types";
 
 export function MpgByFillChart({ fuelLogs }: { fuelLogs: FuelLog[] }) {
-  const data = buildFuelSegments(fuelLogs)
+  const data = buildSimpleFuelSegments(fuelLogs)
     .filter((s) => s.mpg != null)
     .map((s) => ({
       // log.date is a UTC-midnight boundary; pin the formatter to UTC too, or a browser in a
@@ -25,7 +25,13 @@ export function MpgByFillChart({ fuelLogs }: { fuelLogs: FuelLog[] }) {
 
   return (
     <Card className="p-5">
-      <p className="mb-4 text-sm font-medium text-text-secondary">MPG per Fill-up</p>
+      <div className="mb-4">
+        <p className="text-sm font-medium text-text-secondary">MPG per Fill-up</p>
+        <p className="text-xs text-text-muted">
+          Every fill shown individually, including partial top-offs — may differ from Avg/Best/Worst
+          MPG elsewhere, which merge partial fills into the next full tank.
+        </p>
+      </div>
       <div className="h-64 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} barGap={4}>
