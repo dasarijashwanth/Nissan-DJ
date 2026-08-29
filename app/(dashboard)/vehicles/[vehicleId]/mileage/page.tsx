@@ -2,10 +2,11 @@ import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { getAuthUser } from "@/lib/supabase";
-import { getVehicleById } from "@/lib/vehicleQueries";
+import { getVehicleById, getFuelLogs } from "@/lib/vehicleQueries";
 import { getDailyOdometerEntries } from "@/lib/dailyOdometerQueries";
 import { OdometerHistoryChart } from "@/components/vehicles/OdometerHistoryChart";
 import { DailyOdometerWidget } from "@/components/vehicles/DailyOdometerWidget";
+import { MpgByFillChart } from "@/components/vehicles/MpgByFillChart";
 
 export default async function MileagePage({ params }: { params: Promise<{ vehicleId: string }> }) {
   const user = await getAuthUser();
@@ -18,7 +19,10 @@ export default async function MileagePage({ params }: { params: Promise<{ vehicl
   const to = new Date();
   const from = new Date(to);
   from.setUTCDate(from.getUTCDate() - 89);
-  const entries = await getDailyOdometerEntries(vehicleId, from, to);
+  const [entries, fuelLogs] = await Promise.all([
+    getDailyOdometerEntries(vehicleId, from, to),
+    getFuelLogs(vehicleId),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -34,6 +38,8 @@ export default async function MileagePage({ params }: { params: Promise<{ vehicl
       <DailyOdometerWidget vehicleId={vehicle.id} showHistory />
 
       <OdometerHistoryChart entries={entries} />
+
+      <MpgByFillChart fuelLogs={fuelLogs} />
     </div>
   );
 }
