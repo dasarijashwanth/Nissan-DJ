@@ -62,28 +62,6 @@ export function buildFuelSegments(fuelLogs: FuelLog[]): FuelSegment[] {
   return segments;
 }
 
-/**
- * Simple back-to-back MPG for every fill — (this fill's odometer - the previous fill's odometer)
- * / this fill's own gallons, with no full-tank merging. This is what the user explicitly asked
- * for on the "MPG per Fill-up" chart specifically (one bar per fill, including partial top-offs),
- * even knowing a partial fill can show a misleadingly low value for that one segment. Every other
- * MPG figure in the app (Avg/Best/Worst MPG, the efficiency insight, the weekly trend) keeps using
- * buildFuelSegments' full-tank-aware math — do not swap those to this.
- */
-export function buildSimpleFuelSegments(fuelLogs: FuelLog[]): FuelSegment[] {
-  const sorted = [...fuelLogs]
-    .filter((l) => l.type === "per_fill")
-    .sort((a, b) => a.odometer - b.odometer);
-
-  return sorted.map((log, i) => {
-    if (i === 0) return { log, mpg: null, miles: 0, gallons: 0 };
-
-    const miles = log.odometer - sorted[i - 1].odometer;
-    const mpg = miles > 0 && log.gallons > 0 ? miles / log.gallons : null;
-    return { log, mpg, miles: Math.max(miles, 0), gallons: log.gallons };
-  });
-}
-
 /** Average MPG across all completed full-tank segments: total miles / total gallons. */
 export function calcAvgMPG(fuelLogs: FuelLog[]): number {
   const segments = buildFuelSegments(fuelLogs);
