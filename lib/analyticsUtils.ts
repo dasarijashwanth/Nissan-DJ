@@ -1,5 +1,5 @@
 import type { Transaction, BudgetStatus } from "@/lib/types";
-import { monthRange, shortMonthLabel } from "@/lib/utils";
+import { monthRange, shortMonthLabel, nowInAppTimezone } from "@/lib/utils";
 
 export function calcSavingsRate(income: number, expenses: number): number {
   if (income <= 0) return 0;
@@ -28,7 +28,7 @@ export function getMonthlyTrend(
   transactions: Transaction[],
   months: number
 ): { month: string; income: number; expenses: number }[] {
-  const now = new Date();
+  const now = nowInAppTimezone();
   const buckets = Array.from({ length: months }, (_, i) => {
     const offset = months - 1 - i;
     const date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - offset, 1));
@@ -72,7 +72,7 @@ export function getTopCategories(
 export type AnalyticsPeriod = "month" | "3m" | "6m" | "year" | "all";
 
 export function getPeriodRange(period: AnalyticsPeriod, earliestDate?: Date) {
-  const now = new Date();
+  const now = nowInAppTimezone();
   const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
 
   if (period === "month") {

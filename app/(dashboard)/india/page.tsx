@@ -7,6 +7,7 @@ import {
   groupIndiaTransfersByRecipient,
 } from "@/lib/indiaTransferQueries";
 import { getUsdToInrRate } from "@/lib/exchangeRate";
+import { nowInAppTimezone } from "@/lib/utils";
 import { Card } from "@/components/ui/Card";
 import { AnimatedAmount } from "@/components/ui/AnimatedAmount";
 import { IndiaTransferTable } from "@/components/IndiaTransferTable";
@@ -19,7 +20,7 @@ export default async function IndiaTransfersPage() {
 
   const [transfers, usdRate] = await Promise.all([getIndiaTransfers(user.id), getUsdToInrRate()]);
 
-  const now = new Date();
+  const now = nowInAppTimezone();
   const thisYear = now.getUTCFullYear();
   const thisMonth = now.getUTCMonth();
 

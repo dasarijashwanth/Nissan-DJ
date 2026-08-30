@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { monthRange, shortMonthLabel } from "@/lib/utils";
+import { monthRange, shortMonthLabel, nowInAppTimezone } from "@/lib/utils";
 import type { Transaction, TransactionType } from "@/lib/types";
 import type { scopeWhereForMode } from "@/lib/trackingMode";
 
@@ -47,7 +47,7 @@ export async function getSummary(userId: string, start: Date, end: Date, scopeWh
 }
 
 export async function getMonthlyChartData(userId: string, months = 6, scopeWhere?: ScopeWhere) {
-  const now = new Date();
+  const now = nowInAppTimezone();
   const currentYear = now.getUTCFullYear();
   const currentMonth = now.getUTCMonth();
 

@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { Alert, AlertType } from "@/lib/types";
+import { nowInAppTimezone } from "@/lib/utils";
 
 export async function getAlerts(userId: string, type?: string, limit?: number): Promise<Alert[]> {
   const alerts = await prisma.alert.findMany({
@@ -31,7 +32,7 @@ export async function createAlertIfNotDuplicate(
   message: string,
   link?: string | null
 ) {
-  const startOfDay = new Date();
+  const startOfDay = nowInAppTimezone();
   startOfDay.setUTCHours(0, 0, 0, 0);
 
   const existing = await prisma.alert.findFirst({

@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { IndiaTransfer } from "@/lib/types";
-import { monthRange, shortMonthLabel } from "@/lib/utils";
+import { monthRange, shortMonthLabel, nowInAppTimezone } from "@/lib/utils";
 
 export async function getIndiaTransfers(userId: string): Promise<IndiaTransfer[]> {
   const transfers = await prisma.indiaTransfer.findMany({
@@ -25,7 +25,7 @@ export function getIndiaTransferMonthlyTrend(
   transfers: IndiaTransfer[],
   months: number
 ): { month: string; amount: number }[] {
-  const now = new Date();
+  const now = nowInAppTimezone();
   const buckets = Array.from({ length: months }, (_, i) => {
     const offset = months - 1 - i;
     const date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - offset, 1));

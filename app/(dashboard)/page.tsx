@@ -19,7 +19,7 @@ import { getTrackingMode, categoryWhereForMode, scopeWhereForMode } from "@/lib/
 import { calcSavingsRate, getBudgetStatus, groupByCategory } from "@/lib/analyticsUtils";
 import { calcMonthVehicleCost } from "@/lib/vehicleUtils";
 import { getWeeklyStats } from "@/lib/vehicleAnalytics";
-import { monthRange, formatCurrency, formatDate, cn } from "@/lib/utils";
+import { monthRange, formatCurrency, formatDate, cn, nowInAppTimezone } from "@/lib/utils";
 import { Card } from "@/components/ui/Card";
 import { AnimatedAmount } from "@/components/ui/AnimatedAmount";
 import { SummaryCards } from "@/components/SummaryCards";
@@ -35,7 +35,7 @@ export default async function DashboardPage() {
   const user = await getAuthUser();
   if (!user) redirect("/login");
 
-  const now = new Date();
+  const now = nowInAppTimezone();
   const { start, end } = monthRange(now.getUTCFullYear(), now.getUTCMonth());
   const month = now.getUTCMonth() + 1;
   const year = now.getUTCFullYear();

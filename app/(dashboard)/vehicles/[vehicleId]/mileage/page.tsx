@@ -4,6 +4,7 @@ import { ChevronLeft } from "lucide-react";
 import { getAuthUser } from "@/lib/supabase";
 import { getVehicleById, getFuelLogs } from "@/lib/vehicleQueries";
 import { getDailyOdometerEntries } from "@/lib/dailyOdometerQueries";
+import { nowInAppTimezone } from "@/lib/utils";
 import { OdometerHistoryChart } from "@/components/vehicles/OdometerHistoryChart";
 import { DailyOdometerWidget } from "@/components/vehicles/DailyOdometerWidget";
 import { MpgByFillChart } from "@/components/vehicles/MpgByFillChart";
@@ -17,7 +18,7 @@ export default async function MileagePage({ params }: { params: Promise<{ vehicl
   const vehicle = await getVehicleById(vehicleId);
   if (!vehicle || vehicle.userId !== user.id) notFound();
 
-  const to = new Date();
+  const to = nowInAppTimezone();
   const from = new Date(to);
   from.setUTCDate(from.getUTCDate() - 89);
   const [entries, fuelLogs] = await Promise.all([

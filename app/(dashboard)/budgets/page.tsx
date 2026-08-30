@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getAuthUser } from "@/lib/supabase";
 import { getBudgetsWithSpending } from "@/lib/budgetQueries";
 import { getTrackingMode, categoryWhereForMode } from "@/lib/trackingMode";
-import { monthLabel, formatCurrency } from "@/lib/utils";
+import { monthLabel, formatCurrency, nowInAppTimezone } from "@/lib/utils";
 import { Card } from "@/components/ui/Card";
 import { BudgetOverviewGrid } from "@/components/budgets/BudgetOverviewGrid";
 
@@ -13,7 +13,7 @@ export default async function BudgetsPage({ searchParams }: PageProps<"/budgets"
   if (!user) redirect("/login");
 
   const params = await searchParams;
-  const now = new Date();
+  const now = nowInAppTimezone();
   const year = Number(params.year) || now.getUTCFullYear();
   const month = params.month ? Number(params.month) : now.getUTCMonth() + 1;
 

@@ -1,5 +1,5 @@
 import type { FuelLog, MaintenanceLog, RepairLog, Insurance, OdometerLog } from "@/lib/types";
-import { monthRange, shortMonthLabel } from "@/lib/utils";
+import { monthRange, shortMonthLabel, nowInAppTimezone } from "@/lib/utils";
 
 /**
  * Falls back to the vehicle's own starting mileage (not 0) when nothing was logged before `date`
@@ -29,7 +29,7 @@ function maxOdometerBeforeFn(
 }
 
 function monthBuckets(months: number) {
-  const now = new Date();
+  const now = nowInAppTimezone();
   return Array.from({ length: months }, (_, i) => {
     const offset = months - 1 - i;
     const date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - offset, 1));

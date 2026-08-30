@@ -10,6 +10,7 @@ import {
 } from "@/lib/chitFundQueries";
 import { getLoansGiven } from "@/lib/loanQueries";
 import { getUsdToInrRate } from "@/lib/exchangeRate";
+import { nowInAppTimezone } from "@/lib/utils";
 import { Card } from "@/components/ui/Card";
 import { AnimatedAmount } from "@/components/ui/AnimatedAmount";
 import { ChitFundTable } from "@/components/ChitFundTable";
@@ -30,7 +31,7 @@ export default async function CheetiPage() {
     getUsdToInrRate(),
   ]);
 
-  const now = new Date();
+  const now = nowInAppTimezone();
   const thisYear = now.getUTCFullYear();
   const thisMonth = now.getUTCMonth();
 

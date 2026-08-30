@@ -25,6 +25,34 @@ export function formatMiles(miles: number) {
   return `${new Intl.NumberFormat("en-US").format(Math.round(miles))} mi`;
 }
 
+const APP_TIMEZONE = "America/New_York";
+
+/**
+ * Server Components run on UTC, but every stored date is a US Eastern calendar day. Deriving
+ * "today"/"this week"/"this month" from the raw UTC instant (`new Date()`) flips the calendar
+ * over 4-5 hours before it actually does in Eastern time — e.g. at 8pm ET the UTC clock has
+ * already rolled to the next day, so a Saturday-night "this week" query lands in a brand-new,
+ * still-empty week. This returns a Date whose UTC fields (getUTCDate, getUTCDay, etc.) read as
+ * the current Eastern wall-clock date/time instead, so existing UTC-based bucket math just works.
+ */
+export function nowInAppTimezone(): Date {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: APP_TIMEZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).formatToParts(new Date());
+  const get = (type: string) => Number(parts.find((p) => p.type === type)?.value);
+  const hour = get("hour");
+  return new Date(
+    Date.UTC(get("year"), get("month") - 1, get("day"), hour === 24 ? 0 : hour, get("minute"), get("second"))
+  );
+}
+
 // Every stored date here is a calendar day with no meaningful time component, serialized as
 // UTC midnight ("...T00:00:00.000Z"). Parsing that with `new Date()` and formatting in the
 // viewer's local timezone shifts it back a day for anyone west of UTC — so pull the Y/M/D

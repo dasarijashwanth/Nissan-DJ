@@ -11,6 +11,7 @@ import {
 } from "@/lib/vehicleQueries";
 import { getWeeklyFuelTrend } from "@/lib/vehicleAnalytics";
 import { getFuelEfficiencyInsight } from "@/lib/vehicleUtils";
+import { nowInAppTimezone } from "@/lib/utils";
 import { FuelLogTable } from "@/components/vehicles/FuelLogTable";
 import { FuelTrendChart } from "@/components/vehicles/FuelTrendChart";
 import { FuelEfficiencyInsights } from "@/components/vehicles/FuelEfficiencyInsights";
@@ -36,7 +37,7 @@ export default async function FuelPage({ params }: { params: Promise<{ vehicleId
     repairLogs,
     odometerLogs,
     12,
-    new Date(),
+    nowInAppTimezone(),
     vehicle.startOdometer
   );
   const efficiencyInsight = getFuelEfficiencyInsight(fuelLogs);

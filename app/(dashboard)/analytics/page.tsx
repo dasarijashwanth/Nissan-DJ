@@ -24,7 +24,7 @@ import {
 } from "@/lib/analyticsUtils";
 import { getMonthlyVehicleCosts, getCostPerMileTrend, getWeeklyFuelTrend } from "@/lib/vehicleAnalytics";
 import { getTrackingMode, scopeWhereForMode } from "@/lib/trackingMode";
-import { monthRange, cn } from "@/lib/utils";
+import { monthRange, cn, nowInAppTimezone } from "@/lib/utils";
 import { Card } from "@/components/ui/Card";
 import { AnimatedAmount } from "@/components/ui/AnimatedAmount";
 import { SavingsRateCard } from "@/components/analytics/SavingsRateCard";
@@ -111,7 +111,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
   const trendData = getMonthlyTrend(transactions, months);
 
   // "vs last month" is always the two most recent calendar months, independent of the period tab.
-  const now = new Date();
+  const now = nowInAppTimezone();
   const thisMonthRange = monthRange(now.getUTCFullYear(), now.getUTCMonth());
   const lastMonthDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1));
   const lastMonthRange = monthRange(lastMonthDate.getUTCFullYear(), lastMonthDate.getUTCMonth());

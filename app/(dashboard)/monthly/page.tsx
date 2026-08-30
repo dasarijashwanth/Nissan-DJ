@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight, PieChart } from "lucide-react";
 import { getAuthUser } from "@/lib/supabase";
 import { getTransactions, getSummary, getCategoryTotals } from "@/lib/queries";
 import { getTrackingMode, scopeWhereForMode } from "@/lib/trackingMode";
-import { monthLabel, monthRange, formatCurrency, cn } from "@/lib/utils";
+import { monthLabel, monthRange, formatCurrency, cn, nowInAppTimezone } from "@/lib/utils";
 import { SummaryCards } from "@/components/SummaryCards";
 import { TransactionTable } from "@/components/TransactionTable";
 import { Card } from "@/components/ui/Card";
@@ -14,7 +14,7 @@ export default async function MonthlyPage({ searchParams }: PageProps<"/monthly"
   if (!user) redirect("/login");
 
   const params = await searchParams;
-  const now = new Date();
+  const now = nowInAppTimezone();
   const year = Number(params.year) || now.getUTCFullYear();
   const month = params.month ? Number(params.month) - 1 : now.getUTCMonth();
 

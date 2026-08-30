@@ -1,4 +1,5 @@
 import type { ChitFund, LoanGiven } from "@/lib/types";
+import { nowInAppTimezone } from "@/lib/utils";
 
 /** Number of full calendar months between two dates — a month only counts once its "day of month" anniversary has passed. */
 function fullMonthsElapsed(start: Date, now: Date): number {
@@ -22,7 +23,7 @@ export type LoanOutstanding = {
  * already fills in when logging a received payment — no separate linking step required.
  */
 export function calcLoanOutstanding(loan: LoanGiven, allContributions: ChitFund[]): LoanOutstanding {
-  const monthsElapsed = fullMonthsElapsed(new Date(loan.startDate), new Date());
+  const monthsElapsed = fullMonthsElapsed(new Date(loan.startDate), nowInAppTimezone());
   const accruedInterest = loan.principal * (loan.interestRatePercent / 100) * monthsElapsed;
 
   const receivedInterest = allContributions

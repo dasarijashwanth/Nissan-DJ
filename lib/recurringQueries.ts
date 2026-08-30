@@ -3,7 +3,7 @@ import type { RecurringTransaction, RecurringFrequency, TransactionType } from "
 import { computeNextDueDate } from "@/lib/recurringUtils";
 import { createAlertIfNotDuplicate } from "@/lib/alertQueries";
 import { checkBudgetAlertForTransaction } from "@/lib/alertChecks";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, nowInAppTimezone } from "@/lib/utils";
 import { VEHICLE_CATEGORIES } from "@/lib/trackingMode";
 import type { categoryWhereForMode } from "@/lib/trackingMode";
 
@@ -35,7 +35,7 @@ export async function isRecurringOwnedBy(id: string, userId: string): Promise<bo
 }
 
 export async function getDueTodayCount(userId: string, categoryWhere?: CategoryWhere): Promise<number> {
-  const endOfToday = new Date();
+  const endOfToday = nowInAppTimezone();
   endOfToday.setUTCHours(23, 59, 59, 999);
 
   return prisma.recurringTransaction.count({

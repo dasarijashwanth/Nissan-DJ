@@ -22,7 +22,7 @@ import {
   isInsuranceRenewalSoon,
   daysUntil,
 } from "@/lib/vehicleUtils";
-import { formatCurrency, formatDate, formatMiles, cn } from "@/lib/utils";
+import { formatCurrency, formatDate, formatMiles, cn, nowInAppTimezone } from "@/lib/utils";
 import { Card } from "@/components/ui/Card";
 import { VehicleHeroCard } from "@/components/vehicles/VehicleHeroCard";
 import { CarStatsRow } from "@/components/vehicles/CarStatsRow";
@@ -63,7 +63,7 @@ export default async function VehiclePage({
   const totalSpend = calcTotalVehicleSpend(fuelLogs, maintenanceLogs, repairLogs, insurancePolicies);
   const costPerMile = calcCostPerMile(totalSpend, startOdometer, currentOdometer);
   const avgMPG = calcAvgMPG(fuelLogs);
-  const monthCost = calcMonthVehicleCost(fuelLogs, maintenanceLogs, repairLogs, insurancePolicies, new Date());
+  const monthCost = calcMonthVehicleCost(fuelLogs, maintenanceLogs, repairLogs, insurancePolicies, nowInAppTimezone());
 
   const dueMaintenance = maintenanceLogs.filter((l) => isMaintenanceDueSoon(l, currentOdometer));
   const dueInsurance = insurancePolicies.filter((p) => isInsuranceRenewalSoon(p));
