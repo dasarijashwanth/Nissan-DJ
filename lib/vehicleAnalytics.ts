@@ -91,13 +91,15 @@ export function getWeeklyStats(
   now: Date,
   startOdometer: number | null = null
 ) {
+  // Monday-start, to match weekBuckets/getWeeklyFuelTrend's own week convention below.
   const dayOfWeek = now.getUTCDay(); // 0 = Sunday
-  const weekStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - dayOfWeek));
+  const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  const weekStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - diffToMonday));
   const weekEnd = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000);
 
   const maxOdometerBefore = maxOdometerBeforeFn(fuelLogs, maintenanceLogs, repairLogs, odometerLogs, startOdometer);
   const milesThisWeek = Math.max(0, maxOdometerBefore(weekEnd) - maxOdometerBefore(weekStart));
-  const daysElapsed = dayOfWeek + 1; // days so far this week, including today
+  const daysElapsed = diffToMonday + 1; // days so far this week (Mon=1) including today
   const avgPerDay = milesThisWeek / daysElapsed;
 
   const fuelCostThisWeek = fuelLogs
