@@ -62,6 +62,27 @@ export function buildFuelSegments(fuelLogs: FuelLog[]): FuelSegment[] {
   return segments;
 }
 
+/**
+ * Per-fill MPG for the "Odometer at Every Fill-up" table: each fill's own gallons divided into
+ * the distance driven *before the next* fill — e.g. the gas bought on the 18th is what carried the
+ * car to the 20th, so that MPG is shown on the 18th's row, not the 20th's. The most recent fill has
+ * no MPG yet, since there's no later odometer reading to measure the distance it covered.
+ */
+export function buildOpeningFillSegments(fuelLogs: FuelLog[]): FuelSegment[] {
+  const sorted = [...fuelLogs]
+    .filter((l) => l.type === "per_fill")
+    .sort((a, b) => a.odometer - b.odometer);
+
+  return sorted.map((log, i) => {
+    const next = sorted[i + 1];
+    if (!next) return { log, mpg: null, miles: 0, gallons: 0 };
+
+    const miles = next.odometer - log.odometer;
+    const mpg = miles > 0 && log.gallons > 0 ? miles / log.gallons : null;
+    return { log, mpg, miles: Math.max(miles, 0), gallons: log.gallons };
+  });
+}
+
 /** Average MPG across all completed full-tank segments: total miles / total gallons. */
 export function calcAvgMPG(fuelLogs: FuelLog[]): number {
   const segments = buildFuelSegments(fuelLogs);

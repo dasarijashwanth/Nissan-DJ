@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/Card";
-import { buildFuelSegments } from "@/lib/vehicleUtils";
+import { buildOpeningFillSegments } from "@/lib/vehicleUtils";
 import { formatDate, formatMiles } from "@/lib/utils";
 import type { FuelLog } from "@/lib/types";
 
@@ -12,7 +12,7 @@ export function FuelOdometerList({ fuelLogs }: { fuelLogs: FuelLog[] }) {
   if (sorted.length === 0) return null;
 
   const mpgById = new Map<string, number>();
-  for (const s of buildFuelSegments(fuelLogs)) {
+  for (const s of buildOpeningFillSegments(fuelLogs)) {
     if (s.mpg != null) mpgById.set(s.log.id, s.mpg);
   }
 
@@ -20,6 +20,11 @@ export function FuelOdometerList({ fuelLogs }: { fuelLogs: FuelLog[] }) {
     <Card className="overflow-hidden p-0">
       <div className="border-b border-black/[0.08] p-4">
         <p className="text-sm font-medium text-text-secondary">Odometer at Every Fill-up</p>
+        <p className="mt-1 text-xs text-text-muted">
+          MPG shown on each row = miles driven until the *next* fill, divided by the gallons bought
+          on this row — e.g. Aug 18&apos;s gas is what got the car to Aug 20, so that MPG shows on
+          the Aug 18 row. The most recent fill has no MPG yet until you log the next one.
+        </p>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
