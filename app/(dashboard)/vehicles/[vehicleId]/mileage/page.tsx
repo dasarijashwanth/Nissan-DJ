@@ -7,6 +7,7 @@ import { getDailyOdometerEntries } from "@/lib/dailyOdometerQueries";
 import { OdometerHistoryChart } from "@/components/vehicles/OdometerHistoryChart";
 import { DailyOdometerWidget } from "@/components/vehicles/DailyOdometerWidget";
 import { MpgByFillChart } from "@/components/vehicles/MpgByFillChart";
+import { FuelOdometerList } from "@/components/vehicles/FuelOdometerList";
 
 export default async function MileagePage({ params }: { params: Promise<{ vehicleId: string }> }) {
   const user = await getAuthUser();
@@ -40,6 +41,8 @@ export default async function MileagePage({ params }: { params: Promise<{ vehicl
       <OdometerHistoryChart entries={entries} />
 
       <MpgByFillChart fuelLogs={fuelLogs} />
+
+      <FuelOdometerList fuelLogs={fuelLogs} />
     </div>
   );
 }
