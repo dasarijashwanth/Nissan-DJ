@@ -1,9 +1,120 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Bell, BellOff } from "lucide-react";
 import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import type { UserPreferences } from "@/lib/types";
+
+function urlBase64ToUint8Array(base64: string) {
+  const padding = "=".repeat((4 - (base64.length % 4)) % 4);
+  const base64Safe = (base64 + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const raw = atob(base64Safe);
+  return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
+}
+
+type PushStatus = "unsupported" | "checking" | "subscribed" | "unsubscribed" | "denied";
+
+function PushToggle() {
+  const [status, setStatus] = useState<PushStatus>("checking");
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+      setStatus("unsupported");
+      return;
+    }
+    if (Notification.permission === "denied") {
+      setStatus("denied");
+      return;
+    }
+    navigator.serviceWorker.ready
+      .then((reg) => reg.pushManager.getSubscription())
+      .then((sub) => setStatus(sub ? "subscribed" : "unsubscribed"))
+      .catch(() => setStatus("unsupported"));
+  }, []);
+
+  async function subscribe() {
+    const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+    if (!publicKey) {
+      setStatus("unsupported");
+      return;
+    }
+    setBusy(true);
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") {
+        setStatus(permission === "denied" ? "denied" : "unsubscribed");
+        return;
+      }
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicKey),
+      });
+      await fetch("/api/push/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(sub.toJSON()),
+      });
+      setStatus("subscribed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function unsubscribe() {
+    setBusy(true);
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
+      if (sub) {
+        await fetch("/api/push/unsubscribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ endpoint: sub.endpoint }),
+        });
+        await sub.unsubscribe();
+      }
+      setStatus("unsubscribed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (status === "unsupported") return null;
+
+  return (
+    <div className="flex items-center justify-between gap-4 border-b border-black/[0.08] pb-4">
+      <div className="flex items-center gap-3">
+        {status === "subscribed" ? (
+          <Bell className="size-4 text-indigo-600" />
+        ) : (
+          <BellOff className="size-4 text-text-muted" />
+        )}
+        <div>
+          <p className="text-sm font-medium text-text-primary">Push notifications on this device</p>
+          <p className="text-xs text-text-muted">
+            {status === "denied"
+              ? "Blocked in your browser settings — enable notifications for this site to turn it back on."
+              : "Get a notification here even when the app isn't open."}
+          </p>
+        </div>
+      </div>
+      {status !== "denied" && (
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={busy || status === "checking"}
+          onClick={status === "subscribed" ? unsubscribe : subscribe}
+        >
+          {status === "subscribed" ? "Disable" : "Enable"}
+        </Button>
+      )}
+    </div>
+  );
+}
 
 const TOGGLES: { key: keyof UserPreferences["notifications"]; label: string; description: string }[] = [
   {
@@ -40,6 +151,7 @@ export function NotificationsSection({ notifications }: { notifications: UserPre
     <Card className="p-5">
       <p className="mb-4 text-sm font-semibold text-text-primary">Notifications</p>
       <div className="space-y-4">
+        <PushToggle />
         {TOGGLES.map((t) => (
           <div key={t.key} className="flex items-center justify-between gap-4">
             <div>

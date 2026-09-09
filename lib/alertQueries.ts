@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { Alert, AlertType } from "@/lib/types";
 import { nowInAppTimezone } from "@/lib/utils";
+import { sendPushToUser } from "@/lib/pushQueries";
 
 export async function getAlerts(userId: string, type?: string, limit?: number): Promise<Alert[]> {
   const alerts = await prisma.alert.findMany({
@@ -41,7 +42,11 @@ export async function createAlertIfNotDuplicate(
   });
   if (existing) return null;
 
-  return prisma.alert.create({
+  const alert = await prisma.alert.create({
     data: { userId, type, title, message, link: link ?? null },
   });
+
+  await sendPushToUser(userId, { title, body: message, url: link });
+
+  return alert;
 }

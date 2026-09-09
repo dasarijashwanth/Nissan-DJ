@@ -21,7 +21,21 @@ model User {
   chitFunds      ChitFund[]
   chitFundPlans  ChitFundPlan[]
   loansGiven     LoanGiven[]
+  pushSubscriptions PushSubscription[]
   preferences    Json?
+}
+
+/** One browser/device subscribed to push notifications for this user — created when they enable push in Settings. A user can have several (phone + laptop, etc.); each is sent to independently, and a subscription is deleted if the browser reports it's no longer valid. */
+model PushSubscription {
+  id        String   @id @default(uuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
 
 /** A purely informational log of money sent to family in India — never counted in income/expense totals, budgets, or any chart; just notes the user wants to keep track of separately. */
