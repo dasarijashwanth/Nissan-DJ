@@ -16,24 +16,24 @@ function urlBase64ToUint8Array(base64: string) {
 
 type PushStatus = "unsupported" | "checking" | "subscribed" | "unsubscribed" | "denied";
 
+function getInitialPushStatus(): PushStatus {
+  if (typeof window === "undefined") return "checking"; // resolved for real once mounted on the client
+  if (!("serviceWorker" in navigator) || !("PushManager" in window)) return "unsupported";
+  if (Notification.permission === "denied") return "denied";
+  return "checking";
+}
+
 function PushToggle() {
-  const [status, setStatus] = useState<PushStatus>("checking");
+  const [status, setStatus] = useState<PushStatus>(getInitialPushStatus);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
-      setStatus("unsupported");
-      return;
-    }
-    if (Notification.permission === "denied") {
-      setStatus("denied");
-      return;
-    }
+    if (status !== "checking") return;
     navigator.serviceWorker.ready
       .then((reg) => reg.pushManager.getSubscription())
       .then((sub) => setStatus(sub ? "subscribed" : "unsubscribed"))
       .catch(() => setStatus("unsupported"));
-  }, []);
+  }, [status]);
 
   async function subscribe() {
     const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
