@@ -28,11 +28,11 @@ function maxOdometerBeforeFn(
   };
 }
 
-function monthBuckets(months: number) {
-  const now = nowInAppTimezone();
+/** `anchor` is the last month the buckets should end on — defaults to today, but a custom analytics range needs buckets ending at the picked end date instead. */
+function monthBuckets(months: number, anchor: Date = nowInAppTimezone()) {
   return Array.from({ length: months }, (_, i) => {
     const offset = months - 1 - i;
-    const date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - offset, 1));
+    const date = new Date(Date.UTC(anchor.getUTCFullYear(), anchor.getUTCMonth() - offset, 1));
     return { year: date.getUTCFullYear(), month: date.getUTCMonth() };
   });
 }
@@ -42,9 +42,10 @@ export function getMonthlyVehicleCosts(
   maintenanceLogs: MaintenanceLog[],
   repairLogs: RepairLog[],
   insurancePolicies: Insurance[],
-  months: number
+  months: number,
+  anchor?: Date
 ) {
-  return monthBuckets(months).map(({ year, month }) => {
+  return monthBuckets(months, anchor).map(({ year, month }) => {
     const { start, end } = monthRange(year, month);
     const inRange = (date: string) => {
       const d = new Date(date);
@@ -70,11 +71,12 @@ export function getCostPerMileTrend(
   odometerLogs: OdometerLog[],
   monthlyCosts: { month: string; fuel: number; maintenance: number; repair: number; insurance: number }[],
   months: number,
-  startOdometer: number | null = null
+  startOdometer: number | null = null,
+  anchor?: Date
 ) {
   const maxOdometerBefore = maxOdometerBeforeFn(fuelLogs, maintenanceLogs, repairLogs, odometerLogs, startOdometer);
 
-  return monthBuckets(months).map(({ year, month }, i) => {
+  return monthBuckets(months, anchor).map(({ year, month }, i) => {
     const { start, end } = monthRange(year, month);
     const milesDriven = Math.max(0, maxOdometerBefore(end) - maxOdometerBefore(start));
     const cost = monthlyCosts[i];

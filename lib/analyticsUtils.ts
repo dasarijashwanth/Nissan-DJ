@@ -24,14 +24,18 @@ export function groupByCategory(transactions: Transaction[]): Record<string, num
   return result;
 }
 
+/**
+ * `anchor` is the last month the trend should end on — defaults to the current month, but a
+ * custom analytics range needs the buckets to end at the picked end date instead of always today.
+ */
 export function getMonthlyTrend(
   transactions: Transaction[],
-  months: number
+  months: number,
+  anchor: Date = nowInAppTimezone()
 ): { month: string; income: number; expenses: number }[] {
-  const now = nowInAppTimezone();
   const buckets = Array.from({ length: months }, (_, i) => {
     const offset = months - 1 - i;
-    const date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - offset, 1));
+    const date = new Date(Date.UTC(anchor.getUTCFullYear(), anchor.getUTCMonth() - offset, 1));
     return { year: date.getUTCFullYear(), month: date.getUTCMonth() };
   });
 
@@ -69,27 +73,49 @@ export function getTopCategories(
     .slice(0, n);
 }
 
-export type AnalyticsPeriod = "month" | "3m" | "6m" | "year" | "all";
+export type AnalyticsPeriod = "month" | "3m" | "6m" | "year" | "all" | "custom";
 
-export function getPeriodRange(period: AnalyticsPeriod, earliestDate?: Date) {
+/**
+ * `customRange` is required (and only used) when period is "custom" — an inclusive start/end date
+ * picked by the user. `end` here is exclusive (bumped to the day after the picked end date) to
+ * match every other date-range boundary in the app (`d >= start && d < end`). `anchor` returned
+ * is the last calendar month in range, for callers that build monthly trend buckets ending there
+ * instead of always ending on today's month.
+ */
+export function getPeriodRange(
+  period: AnalyticsPeriod,
+  earliestDate?: Date,
+  customRange?: { start: Date; end: Date }
+) {
   const now = nowInAppTimezone();
   const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
 
   if (period === "month") {
-    return { start: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)), end, months: 1 };
+    return { start: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)), end, months: 1, anchor: now };
   }
   if (period === "3m") {
-    return { start: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 2, 1)), end, months: 3 };
+    return { start: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 2, 1)), end, months: 3, anchor: now };
   }
   if (period === "6m") {
-    return { start: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 5, 1)), end, months: 6 };
+    return { start: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 5, 1)), end, months: 6, anchor: now };
   }
   if (period === "year") {
     return {
       start: new Date(Date.UTC(now.getUTCFullYear(), 0, 1)),
       end,
       months: now.getUTCMonth() + 1,
+      anchor: now,
     };
+  }
+  if (period === "custom" && customRange) {
+    const { start, end: pickedEnd } = customRange;
+    const exclusiveEnd = new Date(pickedEnd.getTime() + 24 * 60 * 60 * 1000);
+    // Calendar months touched by the range, inclusive of both ends' months.
+    const months = Math.max(
+      1,
+      (pickedEnd.getUTCFullYear() - start.getUTCFullYear()) * 12 + (pickedEnd.getUTCMonth() - start.getUTCMonth()) + 1
+    );
+    return { start, end: exclusiveEnd, months, anchor: pickedEnd };
   }
 
   const start = earliestDate ? new Date(Date.UTC(earliestDate.getUTCFullYear(), earliestDate.getUTCMonth(), 1)) : end;
@@ -97,7 +123,7 @@ export function getPeriodRange(period: AnalyticsPeriod, earliestDate?: Date) {
     1,
     (end.getUTCFullYear() - start.getUTCFullYear()) * 12 + (end.getUTCMonth() - start.getUTCMonth())
   );
-  return { start, end, months };
+  return { start, end, months, anchor: now };
 }
 
 export function getBudgetStatus(spent: number, budget: number): BudgetStatus {

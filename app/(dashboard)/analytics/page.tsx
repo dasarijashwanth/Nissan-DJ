@@ -35,6 +35,7 @@ import { CarCostTrendChart } from "@/components/analytics/CarCostTrendChart";
 import { WeeklyMilesChart } from "@/components/analytics/WeeklyMilesChart";
 import { MonthOverMonthCard } from "@/components/analytics/MonthOverMonthCard";
 import { VehicleComparisonChart } from "@/components/analytics/VehicleComparisonChart";
+import { CustomRangePicker } from "@/components/analytics/CustomRangePicker";
 import { ExportMenu } from "@/components/ExportMenu";
 
 const PERIOD_TABS: { key: AnalyticsPeriod; label: string }[] = [
@@ -58,9 +59,20 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
 
   const params = await searchParams;
   const rawPeriod = Array.isArray(params.period) ? params.period[0] : params.period;
-  const selectedPeriod: AnalyticsPeriod = PERIOD_TABS.some((t) => t.key === rawPeriod)
-    ? (rawPeriod as AnalyticsPeriod)
-    : "month";
+  const rawFrom = Array.isArray(params.from) ? params.from[0] : params.from;
+  const rawTo = Array.isArray(params.to) ? params.to[0] : params.to;
+
+  const customRange =
+    rawPeriod === "custom" && rawFrom && rawTo && rawFrom <= rawTo
+      ? { start: new Date(rawFrom), end: new Date(rawTo) }
+      : undefined;
+
+  const selectedPeriod: AnalyticsPeriod =
+    rawPeriod === "custom" && customRange
+      ? "custom"
+      : PERIOD_TABS.some((t) => t.key === rawPeriod)
+        ? (rawPeriod as AnalyticsPeriod)
+        : "month";
 
   const trackingMode = await getTrackingMode();
   const isVehicleMode = trackingMode === "vehicle";
@@ -88,7 +100,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
       ? new Date(Math.min(...transactions.map((t) => new Date(t.date).getTime())))
       : undefined;
 
-  const { start, end, months } = getPeriodRange(selectedPeriod, earliestDate);
+  const { start, end, months, anchor } = getPeriodRange(selectedPeriod, earliestDate, customRange);
 
   const vehicles = isVehicleMode ? await getVehiclesForUser(user.id) : [];
   const vehicleComparison =
@@ -108,7 +120,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
   const expenseTransactions = periodTransactions.filter((t) => t.type === "expense");
   const biggestCategory = getTopCategories(expenseTransactions, 1)[0];
 
-  const trendData = getMonthlyTrend(transactions, months);
+  const trendData = getMonthlyTrend(transactions, months, anchor);
 
   // "vs last month" is always the two most recent calendar months, independent of the period tab.
   const now = nowInAppTimezone();
@@ -145,7 +157,14 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
     amount,
   }));
 
-  const monthlyCarCosts = getMonthlyVehicleCosts(fuelLogs, maintenanceLogs, repairLogs, insurancePolicies, months);
+  const monthlyCarCosts = getMonthlyVehicleCosts(
+    fuelLogs,
+    maintenanceLogs,
+    repairLogs,
+    insurancePolicies,
+    months,
+    anchor
+  );
   const costPerMileTrend = getCostPerMileTrend(
     fuelLogs,
     maintenanceLogs,
@@ -153,7 +172,8 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
     odometerLogs,
     monthlyCarCosts,
     months,
-    vehicle?.startOdometer
+    vehicle?.startOdometer,
+    anchor
   );
   const weeklyMilesData = isVehicleMode
     ? getWeeklyFuelTrend(fuelLogs, maintenanceLogs, repairLogs, odometerLogs, 12, now, vehicle?.startOdometer)
@@ -176,7 +196,11 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
           {TOP_TABS.map((tab) => (
             <Link
               key={tab.key}
-              href={`/analytics?tab=${tab.key}&period=${selectedPeriod}`}
+              href={
+                selectedPeriod === "custom" && rawFrom && rawTo
+                  ? `/analytics?tab=${tab.key}&period=custom&from=${rawFrom}&to=${rawTo}`
+                  : `/analytics?tab=${tab.key}&period=${selectedPeriod}`
+              }
               className={cn(
                 "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
                 selectedTab === tab.key
@@ -190,7 +214,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
         </div>
       )}
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {PERIOD_TABS.map((tab) => (
           <Link
             key={tab.key}
@@ -205,6 +229,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
             {tab.label}
           </Link>
         ))}
+        <CustomRangePicker tab={selectedTab} active={selectedPeriod === "custom"} from={rawFrom} to={rawTo} />
       </div>
 
       {selectedTab === "vehicles" ? (
