@@ -180,7 +180,7 @@ export function TransactionTable({ transactions }: { transactions: Transaction[]
                     <td
                       className={cn(
                         "px-4 py-3 text-right font-medium tabular-nums",
-                        t.type === "income" ? "text-emerald-600" : "text-red-600"
+                        t.type === "income" ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
                       )}
                     >
                       {t.type === "income" ? "+" : "-"}
@@ -199,7 +199,7 @@ export function TransactionTable({ transactions }: { transactions: Transaction[]
                           onClick={() => handleDelete(t.id)}
                           disabled={deletingId === t.id}
                           aria-label={`Delete ${t.title}`}
-                          className="rounded-md p-1.5 text-text-muted hover:bg-red-500/10 hover:text-red-600 disabled:opacity-50"
+                          className="rounded-md p-1.5 text-text-muted hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-50"
                         >
                           <Trash2 className="size-4" />
                         </button>

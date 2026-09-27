@@ -26,7 +26,7 @@ export default function LoginPage() {
           required
         />
 
-        {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+        {state?.error && <p className="text-sm text-red-600 dark:text-red-400">{state.error}</p>}
 
         <Button type="submit" className="w-full" loading={pending}>
           Log in

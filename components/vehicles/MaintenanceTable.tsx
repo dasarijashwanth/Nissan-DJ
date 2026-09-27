@@ -95,7 +95,7 @@ export function MaintenanceTable({
     <div className="space-y-4">
       {dueSoon.length > 0 && (
         <Card className="flex items-center gap-3 border-amber-500/30 bg-amber-500/10 p-4">
-          <AlertTriangle className="size-5 shrink-0 text-amber-600" />
+          <AlertTriangle className="size-5 shrink-0 text-amber-600 dark:text-amber-400" />
           <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
             {dueSoon.length} item{dueSoon.length > 1 ? "s" : ""} due soon: {dueSoon.map((l) => l.type).join(", ")}
           </p>

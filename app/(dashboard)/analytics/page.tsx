@@ -247,7 +247,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
           <p
             className={cn(
               "mt-4 text-2xl font-semibold tabular-nums",
-              netSavings >= 0 ? "text-emerald-600" : "text-red-600"
+              netSavings >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
             )}
           >
             <AnimatedAmount value={netSavings} formatType="usd" />

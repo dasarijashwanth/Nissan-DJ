@@ -127,7 +127,7 @@ export function AlertList({ alerts: initialAlerts }: { alerts: Alert[] }) {
                   <button
                     onClick={() => deleteAlert(a.id)}
                     aria-label="Delete alert"
-                    className="rounded-md p-1.5 text-text-muted hover:bg-red-500/10 hover:text-red-600"
+                    className="rounded-md p-1.5 text-text-muted hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400"
                   >
                     <Trash2 className="size-4" />
                   </button>

@@ -174,7 +174,7 @@ export function RepairForm({ open, onClose, vehicleId, log }: RepairFormProps) {
           onChange={(e) => set("notes", e.target.value)}
         />
 
-        {formError && <p className="text-sm text-red-600">{formError}</p>}
+        {formError && <p className="text-sm text-red-600 dark:text-red-400">{formError}</p>}
 
         <div className="flex gap-3 pt-2">
           <Button type="button" variant="outline" className="flex-1" onClick={onClose}>

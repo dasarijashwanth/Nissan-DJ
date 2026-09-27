@@ -137,7 +137,7 @@ export default async function AdminUserPage({ params }: { params: Promise<{ user
                       <td className="px-4 py-3 text-text-muted">{formatDate(t.date)}</td>
                       <td
                         className={`px-4 py-3 text-right font-medium tabular-nums ${
-                          t.type === "income" ? "text-emerald-600" : "text-red-600"
+                          t.type === "income" ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
                         }`}
                       >
                         {t.type === "income" ? "+" : "-"}

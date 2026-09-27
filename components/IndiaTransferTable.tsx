@@ -167,7 +167,7 @@ export function IndiaTransferTable({ transfers, usdRate }: { transfers: IndiaTra
                           onClick={() => handleDelete(t.id)}
                           disabled={deletingId === t.id}
                           aria-label={`Delete transfer to ${t.recipient}`}
-                          className="rounded-md p-1.5 text-text-muted hover:bg-red-500/10 hover:text-red-600 disabled:opacity-50"
+                          className="rounded-md p-1.5 text-text-muted hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-50"
                         >
                           <Trash2 className="size-4" />
                         </button>

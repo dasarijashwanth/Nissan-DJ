@@ -319,7 +319,7 @@ export function NewVehicleForm() {
             </div>
           </div>
 
-          {formError && <p className="text-sm text-red-600">{formError}</p>}
+          {formError && <p className="text-sm text-red-600 dark:text-red-400">{formError}</p>}
 
           <Button type="submit" className="w-full bg-amber-500 hover:bg-amber-600" loading={submitting}>
             Add vehicle →

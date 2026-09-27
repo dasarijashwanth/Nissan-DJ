@@ -69,7 +69,7 @@ export function ChitFundPlanCard({
           <p
             className={cn(
               "text-lg font-semibold tabular-nums",
-              plan.type === "received" ? "text-emerald-600" : "text-text-primary"
+              plan.type === "received" ? "text-emerald-600 dark:text-emerald-400" : "text-text-primary"
             )}
           >
             {plan.type === "received" ? "+" : ""}
@@ -89,7 +89,7 @@ export function ChitFundPlanCard({
             onClick={handleDelete}
             disabled={busy}
             aria-label="Delete"
-            className="rounded-md p-1.5 text-text-muted hover:bg-red-500/10 hover:text-red-600 disabled:opacity-50"
+            className="rounded-md p-1.5 text-text-muted hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-50"
           >
             <Trash2 className="size-4" />
           </button>

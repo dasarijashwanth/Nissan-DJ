@@ -36,7 +36,7 @@ export function FuelTrendChart({ data }: { data: WeeklyFuelTrendDatum[] }) {
           {bestWeek && (
             <Card className="p-4">
               <p className="text-xs font-medium text-text-muted">Best week</p>
-              <p className="mt-1 text-lg font-semibold text-emerald-600 tabular-nums">{animatedBestMpg.toFixed(1)} MPG</p>
+              <p className="mt-1 text-lg font-semibold text-emerald-600 dark:text-emerald-400 tabular-nums">{animatedBestMpg.toFixed(1)} MPG</p>
               <p className="text-xs text-text-muted">Week of {bestWeek.week}</p>
             </Card>
           )}

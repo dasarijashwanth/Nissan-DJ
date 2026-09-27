@@ -22,7 +22,7 @@ export function CarStatsRow({ totalSpend, costPerMile, totalMiles, avgMPG, month
           </div>
           <p className="text-sm font-medium text-text-muted">Total Car Spend</p>
         </div>
-        <p className="mt-4 text-2xl font-semibold tabular-nums text-amber-600">
+        <p className="mt-4 text-2xl font-semibold tabular-nums text-amber-600 dark:text-amber-400">
           <AnimatedAmount value={totalSpend} formatType="usd" />
         </p>
       </Card>
@@ -40,7 +40,7 @@ export function CarStatsRow({ totalSpend, costPerMile, totalMiles, avgMPG, month
           </div>
           <p className="text-sm font-medium text-text-muted">Avg MPG</p>
         </div>
-        <p className="mt-4 text-2xl font-semibold tabular-nums text-amber-600">
+        <p className="mt-4 text-2xl font-semibold tabular-nums text-amber-600 dark:text-amber-400">
           {avgMPG > 0 ? <AnimatedAmount value={avgMPG} formatType="decimal1" /> : "—"}
         </p>
       </Card>
@@ -52,7 +52,7 @@ export function CarStatsRow({ totalSpend, costPerMile, totalMiles, avgMPG, month
           </div>
           <p className="text-sm font-medium text-text-muted">This Month</p>
         </div>
-        <p className="mt-4 text-2xl font-semibold tabular-nums text-amber-600">
+        <p className="mt-4 text-2xl font-semibold tabular-nums text-amber-600 dark:text-amber-400">
           <AnimatedAmount value={monthCost} formatType="usd" />
         </p>
       </Card>

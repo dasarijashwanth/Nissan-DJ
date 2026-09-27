@@ -51,7 +51,7 @@ export function CategoryBreakdownTable({ rows }: { rows: CategoryBreakdownRow[] 
                     <span
                       className={cn(
                         "inline-flex items-center gap-0.5 tabular-nums",
-                        direction === "up" ? "text-red-600" : direction === "down" ? "text-emerald-600" : "text-text-muted"
+                        direction === "up" ? "text-red-600 dark:text-red-400" : direction === "down" ? "text-emerald-600 dark:text-emerald-400" : "text-text-muted"
                       )}
                     >
                       {direction === "up" && <ArrowUp className="size-3" />}

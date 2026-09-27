@@ -127,7 +127,7 @@ function SummaryStat({
       <p
         className={
           highlight || received
-            ? "mt-1 text-2xl font-semibold text-emerald-600 tabular-nums"
+            ? "mt-1 text-2xl font-semibold text-emerald-600 dark:text-emerald-400 tabular-nums"
             : "mt-1 text-lg font-semibold text-text-primary tabular-nums"
         }
       >

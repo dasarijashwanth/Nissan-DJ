@@ -94,7 +94,7 @@ export function InsuranceCard({ policies, vehicleId }: { policies: Insurance[]; 
             <p
               className={cn(
                 "mt-1 text-lg font-semibold tabular-nums",
-                days <= 30 ? "text-amber-600" : "text-text-primary"
+                days <= 30 ? "text-amber-600 dark:text-amber-400" : "text-text-primary"
               )}
             >
               {days >= 0 ? `${days} days` : "Expired"}

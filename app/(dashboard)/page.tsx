@@ -91,7 +91,7 @@ export default async function DashboardPage() {
       {dueTodayCount > 0 && (
         <Card className="flex flex-wrap items-center justify-between gap-3 border-amber-500/30 bg-amber-500/10 p-4">
           <div className="flex items-center gap-3">
-            <AlertCircle className="size-5 shrink-0 text-amber-600" />
+            <AlertCircle className="size-5 shrink-0 text-amber-600 dark:text-amber-400" />
             <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
               {dueTodayCount} recurring transaction{dueTodayCount > 1 ? "s are" : " is"} due today
             </p>
@@ -117,7 +117,7 @@ export default async function DashboardPage() {
                 style={{ "--card-accent-color": "var(--color-accent)", animationDelay: "180ms" } as CSSProperties}
               >
                 <p className="text-sm font-medium text-text-muted">Car Cost</p>
-                <p className="mt-4 text-2xl font-semibold tabular-nums text-amber-600">
+                <p className="mt-4 text-2xl font-semibold tabular-nums text-amber-600 dark:text-amber-400">
                   <AnimatedAmount value={carCostThisMonth} formatType="usd" />
                 </p>
               </Card>
@@ -183,7 +183,7 @@ export default async function DashboardPage() {
                     <span
                       className={cn(
                         "shrink-0 text-sm font-medium tabular-nums",
-                        t.type === "income" ? "text-emerald-600" : "text-red-600"
+                        t.type === "income" ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
                       )}
                     >
                       {t.type === "income" ? "+" : "-"}

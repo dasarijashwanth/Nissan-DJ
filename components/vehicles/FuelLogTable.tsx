@@ -278,7 +278,7 @@ function SummaryStat({
   return (
     <Card className="p-4" style={{ animationDelay: `${delayMs}ms` } as CSSProperties}>
       <p className="text-xs font-medium text-text-muted">{label}</p>
-      <p className="mt-1 text-lg font-semibold text-amber-600 tabular-nums">{format(animated)}</p>
+      <p className="mt-1 text-lg font-semibold text-amber-600 dark:text-amber-400 tabular-nums">{format(animated)}</p>
     </Card>
   );
 }

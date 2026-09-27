@@ -102,7 +102,7 @@ export function DailyOdometerWidget({
             Log today
           </Button>
         )}
-        {justLogged && <span className="text-xs font-medium text-emerald-600">Saved!</span>}
+        {justLogged && <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">Saved!</span>}
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-black/[0.08] pt-4 text-sm">

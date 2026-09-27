@@ -20,7 +20,7 @@ export function CostPerMileCard({
         </div>
         <p className="text-sm font-medium text-text-muted">Cost / Mile</p>
       </div>
-      <p className="mt-4 text-2xl font-semibold tabular-nums text-amber-600">
+      <p className="mt-4 text-2xl font-semibold tabular-nums text-amber-600 dark:text-amber-400">
         <AnimatedAmount value={costPerMile} formatType="usd" />{" "}
         <span className="text-sm font-normal text-text-muted">/ mile</span>
       </p>

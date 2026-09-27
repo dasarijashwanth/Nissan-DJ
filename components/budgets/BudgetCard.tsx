@@ -24,7 +24,7 @@ export function BudgetCard({
           onClick={onDelete}
           disabled={deleting}
           aria-label={`Remove ${budget.category} budget`}
-          className="rounded-md p-1 text-slate-300 hover:bg-red-500/10 hover:text-red-600 disabled:opacity-50"
+          className="rounded-md p-1 text-slate-300 hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-50"
         >
           <Trash2 className="size-3.5" />
         </button>
@@ -38,7 +38,7 @@ export function BudgetCard({
         You&apos;ve spent <AnimatedAmount value={budget.spent} formatType="usd" /> of{" "}
         <AnimatedAmount value={budget.amount} formatType="usd" /> this month
       </p>
-      <p className={isOver ? "text-sm font-medium text-red-600" : "text-sm font-medium text-emerald-600"}>
+      <p className={isOver ? "text-sm font-medium text-red-600 dark:text-red-400" : "text-sm font-medium text-emerald-600 dark:text-emerald-400"}>
         <AnimatedAmount value={isOver ? -remaining : remaining} formatType="usd" />{" "}
         {isOver ? "over budget" : "remaining"}
       </p>

@@ -7,7 +7,7 @@ export function MileageStreakBadge({ streak, className }: { streak: number; clas
   }
 
   return (
-    <span className={cn("inline-flex items-center gap-1 text-xs font-semibold text-amber-600", className)}>
+    <span className={cn("inline-flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-400", className)}>
       <Flame className="size-3.5 fill-amber-500 text-amber-500" />
       {streak} day logging streak
     </span>

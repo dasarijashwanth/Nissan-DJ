@@ -86,7 +86,7 @@ export function ProfileSection({
           <Input label="Email" value={email} disabled readOnly />
         </div>
         {savingName && <p className="mt-1.5 text-xs text-text-muted">Saving…</p>}
-        {nameSaved && !savingName && <p className="mt-1.5 text-xs text-emerald-600">Saved</p>}
+        {nameSaved && !savingName && <p className="mt-1.5 text-xs text-emerald-600 dark:text-emerald-400">Saved</p>}
       </div>
 
       <div className="border-t border-black/[0.08] pt-6">
@@ -117,8 +117,8 @@ export function ProfileSection({
               required
             />
           </div>
-          {passwordError && <p className="text-sm text-red-600">{passwordError}</p>}
-          {passwordSuccess && <p className="text-sm text-emerald-600">Password updated.</p>}
+          {passwordError && <p className="text-sm text-red-600 dark:text-red-400">{passwordError}</p>}
+          {passwordSuccess && <p className="text-sm text-emerald-600 dark:text-emerald-400">Password updated.</p>}
           <Button type="submit" loading={savingPassword}>
             Update Password
           </Button>

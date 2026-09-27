@@ -81,7 +81,7 @@ export function LoanGivenCard({
             onClick={handleDelete}
             disabled={busy}
             aria-label="Delete"
-            className="rounded-md p-1.5 text-text-muted hover:bg-red-500/10 hover:text-red-600 disabled:opacity-50"
+            className="rounded-md p-1.5 text-text-muted hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-50"
           >
             <Trash2 className="size-4" />
           </button>
@@ -90,7 +90,7 @@ export function LoanGivenCard({
 
       <div className="mt-3">
         <p className="text-xs font-medium text-text-muted">Outstanding Amount</p>
-        <p className="text-2xl font-semibold tabular-nums text-amber-600">{formatINR(animatedOutstanding)}</p>
+        <p className="text-2xl font-semibold tabular-nums text-amber-600 dark:text-amber-400">{formatINR(animatedOutstanding)}</p>
         <p className="text-xs text-text-muted">≈ {formatCurrency(animatedOutstanding / usdRate)}</p>
       </div>
 
@@ -101,11 +101,11 @@ export function LoanGivenCard({
         </div>
         <div>
           <p className="text-text-muted">Received</p>
-          <p className="font-medium tabular-nums text-emerald-600">{formatINR(animatedReceived)}</p>
+          <p className="font-medium tabular-nums text-emerald-600 dark:text-emerald-400">{formatINR(animatedReceived)}</p>
         </div>
         <div>
           <p className="text-text-muted">Unpaid</p>
-          <p className="font-medium tabular-nums text-red-600">{formatINR(animatedUnpaid)}</p>
+          <p className="font-medium tabular-nums text-red-600 dark:text-red-400">{formatINR(animatedUnpaid)}</p>
         </div>
       </div>
 

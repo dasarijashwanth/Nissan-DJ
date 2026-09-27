@@ -74,7 +74,7 @@ export function RecurringCard({
           <p
             className={cn(
               "text-lg font-semibold tabular-nums",
-              recurring.type === "income" ? "text-emerald-600" : "text-red-600"
+              recurring.type === "income" ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
             )}
           >
             {recurring.type === "income" ? "+" : "-"}
@@ -89,7 +89,7 @@ export function RecurringCard({
             onClick={handleDelete}
             disabled={busy}
             aria-label="Delete"
-            className="rounded-md p-1.5 text-text-muted hover:bg-red-500/10 hover:text-red-600 disabled:opacity-50"
+            className="rounded-md p-1.5 text-text-muted hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-50"
           >
             <Trash2 className="size-4" />
           </button>

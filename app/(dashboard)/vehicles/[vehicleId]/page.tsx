@@ -91,7 +91,7 @@ export default async function VehiclePage({
 
       <Link
         href={`/vehicles/${vehicle.id}/mileage`}
-        className="inline-flex items-center gap-1 text-sm font-medium text-amber-600 hover:text-amber-700"
+        className="inline-flex items-center gap-1 text-sm font-medium text-amber-600 dark:text-amber-400 hover:text-amber-700"
       >
         View full mileage history
         <ChevronRight className="size-3.5" />
@@ -112,7 +112,7 @@ export default async function VehiclePage({
           <p className="text-sm font-medium text-text-secondary">Upcoming Reminders</p>
           {dueMaintenance.map((l) => (
             <Card key={l.id} className="flex items-center gap-3 border-amber-500/30 bg-amber-500/10 p-4">
-              <AlertTriangle className="size-5 shrink-0 text-amber-600" />
+              <AlertTriangle className="size-5 shrink-0 text-amber-600 dark:text-amber-400" />
               <p className="text-sm text-amber-800 dark:text-amber-300">
                 <span className="font-medium">{l.type}</span> due{" "}
                 {l.nextDueDate ? `by ${formatDate(l.nextDueDate)}` : ""}
@@ -122,7 +122,7 @@ export default async function VehiclePage({
           ))}
           {dueInsurance.map((p) => (
             <Card key={p.id} className="flex items-center gap-3 border-amber-500/30 bg-amber-500/10 p-4">
-              <AlertTriangle className="size-5 shrink-0 text-amber-600" />
+              <AlertTriangle className="size-5 shrink-0 text-amber-600 dark:text-amber-400" />
               <p className="text-sm text-amber-800 dark:text-amber-300">
                 <span className="font-medium">{p.provider}</span> insurance renews in{" "}
                 {daysUntil(p.renewalDate)} days ({formatDate(p.renewalDate)})

@@ -55,7 +55,7 @@ export function VehicleComparisonChart({ data }: { data: VehicleComparisonDatum[
               <span className="text-xs font-normal text-text-muted"> / mile</span>
             </p>
             {v.vehicleId === cheapest.vehicleId && v.costPerMile > 0 && (
-              <p className="mt-1 text-xs font-medium text-emerald-600">Cheapest to run</p>
+              <p className="mt-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">Cheapest to run</p>
             )}
           </Card>
         ))}

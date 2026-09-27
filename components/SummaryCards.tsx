@@ -18,7 +18,7 @@ const STATS = [
     label: "Total Income",
     icon: TrendingUp,
     iconClass: "bg-emerald-500/12 text-emerald-600 dark:text-emerald-400",
-    valueClass: "text-emerald-600",
+    valueClass: "text-emerald-600 dark:text-emerald-400",
     accentColor: "var(--color-income)",
   },
   {
@@ -26,7 +26,7 @@ const STATS = [
     label: "Total Expenses",
     icon: TrendingDown,
     iconClass: "bg-red-500/12 text-red-600 dark:text-red-400",
-    valueClass: "text-red-600",
+    valueClass: "text-red-600 dark:text-red-400",
     accentColor: "var(--color-expense)",
   },
   {

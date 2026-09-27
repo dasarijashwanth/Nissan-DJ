@@ -132,7 +132,7 @@ export function VehicleHeroCard({ vehicle, currentOdometer }: { vehicle: Vehicle
                   onClick={savePlate}
                   disabled={savingPlate}
                   aria-label="Save license plate"
-                  className="rounded-md p-1 text-emerald-600 hover:bg-emerald-500/12"
+                  className="rounded-md p-1 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/12"
                 >
                   <Check className="size-4" />
                 </button>

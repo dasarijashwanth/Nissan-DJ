@@ -75,7 +75,7 @@ export default async function MonthlyPage({ searchParams }: PageProps<"/monthly"
                 <span
                   className={cn(
                     "text-sm font-medium tabular-nums",
-                    c.type === "income" ? "text-emerald-600" : "text-red-600"
+                    c.type === "income" ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
                   )}
                 >
                   {c.type === "income" ? "+" : "-"}

@@ -119,7 +119,7 @@ export function TransactionForm({ open, onClose, transaction }: TransactionFormP
             </button>
           ))}
         </div>
-        {errors.type && <p className="-mt-2 text-sm text-red-600">{errors.type}</p>}
+        {errors.type && <p className="-mt-2 text-sm text-red-600 dark:text-red-400">{errors.type}</p>}
 
         <Input
           label="Title"
@@ -198,7 +198,7 @@ export function TransactionForm({ open, onClose, transaction }: TransactionFormP
           onChange={(e) => set("notes", e.target.value)}
         />
 
-        {formError && <p className="text-sm text-red-600">{formError}</p>}
+        {formError && <p className="text-sm text-red-600 dark:text-red-400">{formError}</p>}
 
         <div className="flex gap-3 pt-2">
           <Button type="button" variant="outline" className="flex-1" onClick={onClose}>

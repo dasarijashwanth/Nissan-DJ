@@ -180,7 +180,7 @@ export function ChitFundTable({ contributions, usdRate }: { contributions: ChitF
                     </td>
                     <td className="px-4 py-3 text-text-muted">{formatDate(c.date)}</td>
                     <td className="px-4 py-3 text-right tabular-nums">
-                      <p className={cn("font-medium", c.type === "received" ? "text-emerald-600" : "text-text-primary")}>
+                      <p className={cn("font-medium", c.type === "received" ? "text-emerald-600 dark:text-emerald-400" : "text-text-primary")}>
                         {c.type === "received" ? "+" : ""}
                         {formatINR(c.amount)}
                       </p>
@@ -200,7 +200,7 @@ export function ChitFundTable({ contributions, usdRate }: { contributions: ChitF
                           onClick={() => handleDelete(c.id)}
                           disabled={deletingId === c.id}
                           aria-label={`Delete contribution to ${c.groupName}`}
-                          className="rounded-md p-1.5 text-text-muted hover:bg-red-500/10 hover:text-red-600 disabled:opacity-50"
+                          className="rounded-md p-1.5 text-text-muted hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-50"
                         >
                           <Trash2 className="size-4" />
                         </button>

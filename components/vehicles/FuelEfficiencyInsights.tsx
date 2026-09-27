@@ -67,7 +67,7 @@ export function FuelEfficiencyInsights({ insight }: { insight: FuelEfficiencyIns
       <div
         className={cn(
           "mt-3 flex items-start gap-2 text-sm font-medium",
-          isUp ? "text-emerald-600" : isDown ? "text-red-600" : "text-text-primary"
+          isUp ? "text-emerald-600 dark:text-emerald-400" : isDown ? "text-red-600 dark:text-red-400" : "text-text-primary"
         )}
       >
         <Icon className="mt-0.5 size-4 shrink-0" />
