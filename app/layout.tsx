@@ -8,7 +8,7 @@ import { RegisterServiceWorker } from "@/components/RegisterServiceWorker";
 const THEME_INIT_SCRIPT = `
 (function () {
   try {
-    var stored = localStorage.getItem("dj-ledger-theme");
+    var stored = localStorage.getItem("dj-theme");
     var theme = stored || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     document.documentElement.setAttribute("data-theme", theme);
   } catch (e) {}
@@ -26,7 +26,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DJ Ledger",
+  title: "DJ",
   description: "Personal income, expense, vehicle, and family money tracker",
 };
 

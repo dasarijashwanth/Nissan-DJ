@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "DJ Ledger",
-    short_name: "DJ Ledger",
+    name: "DJ",
+    short_name: "DJ",
     description: "Personal finance, vehicle costs, and family money tracker",
     start_url: "/",
     display: "standalone",
