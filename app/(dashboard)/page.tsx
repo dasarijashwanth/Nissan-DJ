@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 import { redirect } from "next/navigation";
 import { AlertCircle, Car as CarIcon } from "lucide-react";
 import { getAuthUser } from "@/lib/supabase";
-import { getSummary, getMonthlyChartData, getTransactions } from "@/lib/queries";
+import { getSummary, getMonthlyChartData, getMonthsOfHistory, getTransactions } from "@/lib/queries";
 import {
   getPrimaryVehicle,
   getFuelLogs,
@@ -44,14 +44,15 @@ export default async function DashboardPage() {
   const categoryWhere = categoryWhereForMode(trackingMode);
   const isVehicleMode = trackingMode === "vehicle";
 
-  const [summary, chartData, vehicle, budgets, dueTodayCount, preferences] = await Promise.all([
+  const [summary, monthsOfHistory, vehicle, budgets, dueTodayCount, preferences] = await Promise.all([
     getSummary(user.id, start, end, scopeWhere),
-    getMonthlyChartData(user.id, 6, scopeWhere),
+    getMonthsOfHistory(user.id, 6, scopeWhere),
     getPrimaryVehicle(user.id),
     getBudgetsWithSpending(user.id, month, year, categoryWhere),
     getDueTodayCount(user.id, categoryWhere),
     getUserPreferences(user.id),
   ]);
+  const chartData = await getMonthlyChartData(user.id, monthsOfHistory, scopeWhere);
 
   const [fuelLogs, maintenanceLogs, repairLogs, insurancePolicies, odometerLogs] =
     vehicle && isVehicleMode
@@ -156,7 +157,7 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <MonthlyChart data={chartData} />
+      <MonthlyChart data={chartData} months={monthsOfHistory} />
 
       {!isVehicleMode && (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">

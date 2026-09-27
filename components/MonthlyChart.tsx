@@ -19,10 +19,11 @@ export interface MonthlyChartDatum {
   expense: number;
 }
 
-export function MonthlyChart({ data }: { data: MonthlyChartDatum[] }) {
+export function MonthlyChart({ data, months = 6 }: { data: MonthlyChartDatum[]; months?: number }) {
+  const label = months === 1 ? "this month" : `last ${months} months`;
   return (
     <Card className="p-5">
-      <p className="mb-4 text-sm font-medium text-text-secondary">Income vs Expenses (last 6 months)</p>
+      <p className="mb-4 text-sm font-medium text-text-secondary">Income vs Expenses ({label})</p>
       <div className="h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} barGap={4}>

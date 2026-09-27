@@ -46,6 +46,21 @@ export async function getSummary(userId: string, start: Date, end: Date, scopeWh
   return { totalIncome, totalExpenses, netBalance: totalIncome - totalExpenses };
 }
 
+/** How many calendar months of real transaction history exist, capped at `max` — used so a new account's trend chart doesn't default to a mostly-empty 6-month window. */
+export async function getMonthsOfHistory(userId: string, max: number, scopeWhere?: ScopeWhere): Promise<number> {
+  const earliest = await prisma.transaction.findFirst({
+    where: { userId, ...scopeWhere },
+    orderBy: { date: "asc" },
+    select: { date: true },
+  });
+  if (!earliest) return max;
+
+  const now = nowInAppTimezone();
+  const monthsElapsed =
+    (now.getUTCFullYear() - earliest.date.getUTCFullYear()) * 12 + (now.getUTCMonth() - earliest.date.getUTCMonth()) + 1;
+  return Math.min(max, Math.max(1, monthsElapsed));
+}
+
 export async function getMonthlyChartData(userId: string, months = 6, scopeWhere?: ScopeWhere) {
   const now = nowInAppTimezone();
   const currentYear = now.getUTCFullYear();
