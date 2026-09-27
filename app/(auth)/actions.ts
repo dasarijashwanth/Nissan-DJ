@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase";
 import { prisma } from "@/lib/prisma";
 
@@ -75,6 +76,23 @@ export async function signup(
   }
 
   redirect("/");
+}
+
+export async function loginWithGoogle() {
+  const supabase = await createClient();
+  const headerList = await headers();
+  const origin = `${headerList.get("x-forwarded-proto") ?? "https"}://${headerList.get("x-forwarded-host") ?? headerList.get("host")}`;
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: `${origin}/auth/callback` },
+  });
+
+  if (error || !data.url) {
+    redirect(`/login?error=${encodeURIComponent(error?.message ?? "Could not start Google sign-in.")}`);
+  }
+
+  redirect(data.url);
 }
 
 export async function logout() {

@@ -6,6 +6,7 @@ import { signup } from "../actions";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 
 export default function SignupPage() {
   const [state, formAction, pending] = useActionState(signup, null);
@@ -14,6 +15,14 @@ export default function SignupPage() {
     <Card className="p-6">
       <h1 className="mb-1 text-lg font-semibold text-text-primary">Create an account</h1>
       <p className="mb-6 text-sm text-text-muted">Start tracking your income, expenses, and car costs.</p>
+
+      <GoogleSignInButton />
+
+      <div className="my-5 flex items-center gap-3">
+        <div className="h-px flex-1 bg-black/[0.08]" />
+        <span className="text-xs text-text-muted">or</span>
+        <div className="h-px flex-1 bg-black/[0.08]" />
+      </div>
 
       <form action={formAction} className="space-y-4">
         <Input label="Email" id="email" name="email" type="email" autoComplete="email" required />
