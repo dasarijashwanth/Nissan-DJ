@@ -28,6 +28,17 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "DJ",
   description: "Personal income, expense, vehicle, and family money tracker",
+  // iOS Safari ignores the web manifest for "Add to Home Screen" — without these it either
+  // falls back to a page screenshot as the icon or opens the installed shortcut in a regular
+  // browser tab (full address bar/chrome) instead of a standalone app-like window.
+  appleWebApp: {
+    title: "DJ",
+    statusBarStyle: "black-translucent",
+  },
+  icons: {
+    icon: "/icons/icon-192.png",
+    apple: "/icons/icon-192.png",
+  },
 };
 
 export const viewport: Viewport = {
