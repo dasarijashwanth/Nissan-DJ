@@ -42,7 +42,7 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
   if (!open || typeof document === "undefined") return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex justify-end">
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
       <div
         className={cn(
           "absolute inset-0 bg-slate-900/40 transition-opacity duration-200",
@@ -56,11 +56,13 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
         aria-modal="true"
         aria-label={title}
         className={cn(
-          "relative flex h-full w-full max-w-md flex-col bg-surface-card shadow-xl",
+          "relative flex max-h-[90vh] w-full flex-col rounded-t-2xl bg-surface-card shadow-xl",
+          "sm:max-w-md sm:rounded-2xl",
           "transition-transform duration-200 ease-out",
-          visible ? "translate-x-0" : "translate-x-full"
+          visible ? "translate-y-0" : "translate-y-full sm:translate-y-8"
         )}
       >
+        <div className="mx-auto mt-2 h-1 w-10 shrink-0 rounded-full bg-black/[0.12] sm:hidden" />
         <div className="flex items-center justify-between border-b border-black/[0.08] px-6 py-4">
           <h2 className="text-base font-semibold text-text-primary">{title}</h2>
           <button

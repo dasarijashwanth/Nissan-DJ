@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Input, Select } from "@/components/ui/Input";
 import { TransactionForm } from "@/components/TransactionForm";
+import { useToast } from "@/components/ui/Toast";
+import { SwipeableRow } from "@/components/ui/SwipeableRow";
 import { CATEGORIES, type Transaction } from "@/lib/types";
 import { cn, formatCurrency, formatDate } from "@/lib/utils";
 
@@ -16,6 +18,7 @@ type SortKey = "date" | "amount" | "title";
 
 export function TransactionTable({ transactions }: { transactions: Transaction[] }) {
   const router = useRouter();
+  const toast = useToast();
 
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<"all" | "income" | "expense">("all");
@@ -72,7 +75,12 @@ export function TransactionTable({ transactions }: { transactions: Transaction[]
     setDeletingId(id);
     try {
       const res = await fetch(`/api/transactions/${id}`, { method: "DELETE" });
-      if (res.ok) router.refresh();
+      if (res.ok) {
+        router.refresh();
+        toast.success("Transaction deleted");
+      } else {
+        toast.error("Could not delete transaction");
+      }
     } finally {
       setDeletingId(null);
     }
@@ -171,7 +179,11 @@ export function TransactionTable({ transactions }: { transactions: Transaction[]
               </thead>
               <tbody>
                 {pageItems.map((t) => (
-                  <tr key={t.id} className="border-b border-black/[0.08] last:border-0 hover:bg-black/[0.04]">
+                  <SwipeableRow
+                    key={t.id}
+                    onDelete={() => handleDelete(t.id)}
+                    className="border-b border-black/[0.08] last:border-0 hover:bg-black/[0.04]"
+                  >
                     <td className="px-4 py-3 font-medium text-text-primary">{t.title}</td>
                     <td className="px-4 py-3">
                       <Badge color="slate">{t.category}</Badge>
@@ -205,7 +217,7 @@ export function TransactionTable({ transactions }: { transactions: Transaction[]
                         </button>
                       </div>
                     </td>
-                  </tr>
+                  </SwipeableRow>
                 ))}
               </tbody>
             </table>

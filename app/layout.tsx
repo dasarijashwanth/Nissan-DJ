@@ -4,6 +4,7 @@ import NextTopLoader from "nextjs-toploader";
 import Script from "next/script";
 import "./globals.css";
 import { RegisterServiceWorker } from "@/components/RegisterServiceWorker";
+import { ToastProvider } from "@/components/ui/Toast";
 
 const THEME_INIT_SCRIPT = `
 (function () {
@@ -34,6 +35,10 @@ export const metadata: Metadata = {
   appleWebApp: {
     title: "DJ",
     statusBarStyle: "black-translucent",
+    // Shown briefly while the app launches from the home screen — without it iOS shows a plain
+    // white flash before the page paints. Not a pixel-exact match for every iPhone size, but iOS
+    // scales it reasonably well rather than showing nothing.
+    startupImage: "/icons/splash.png",
   },
   icons: {
     icon: "/icons/icon-192.png",
@@ -57,7 +62,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {THEME_INIT_SCRIPT}
         </Script>
         <NextTopLoader color="#4f46e5" showSpinner={false} />
-        {children}
+        <ToastProvider>{children}</ToastProvider>
         <RegisterServiceWorker />
       </body>
     </html>

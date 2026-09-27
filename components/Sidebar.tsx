@@ -116,6 +116,15 @@ export function Sidebar({
   const mobileNavItems = MOBILE_NAV_ITEMS.filter((i) =>
     isVehicleMode ? i.href !== "/india" : i.href !== "/vehicles"
   );
+  // "More" isn't a real link — it opens a menu covering pages that don't get their own bottom-nav
+  // slot (mirrors the item list in MobileMoreMenu, since that list lives inside that component).
+  const isMoreActive = ["/monthly", "/recurring", "/alerts", "/cheeti", "/admin"].some((href) =>
+    pathname.startsWith(href)
+  );
+  const totalMobileSlots = mobileNavItems.length + 1;
+  const activeMobileIndex = isMoreActive
+    ? mobileNavItems.length
+    : mobileNavItems.findIndex((item) => isActive(item.href));
 
   return (
     <>
@@ -185,6 +194,15 @@ export function Sidebar({
       </aside>
 
       <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-black/[0.08] bg-surface-card lg:hidden">
+        <div
+          aria-hidden="true"
+          className="absolute inset-y-0 rounded-t-lg bg-primary/10 transition-transform duration-300 ease-out"
+          style={{
+            width: `${100 / totalMobileSlots}%`,
+            transform: `translateX(${activeMobileIndex * 100}%)`,
+            opacity: activeMobileIndex === -1 ? 0 : 1,
+          }}
+        />
         {mobileNavItems.map((item) => {
           const active = isActive(item.href);
           return (
@@ -192,7 +210,7 @@ export function Sidebar({
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-1 flex-col items-center gap-0.5 px-0.5 py-2 text-center text-[10px] leading-tight font-medium transition-colors",
+                "relative flex flex-1 flex-col items-center gap-0.5 px-0.5 py-2 text-center text-[10px] leading-tight font-medium transition-colors",
                 active ? "text-primary" : "text-text-muted"
               )}
             >

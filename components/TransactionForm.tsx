@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Modal } from "@/components/ui/Modal";
 import { Input, Select, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { useToast } from "@/components/ui/Toast";
 import { CATEGORIES, type Category, type Transaction } from "@/lib/types";
 import { toDateInputValue, toStoredDateInputValue, cn } from "@/lib/utils";
 import {
@@ -45,6 +46,7 @@ export interface TransactionFormProps {
 // reset its state for a new form session, instead of syncing state from props in an effect.
 export function TransactionForm({ open, onClose, transaction }: TransactionFormProps) {
   const router = useRouter();
+  const toast = useToast();
   const isEdit = !!transaction;
 
   const [values, setValues] = useState<TransactionFormValues>(() =>
@@ -90,6 +92,7 @@ export function TransactionForm({ open, onClose, transaction }: TransactionFormP
 
       router.refresh();
       onClose();
+      toast.success(isEdit ? "Transaction updated" : "Transaction added");
     } catch {
       setFormError("Something went wrong. Please try again.");
     } finally {

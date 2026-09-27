@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Modal } from "@/components/ui/Modal";
 import { Input, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { useToast } from "@/components/ui/Toast";
 import { cn, toDateInputValue, toStoredDateInputValue } from "@/lib/utils";
 import { calcFillMPG } from "@/lib/vehicleUtils";
 import type { FuelLog } from "@/lib/types";
@@ -95,6 +96,7 @@ export interface FuelLogFormProps {
 
 export function FuelLogForm({ open, onClose, vehicleId, previousOdometer, log }: FuelLogFormProps) {
   const router = useRouter();
+  const toast = useToast();
   const isEdit = !!log;
   const [mode, setMode] = useState<"per_fill" | "weekly_summary">("per_fill");
 
@@ -230,6 +232,7 @@ export function FuelLogForm({ open, onClose, vehicleId, previousOdometer, log }:
 
       router.refresh();
       onClose();
+      toast.success(isEdit ? "Fuel log updated" : "Fuel log added");
     } catch {
       setFormError("Something went wrong. Please try again.");
     } finally {
