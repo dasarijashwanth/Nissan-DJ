@@ -87,7 +87,7 @@ export async function GET(request: Request) {
           "oil_change_due" satisfies AlertType,
           `${log.type} due soon`,
           `${log.type} due in ~${remaining} miles`,
-          "/sentra/maintenance"
+          `/vehicles/${vehicle.id}/maintenance`
         );
         if (created) alertsCreated++;
       }
@@ -100,7 +100,7 @@ export async function GET(request: Request) {
             "maintenance_due" satisfies AlertType,
             `${log.type} due soon`,
             days <= 0 ? `${log.type} is overdue` : `${log.type} due in ${days} days`,
-            "/sentra/maintenance"
+            `/vehicles/${vehicle.id}/maintenance`
           );
           if (created) alertsCreated++;
         }
@@ -115,7 +115,7 @@ export async function GET(request: Request) {
           "insurance_due" satisfies AlertType,
           `${latestPolicy.provider} insurance renewal`,
           days <= 0 ? `${latestPolicy.provider} insurance has renewed` : `Insurance renews in ${days} days`,
-          "/sentra/insurance"
+          `/vehicles/${vehicle.id}/insurance`
         );
         if (created) alertsCreated++;
       }
