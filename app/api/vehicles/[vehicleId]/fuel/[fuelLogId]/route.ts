@@ -54,3 +54,25 @@ export async function PUT(request: Request, { params }: { params: Promise<{ vehi
 
   return NextResponse.json(log);
 }
+
+export async function DELETE(request: Request, { params }: { params: Promise<{ vehicleId: string; fuelLogId: string }> }) {
+  const user = await getAuthUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { vehicleId, fuelLogId } = await params;
+  if (!(await isVehicleOwnedBy(vehicleId, user.id))) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  const existing = await prisma.fuelLog.findUnique({ where: { id: fuelLogId } });
+  if (!existing || existing.vehicleId !== vehicleId) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  // FuelLog and its mirrored Transaction row are separate, unlinked records (no foreign key
+  // between them) — deleting one never touches the other. Callers that also want the matching
+  // "Fuel at X" Transaction gone need to delete that separately from the Transactions page.
+  await prisma.fuelLog.delete({ where: { id: fuelLogId } });
+
+  return NextResponse.json({ success: true });
+}

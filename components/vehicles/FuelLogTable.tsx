@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState, type CSSProperties } from "react";
-import { Fuel, Plus, Pencil } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Fuel, Plus, Pencil, Trash2 } from "lucide-react";
 import {
   CartesianGrid,
   Line,
@@ -15,6 +16,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { FuelLogForm } from "@/components/vehicles/FuelLogForm";
+import { useToast } from "@/components/ui/Toast";
 import { calcAvgMPG, buildFuelSegments } from "@/lib/vehicleUtils";
 import { useCountUp } from "@/hooks/useCountUp";
 import { formatCurrency, formatDate, formatMiles } from "@/lib/utils";
@@ -23,10 +25,13 @@ import type { FuelLog } from "@/lib/types";
 const PAGE_SIZE = 10;
 
 export function FuelLogTable({ fuelLogs, vehicleId }: { fuelLogs: FuelLog[]; vehicleId: string }) {
+  const router = useRouter();
+  const toast = useToast();
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<FuelLog | null>(null);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   function openAdd() {
     setEditing(null);
@@ -36,6 +41,28 @@ export function FuelLogTable({ fuelLogs, vehicleId }: { fuelLogs: FuelLog[]; veh
   function openEdit(log: FuelLog) {
     setEditing(log);
     setFormOpen(true);
+  }
+
+  async function handleDelete(log: FuelLog) {
+    if (
+      !confirm(
+        "Delete this fuel log? This only removes the fuel log — if it also has a matching transaction, delete that separately from Transactions."
+      )
+    )
+      return;
+
+    setDeletingId(log.id);
+    try {
+      const res = await fetch(`/api/vehicles/${vehicleId}/fuel/${log.id}`, { method: "DELETE" });
+      if (res.ok) {
+        router.refresh();
+        toast.success("Fuel log deleted");
+      } else {
+        toast.error("Could not delete fuel log");
+      }
+    } finally {
+      setDeletingId(null);
+    }
   }
 
   const segments = useMemo(() => buildFuelSegments(fuelLogs), [fuelLogs]);
@@ -208,13 +235,23 @@ export function FuelLogTable({ fuelLogs, vehicleId }: { fuelLogs: FuelLog[]; veh
                       {mpgById.has(l.id) ? mpgById.get(l.id)!.toFixed(1) : "—"}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <button
-                        onClick={() => openEdit(l)}
-                        aria-label="Edit fuel log"
-                        className="rounded-md p-1.5 text-text-muted hover:bg-black/[0.06] hover:text-text-secondary"
-                      >
-                        <Pencil className="size-4" />
-                      </button>
+                      <div className="flex justify-end gap-1">
+                        <button
+                          onClick={() => openEdit(l)}
+                          aria-label="Edit fuel log"
+                          className="rounded-md p-1.5 text-text-muted hover:bg-black/[0.06] hover:text-text-secondary"
+                        >
+                          <Pencil className="size-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(l)}
+                          disabled={deletingId === l.id}
+                          aria-label="Delete fuel log"
+                          className="rounded-md p-1.5 text-text-muted hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-50"
+                        >
+                          <Trash2 className="size-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
