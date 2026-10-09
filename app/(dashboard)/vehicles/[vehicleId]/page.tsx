@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
-import { Fuel, Wrench, Hammer, AlertTriangle, Inbox, ChevronRight } from "lucide-react";
+import { Fuel, Wrench, Hammer, Shield, MapPin, AlertTriangle, Inbox } from "lucide-react";
 import { getAuthUser } from "@/lib/supabase";
 import {
   getVehicleById,
@@ -89,13 +89,24 @@ export default async function VehiclePage({
 
       <DailyOdometerWidget vehicleId={vehicle.id} />
 
-      <Link
-        href={`/vehicles/${vehicle.id}/mileage`}
-        className="inline-flex items-center gap-1 text-sm font-medium text-amber-600 dark:text-amber-400 hover:text-amber-700"
-      >
-        View full mileage history
-        <ChevronRight className="size-3.5" />
-      </Link>
+      <div className="flex flex-wrap gap-2">
+        {[
+          { href: `/vehicles/${vehicle.id}/fuel`, label: "Fuel", icon: Fuel },
+          { href: `/vehicles/${vehicle.id}/maintenance`, label: "Maintenance", icon: Wrench },
+          { href: `/vehicles/${vehicle.id}/repairs`, label: "Repairs", icon: Hammer },
+          { href: `/vehicles/${vehicle.id}/insurance`, label: "Insurance", icon: Shield },
+          { href: `/vehicles/${vehicle.id}/mileage`, label: "Mileage", icon: MapPin },
+        ].map((tab) => (
+          <Link
+            key={tab.href}
+            href={tab.href}
+            className="inline-flex items-center gap-1.5 rounded-full border border-black/[0.08] bg-surface-card px-3 py-1.5 text-sm font-medium text-text-secondary transition-colors hover:border-amber-300 hover:bg-amber-500/10 hover:text-amber-700 dark:hover:text-amber-400"
+          >
+            <tab.icon className="size-3.5 text-amber-500" />
+            {tab.label}
+          </Link>
+        ))}
+      </div>
 
       <CarStatsRow
         totalSpend={totalSpend}
