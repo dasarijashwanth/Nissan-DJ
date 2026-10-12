@@ -20,6 +20,7 @@ import {
   calcMonthVehicleCost,
   isMaintenanceDueSoon,
   isInsuranceRenewalSoon,
+  findLatestMaintenanceByType,
   daysUntil,
 } from "@/lib/vehicleUtils";
 import { formatCurrency, formatDate, formatMiles, cn, nowInAppTimezone } from "@/lib/utils";
@@ -65,7 +66,12 @@ export default async function VehiclePage({
   const avgMPG = calcAvgMPG(fuelLogs);
   const monthCost = calcMonthVehicleCost(fuelLogs, maintenanceLogs, repairLogs, insurancePolicies, nowInAppTimezone());
 
-  const dueMaintenance = maintenanceLogs.filter((l) => isMaintenanceDueSoon(l, currentOdometer));
+  // Only the latest log of each type — an older log's due date/mileage goes stale once a newer
+  // one of the same type exists, so it shouldn't keep showing as a reminder forever.
+  const latestMaintenanceByType = [...new Set(maintenanceLogs.map((l) => l.type))]
+    .map((type) => findLatestMaintenanceByType(maintenanceLogs, type))
+    .filter((l) => l != null);
+  const dueMaintenance = latestMaintenanceByType.filter((l) => isMaintenanceDueSoon(l, currentOdometer));
   const dueInsurance = insurancePolicies.filter((p) => isInsuranceRenewalSoon(p));
 
   return (

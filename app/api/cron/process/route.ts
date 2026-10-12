@@ -4,8 +4,13 @@ import { prisma } from "@/lib/prisma";
 import { postRecurringTransaction } from "@/lib/recurringQueries";
 import { postChitFundPlan } from "@/lib/chitFundQueries";
 import { createAlertIfNotDuplicate } from "@/lib/alertQueries";
-import { getCurrentOdometer, getFuelLogs } from "@/lib/vehicleQueries";
-import { daysUntil, calcAvgMPGInRange, calcAvgPricePerGallonInRange } from "@/lib/vehicleUtils";
+import { getCurrentOdometer, getFuelLogs, getMaintenanceLogs } from "@/lib/vehicleQueries";
+import {
+  daysUntil,
+  calcAvgMPGInRange,
+  calcAvgPricePerGallonInRange,
+  findLatestMaintenanceByType,
+} from "@/lib/vehicleUtils";
 import { monthRange } from "@/lib/utils";
 import type { AlertType, UserPreferences } from "@/lib/types";
 
@@ -73,13 +78,21 @@ export async function GET(request: Request) {
   const vehicles = await prisma.vehicle.findMany();
   for (const vehicle of vehicles) {
     const [maintenanceLogs, latestPolicy, currentOdometer, fuelLogs] = await Promise.all([
-      prisma.maintenanceLog.findMany({ where: { vehicleId: vehicle.id } }),
+      getMaintenanceLogs(vehicle.id),
       prisma.insurance.findFirst({ where: { vehicleId: vehicle.id }, orderBy: { renewalDate: "desc" } }),
       getCurrentOdometer(vehicle.id),
       getFuelLogs(vehicle.id),
     ]);
 
-    for (const log of maintenanceLogs) {
+    // Only the most recent log of each maintenance type is checked — an older log's due
+    // date/mileage goes stale the moment a newer one of the same type is logged (e.g. doing a new
+    // oil change shouldn't leave the previous oil change's now-irrelevant due mileage still
+    // triggering "due soon" alerts forever).
+    const maintenanceTypes = [...new Set(maintenanceLogs.map((l) => l.type))];
+    for (const type of maintenanceTypes) {
+      const log = findLatestMaintenanceByType(maintenanceLogs, type);
+      if (!log) continue;
+
       if (log.nextDueMiles != null && currentOdometer >= log.nextDueMiles - OIL_CHANGE_DUE_MILES) {
         const remaining = Math.max(0, Math.round(log.nextDueMiles - currentOdometer));
         const created = await createAlertIfNotDuplicate(
@@ -93,7 +106,7 @@ export async function GET(request: Request) {
       }
 
       if (log.nextDueDate) {
-        const days = daysUntil(log.nextDueDate.toISOString());
+        const days = daysUntil(log.nextDueDate);
         if (days <= MAINTENANCE_DUE_DAYS) {
           const created = await createAlertIfNotDuplicate(
             vehicle.userId,
